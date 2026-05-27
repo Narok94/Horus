@@ -14,6 +14,12 @@ export interface Exercise {
   notes?: string;
   image?: string;
   videoUrl?: string;
+  dropSet?: boolean;
+  restPause?: boolean;
+  biSet?: boolean;
+  cluster?: boolean;
+  isometria?: boolean;
+  falha?: boolean;
 }
 
 export interface WorkoutRoutine {

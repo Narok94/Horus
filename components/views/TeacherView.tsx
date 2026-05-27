@@ -1,711 +1,868 @@
-
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
   Users, 
-  Plus, 
-  Search, 
-  ChevronRight, 
   Dumbbell, 
-  Trash2, 
-  Edit2, 
-  Save, 
-  X, 
-  User as UserIcon,
-  Database,
-  ArrowLeft,
-  Check,
-  Calendar,
-  History as HistoryIcon,
-  PlusCircle,
-  MoreVertical,
-  ChevronDown,
-  ChevronUp,
-  Loader2
+  TrendingUp, 
+  UserPlus,
+  LogOut,
+  Flame,
+  ChevronLeft,
+  Save
 } from 'lucide-react';
 import { useStore } from '../../store';
-import { User, WorkoutRoutine, Exercise, AppTab } from '../../types';
+import { User, WorkoutRoutine, Exercise } from '../../types';
 import { exerciseDatabase, BaseExercise } from '../../data/exerciseDatabase';
-import { storage, db, auth, ref, uploadBytes, getDownloadURL, doc, setDoc, getDoc, collection, getDocs, onSnapshot } from '../../firebase';
+
+// Sub-components
+import { StudentsTab } from './teacher/StudentsTab';
+import { EvolutionTab } from './teacher/EvolutionTab';
+import { ExerciseLibrary } from './teacher/ExerciseLibrary';
+import { WorkoutWorkspace } from './teacher/WorkoutWorkspace';
+import { StudentModals } from './teacher/StudentModals';
 
 export const TeacherView: React.FC = () => {
-  const { allWorkouts, setAllWorkouts, user: currentUser, addToast } = useStore();
-  const [activeSubTab, setActiveSubTab] = useState<'students' | 'database'>('students');
-  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isAddingStudent, setIsAddingStudent] = useState(false);
+  const { user, allWorkouts, setAllWorkouts, addToast, logout } = useStore();
+  
+  // Active Tab: 'alunos', 'construtor' or 'evolucao'
+  const [activeTab, setActiveTab] = useState<'alunos' | 'construtor' | 'evolucao'>('alunos');
+  
+  // Selected Student for Workout Constructor or History Views
+  const [selectedStudentUsername, setSelectedStudentUsername] = useState<string | null>(null);
+
+  // Division Auto-collapse state
+  const [isDivisionSet, setIsDivisionSet] = useState<boolean>(true);
+
+  // Add Student modal trigger
+  const [showAddModal, setShowAddModal] = useState(false);
   const [newStudentData, setNewStudentData] = useState({
     username: '',
     name: '',
+    password: '12345',
+    sex: 'masculino' as 'masculino' | 'feminino',
+  });
+
+  // Edit Student modal trigger
+  const [editingStudent, setEditingStudent] = useState<User | null>(null);
+  const [editStudentData, setEditStudentData] = useState({
+    username: '',
+    name: '',
     password: '',
-    age: ''
+    sex: 'masculino' as 'masculino' | 'feminino'
   });
 
-  const [editingWorkout, setEditingWorkout] = useState<WorkoutRoutine | null>(null);
-  const [isAddingWorkout, setIsAddingWorkout] = useState(false);
-  const [newWorkoutData, setNewWorkoutData] = useState<Partial<WorkoutRoutine>>({
-    title: '',
-    description: '',
-    exercises: [],
-    color: 'blue'
-  });
-
-  const [isExercisePickerOpen, setIsExercisePickerOpen] = useState(false);
-  const [exerciseSearch, setExerciseSearch] = useState('');
-
-  // Get all students from localStorage profiles + allWorkouts keys
+  // Local state directory and sync trigger
+  const [trigger, setTrigger] = useState(0);
   const [students, setStudents] = useState<User[]>([]);
 
+  // Selected Division Frequency (AB, ABC, ABCD, ABCDE)
+  const [sheetFrequency, setSheetFrequency] = useState<'AB' | 'ABC' | 'ABCD' | 'ABCDE'>('ABC');
+
+  // Local storage workouts during generation
+  const [localRoutines, setLocalRoutines] = useState<WorkoutRoutine[]>([]);
+  const [activeRoutineIdx, setActiveRoutineIdx] = useState<number>(0);
+
+  // UI state query and accordion selection
+  const [searchExerciseQuery, setSearchExerciseQuery] = useState('');
+  const [selectedMuscleFilter, setSelectedMuscleFilter] = useState<string>('Todos');
+  const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
+
+  // Highlight effect helper for recently added exercises to visually verify where it goes
+  const [recentAddedId, setRecentAddedId] = useState<string | null>(null);
+
+  // Security Gate for Docente profile 'teste3'
+  if (!user || user.username.toLowerCase() !== 'teste3') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-400 p-6 text-center font-sans">
+        <div className="bg-zinc-900/60 border border-zinc-900 p-8 rounded-xl max-w-sm shrink-0">
+          <span className="text-zinc-500 font-medium text-xs block mb-1">Acesso restrito</span>
+          <p className="text-xs leading-relaxed text-zinc-400 mb-6">Esta interface administrativa é exclusiva para o Docente Credenciado (Prof. Teste3).</p>
+          <button 
+            onClick={logout} 
+            className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-xs transition-colors cursor-pointer"
+          >
+            Sair da conta
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Load students data directory from local registry
   useEffect(() => {
-    const loadStudents = () => {
-      const studentList: User[] = [];
-      const usernames = Object.keys(allWorkouts);
-      
-      usernames.forEach(username => {
-        const profile = localStorage.getItem(`tatugym_user_profile_${username.toLowerCase()}`);
-        if (profile) {
-          try {
-            const userData = JSON.parse(profile);
-            if (userData.role === 'student') {
-              studentList.push(userData);
-            }
-          } catch (e) {
-            console.error('Error parsing student profile:', e);
-          }
-        } else {
-          // Fallback if no profile but has workouts
-          studentList.push({
-            username,
-            name: username.charAt(0).toUpperCase() + username.slice(1),
-            role: 'student',
-            streak: 0,
-            totalWorkouts: 0,
-            checkIns: [],
-            history: [],
-            isProfileComplete: false
-          });
-        }
-      });
-      setStudents(studentList);
-    };
-
-    loadStudents();
-  }, [allWorkouts]);
-
-  const handleAddStudent = (e: React.FormEvent) => {
-    e.preventDefault();
-    const lowerUsername = newStudentData.username.toLowerCase();
+    const list: User[] = [];
+    const defaults = ['teste', 'teste2'];
     
-    if (allWorkouts[lowerUsername]) {
-      if (addToast) addToast('Usuário já existe.', 'error');
+    defaults.forEach(uname => {
+      const saved = localStorage.getItem(`tatugym_user_profile_${uname}`);
+      if (saved) {
+        try {
+          list.push(JSON.parse(saved));
+        } catch {
+          // ignore cache error
+        }
+      } else {
+        list.push({
+          username: uname,
+          name: uname === 'teste' ? 'Teste Masculino' : 'Teste Feminino',
+          role: 'student',
+          sex: uname === 'teste2' ? 'feminino' : 'masculino',
+          streak: 0,
+          totalWorkouts: 0,
+          checkIns: [],
+          history: [],
+          isProfileComplete: true
+        });
+      }
+    });
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('tatugym_user_profile_')) {
+        const username = key.replace('tatugym_user_profile_', '');
+        if (username !== 'teste' && username !== 'teste2' && username !== 'teste3') {
+          try {
+            const profileData = JSON.parse(localStorage.getItem(key) || '');
+            if (profileData && profileData.role === 'student' && !list.some(s => s.username === username)) {
+              list.push(profileData);
+            }
+          } catch {
+            // ignore JSON error
+          }
+        }
+      }
+    }
+
+    setStudents(list);
+  }, [allWorkouts, trigger]);
+
+  // Sync builder routines whenever active student context is switched
+  useEffect(() => {
+    if (selectedStudentUsername) {
+      const lower = selectedStudentUsername.toLowerCase();
+      const existing = allWorkouts[lower] || [];
+      
+      // Auto deduce sheet division setting
+      if (existing.length <= 2) {
+        setSheetFrequency('AB');
+      } else if (existing.length === 3) {
+        setSheetFrequency('ABC');
+      } else if (existing.length === 4) {
+        setSheetFrequency('ABCD');
+      } else {
+        setSheetFrequency('ABCDE');
+      }
+
+      // Prepopulate slots A-E
+      const initialRoutines: WorkoutRoutine[] = Array.from({ length: 5 }).map((_, idx) => {
+        const char = String.fromCharCode(65 + idx);
+        const matched = existing[idx];
+        return matched ? { ...matched } : {
+          id: `routine_${char}_${Math.random().toString(36).substring(2, 9)}`,
+          title: `Treino ${char}`,
+          description: '',
+          exercises: [],
+          color: 'blue'
+        };
+      });
+
+      setLocalRoutines(initialRoutines);
+      setActiveRoutineIdx(0);
+      setIsDivisionSet(true);
+    }
+  }, [selectedStudentUsername]);
+
+  // Add new student integration
+  const handleCreateStudentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanUser = newStudentData.username.trim().toLowerCase();
+    const cleanName = newStudentData.name.trim();
+
+    if (!cleanUser || !cleanName) {
+      if (addToast) addToast("Preencha todos os campos obrigatórios.", "error");
       return;
     }
 
-    const newUser: User = {
-      username: lowerUsername,
-      name: newStudentData.name,
+    const isConflict = students.some(s => s.username.toLowerCase() === cleanUser) || cleanUser === 'teste3';
+    if (isConflict) {
+      if (addToast) addToast("Este nome de usuário já está sendo utilizado.", "error");
+      return;
+    }
+
+    const newStudent: User = {
+      username: cleanUser,
+      name: cleanName,
       password: newStudentData.password,
-      age: parseInt(newStudentData.age) || undefined,
+      sex: newStudentData.sex,
       role: 'student',
       streak: 0,
       totalWorkouts: 0,
       checkIns: [],
       history: [],
+      weights: {},
       isProfileComplete: true
     };
 
-    // Save profile
-    localStorage.setItem(`tatugym_user_profile_${lowerUsername}`, JSON.stringify(newUser));
-    
-    // Add to allWorkouts
-    const updatedWorkouts = { ...allWorkouts, [lowerUsername]: [] };
-    setAllWorkouts(updatedWorkouts);
-
-    setIsAddingStudent(false);
-    setNewStudentData({ username: '', name: '', password: '', age: '' });
-    if (addToast) addToast('Aluno adicionado com sucesso!', 'success');
+    localStorage.setItem(`tatugym_user_profile_${cleanUser}`, JSON.stringify(newStudent));
+    setNewStudentData({
+      username: '',
+      name: '',
+      password: '12345',
+      sex: 'masculino',
+    });
+    setShowAddModal(false);
+    setTrigger(prev => prev + 1);
+    if (addToast) addToast(`Aluno ${cleanName} cadastrado com sucesso!`, "success");
   };
 
-  const handleDeleteStudent = (username: string) => {
-    if (confirm(`Tem certeza que deseja excluir o aluno ${username}?`)) {
-      const updatedWorkouts = { ...allWorkouts };
-      delete updatedWorkouts[username.toLowerCase()];
-      setAllWorkouts(updatedWorkouts);
-      localStorage.removeItem(`tatugym_user_profile_${username.toLowerCase()}`);
-      if (addToast) addToast('Aluno removido.', 'info');
+  // Open Edit student Modal
+  const handleOpenEditModal = (student: User) => {
+    setEditingStudent(student);
+    setEditStudentData({
+      username: student.username,
+      name: student.name,
+      password: student.password || '12345',
+      sex: student.sex || 'masculino'
+    });
+  };
+
+  // Saved Edit student
+  const handleEditStudentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStudent) return;
+
+    const savedKey = `tatugym_user_profile_${editingStudent.username}`;
+    const updatedUser: User = {
+      ...editingStudent,
+      name: editStudentData.name,
+      password: editStudentData.password,
+      sex: editStudentData.sex,
+    };
+
+    localStorage.setItem(savedKey, JSON.stringify(updatedUser));
+    setEditingStudent(null);
+    setTrigger(prev => prev + 1);
+    if (addToast) addToast("Cadastro do aluno atualizado!", "success");
+  };
+
+  // Delete individual student records
+  const handleDeleteStudent = (username: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!window.confirm(`Tem certeza que deseja excluir sumariamente o aluno @${username}?`)) {
+      return;
     }
-  };
 
-  const handleAddWorkout = () => {
-    if (!selectedStudent) return;
+    localStorage.removeItem(`tatugym_user_profile_${username}`);
     
-    const workout: WorkoutRoutine = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: newWorkoutData.title || 'Novo Treino',
-      description: newWorkoutData.description || '',
-      exercises: newWorkoutData.exercises || [],
-      color: newWorkoutData.color || 'blue'
-    };
+    // Clear workouts
+    const currentAll = { ...allWorkouts };
+    delete currentAll[username.toLowerCase()];
+    setAllWorkouts(currentAll);
 
-    const updatedWorkouts = {
-      ...allWorkouts,
-      [selectedStudent.toLowerCase()]: [...(allWorkouts[selectedStudent.toLowerCase()] || []), workout]
-    };
-    
-    setAllWorkouts(updatedWorkouts);
-    setIsAddingWorkout(false);
-    setNewWorkoutData({ title: '', description: '', exercises: [], color: 'blue' });
-    if (addToast) addToast('Treino criado!', 'success');
-  };
-
-  const handleUpdateWorkout = () => {
-    if (!selectedStudent || !editingWorkout) return;
-
-    const updatedList = allWorkouts[selectedStudent.toLowerCase()].map(w => 
-      w.id === editingWorkout.id ? editingWorkout : w
-    );
-
-    const updatedWorkouts = {
-      ...allWorkouts,
-      [selectedStudent.toLowerCase()]: updatedList
-    };
-
-    setAllWorkouts(updatedWorkouts);
-    setEditingWorkout(null);
-    if (addToast) addToast('Treino atualizado!', 'success');
-  };
-
-  const handleDeleteWorkout = (workoutId: string) => {
-    if (!selectedStudent) return;
-    if (confirm('Excluir este treino?')) {
-      const updatedList = allWorkouts[selectedStudent.toLowerCase()].filter(w => w.id !== workoutId);
-      const updatedWorkouts = {
-        ...allWorkouts,
-        [selectedStudent.toLowerCase()]: updatedList
-      };
-      setAllWorkouts(updatedWorkouts);
-      if (addToast) addToast('Treino removido.', 'info');
+    // Notify state
+    setEditingStudent(null);
+    if (selectedStudentUsername === username) {
+      setSelectedStudentUsername(null);
     }
+    setTrigger(prev => prev + 1);
+    if (addToast) addToast(`Aluno @${username} deletado do banco de dados.`, "success");
   };
 
-  const addExerciseToWorkout = (baseEx: BaseExercise) => {
+  // Append exercise inside active training sheet
+  const handleAddNewExercise = (baseEx: BaseExercise) => {
+    const updated = [...localRoutines];
+    const routine = { ...updated[activeRoutineIdx] };
+    if (!routine) return;
+
+    // Build specific structure targeting active layout row
+    const exerciseID = `ex_${Math.random().toString(36).substring(2, 9)}`;
     const newEx: Exercise = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: exerciseID,
       name: baseEx.name,
       muscleGroup: baseEx.muscleGroup,
-      sets: baseEx.defaultSets,
-      reps: baseEx.defaultReps,
-      rest: baseEx.defaultRest,
-      image: baseEx.image
+      sets: baseEx.defaultSets || 3,
+      reps: baseEx.defaultReps || '10-12',
+      rest: baseEx.defaultRest || 60,
+      notes: '0',
+      dropSet: false,
+      restPause: false,
+      biSet: false,
+      cluster: false,
+      isometria: false,
+      falha: false
     };
 
-    if (editingWorkout) {
-      setEditingWorkout({
-        ...editingWorkout,
-        exercises: [...editingWorkout.exercises, newEx]
-      });
-    } else if (isAddingWorkout) {
-      setNewWorkoutData({
-        ...newWorkoutData,
-        exercises: [...(newWorkoutData.exercises || []), newEx]
-      });
-    }
-    setIsExercisePickerOpen(false);
+    routine.exercises = [...(routine.exercises || []), newEx];
+    updated[activeRoutineIdx] = routine;
+    setLocalRoutines(updated);
+    setExpandedExerciseId(exerciseID);
+
+    // Dynamic added visual checklist flash effect
+    setRecentAddedId(baseEx.name);
+    setTimeout(() => {
+      setRecentAddedId(null);
+    }, 800);
+
+    if (addToast) addToast(`"${baseEx.name}" incluído no Treino ${String.fromCharCode(65 + activeRoutineIdx)}`, "success");
   };
 
-  const removeExerciseFromWorkout = (exId: string) => {
-    if (editingWorkout) {
-      setEditingWorkout({
-        ...editingWorkout,
-        exercises: editingWorkout.exercises.filter(e => e.id !== exId)
-      });
-    } else if (isAddingWorkout) {
-      setNewWorkoutData({
-        ...newWorkoutData,
-        exercises: (newWorkoutData.exercises || []).filter(e => e.id !== exId)
-      });
+  // Append flexible customized exercise card at bottom request button
+  const handleAddCustomExercise = () => {
+    const updated = [...localRoutines];
+    const routine = { ...updated[activeRoutineIdx] };
+    if (!routine) return;
+
+    const exerciseID = `ex_${Math.random().toString(36).substring(2, 9)}`;
+    const newEx: Exercise = {
+      id: exerciseID,
+      name: 'Exercício Personalizado',
+      muscleGroup: 'Livre',
+      sets: 4,
+      reps: '10',
+      rest: 60,
+      notes: '0',
+      dropSet: false,
+      restPause: false,
+      biSet: false
+    };
+
+    routine.exercises = [...(routine.exercises || []), newEx];
+    updated[activeRoutineIdx] = routine;
+    setLocalRoutines(updated);
+    setExpandedExerciseId(exerciseID);
+
+    if (addToast) addToast("Exercício livre adicionado ao construtor!", "success");
+  };
+
+  // Handle configuration updates
+  const handleUpdateExerciseField = (id: string, field: keyof Exercise, val: any) => {
+    const updated = [...localRoutines];
+    const routine = { ...updated[activeRoutineIdx] };
+    if (!routine) return;
+
+    routine.exercises = (routine.exercises || []).map(ex => {
+      if (ex.id === id) {
+        return { ...ex, [field]: val };
+      }
+      return ex;
+    });
+
+    updated[activeRoutineIdx] = routine;
+    setLocalRoutines(updated);
+  };
+
+  // Remove exercise from routine
+  const handleRemoveExercise = (id: string) => {
+    const updated = [...localRoutines];
+    const routine = { ...updated[activeRoutineIdx] };
+    if (!routine) return;
+
+    routine.exercises = (routine.exercises || []).map(ex => {
+      // Clean target load metas in profile weights block if matching specific IDs to prevent ghost entries
+      if (ex.id === id && selectedStudentUsername) {
+        const studentProfileKey = `tatugym_user_profile_${selectedStudentUsername.toLowerCase()}`;
+        const cached = localStorage.getItem(studentProfileKey);
+        if (cached) {
+          try {
+            const p = JSON.parse(cached);
+            if (p.weights && p.weights[ex.name]) {
+              delete p.weights[ex.name];
+              localStorage.setItem(studentProfileKey, JSON.stringify(p));
+            }
+          } catch {
+            // ignore
+          }
+        }
+      }
+      return ex;
+    }).filter(ex => ex.id !== id);
+
+    updated[activeRoutineIdx] = routine;
+    setLocalRoutines(updated);
+    if (expandedExerciseId === id) setExpandedExerciseId(null);
+    if (addToast) addToast("Exercício removido da planilha.", "success");
+  };
+
+  // Continuously auto-saves any changes to workouts in real-time
+  useEffect(() => {
+    if (!selectedStudentUsername || localRoutines.length === 0) return;
+
+    const lowerStr = selectedStudentUsername.toLowerCase();
+    const limit = getFrequencyCount();
+    const activeRoutines = localRoutines.slice(0, limit);
+
+    const payload = {
+      ...allWorkouts,
+      [lowerStr]: activeRoutines,
+    };
+
+    setAllWorkouts(payload);
+    localStorage.setItem('tatugym_all_workouts', JSON.stringify(payload));
+  }, [localRoutines, sheetFrequency, selectedStudentUsername]);
+
+  // Inject a block template of exercises with default presets instantly
+  const handleInjectBlock = (exercisesList: BaseExercise[]) => {
+    const updated = [...localRoutines];
+    const routine = { ...updated[activeRoutineIdx] };
+    if (!routine) return;
+
+    const newExs: Exercise[] = exercisesList.map(baseEx => {
+      const exerciseID = `ex_${Math.random().toString(36).substring(2, 9)}`;
+      return {
+        id: exerciseID,
+        name: baseEx.name,
+        muscleGroup: baseEx.muscleGroup,
+        sets: baseEx.defaultSets || 3,
+        reps: baseEx.defaultReps || '10-12',
+        rest: baseEx.defaultRest || 60,
+        notes: '0',
+        dropSet: false,
+        restPause: false,
+        biSet: false,
+        cluster: false,
+        isometria: false,
+        falha: false
+      };
+    });
+
+    routine.exercises = [...(routine.exercises || []), ...newExs];
+    updated[activeRoutineIdx] = routine;
+    setLocalRoutines(updated);
+    
+    if (addToast) addToast(`Injetado bloco de ${exercisesList.length} exercícios com presets!`, "success");
+  };
+
+  // Clones exercises from another training slot (e.g. A to B)
+  const handleCloneRoutine = (fromIdx: number) => {
+    if (fromIdx < 0 || fromIdx >= localRoutines.length) return;
+    const source = localRoutines[fromIdx];
+    if (!source) return;
+
+    const updated = [...localRoutines];
+    const clonedExercises: Exercise[] = (source.exercises || []).map(ex => ({
+      ...ex,
+      id: `ex_${Math.random().toString(36).substring(2, 9)}`
+    }));
+
+    updated[activeRoutineIdx] = {
+      ...updated[activeRoutineIdx],
+      exercises: clonedExercises,
+      title: source.title || updated[activeRoutineIdx].title
+    };
+
+    setLocalRoutines(updated);
+    if (addToast) addToast(`Copiado estrutura do Treino ${String.fromCharCode(65 + fromIdx)} para este treino!`, "success");
+  };
+
+  // Clones entire sheet from another student
+  const handleCloneFromOtherStudent = (otherStudentUsername: string) => {
+    const existing = allWorkouts[otherStudentUsername.toLowerCase()] || [];
+    if (existing.length === 0) {
+      if (addToast) addToast(`O aluno @${otherStudentUsername} ainda não possui treinos cadastrados.`, "error");
+      return;
+    }
+
+    const clonedRoutines = existing.map(routine => ({
+      ...routine,
+      id: `routine_${Math.random().toString(36).substring(2, 9)}`,
+      exercises: (routine.exercises || []).map(ex => ({
+        ...ex,
+        id: `ex_${Math.random().toString(36).substring(2, 9)}`
+      }))
+    }));
+
+    const initialRoutines: WorkoutRoutine[] = Array.from({ length: 5 }).map((_, idx) => {
+      const char = String.fromCharCode(65 + idx);
+      const matched = clonedRoutines[idx];
+      return matched ? { ...matched } : {
+        id: `routine_${char}_${Math.random().toString(36).substring(2, 9)}`,
+        title: `Treino ${char}`,
+        description: '',
+        exercises: [],
+        color: 'blue'
+      };
+    });
+
+    setLocalRoutines(initialRoutines);
+    if (addToast) addToast(`Treinos clonados com sucesso do aluno @${otherStudentUsername}!`, "success");
+  };
+
+  // Wipe current routine exercises
+  const handleClearWorkoutRoutine = () => {
+    const updated = [...localRoutines];
+    if (updated[activeRoutineIdx]) {
+      updated[activeRoutineIdx].exercises = [];
+      setLocalRoutines(updated);
+      if (addToast) addToast("Todos os exercícios foram removidos deste treino.", "success");
     }
   };
 
-  const filteredStudents = students.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Fast forward to builder
+  const handleManageStudent = (username: string) => {
+    setSelectedStudentUsername(username);
+    setActiveTab('construtor');
+  };
 
-  const filteredExercises = exerciseDatabase.filter(e => 
-    e.name.toLowerCase().includes(exerciseSearch.toLowerCase()) ||
-    e.muscleGroup.toLowerCase().includes(exerciseSearch.toLowerCase())
-  );
+  // Helper limits
+  const getFrequencyCount = () => {
+    switch (sheetFrequency) {
+      case 'AB': return 2;
+      case 'ABC': return 3;
+      case 'ABCD': return 4;
+      case 'ABCDE': return 5;
+      default: return 3;
+    }
+  };
 
-  if (selectedStudent) {
-    const studentWorkouts = allWorkouts[selectedStudent.toLowerCase()] || [];
-    const studentProfile = students.find(s => s.username.toLowerCase() === selectedStudent.toLowerCase());
+  // Filter recommendations database list
+  const filteredSuggestions = exerciseDatabase.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchExerciseQuery.toLowerCase()) || 
+                          item.muscleGroup.toLowerCase().includes(searchExerciseQuery.toLowerCase());
+    
+    if (selectedMuscleFilter === 'Todos') return matchesSearch;
+    
+    if (selectedMuscleFilter === 'Braços') {
+      return matchesSearch && ['Bíceps', 'Tríceps', 'Antebraço'].includes(item.muscleGroup);
+    }
+    if (selectedMuscleFilter === 'Pernas') {
+      return matchesSearch && ['Quadríceps', 'Isquiotibiais', 'Panturrilha', 'Perna', 'Coxa', 'Glúteos'].includes(item.muscleGroup);
+    }
+    
+    return matchesSearch && item.muscleGroup.toLowerCase().includes(selectedMuscleFilter.toLowerCase().slice(0, 4));
+  });
 
-    return (
-      <div className="space-y-6 animate-slide-up pb-20">
-        <header className="flex items-center gap-4 text-ink">
-          <button 
-            onClick={() => setSelectedStudent(null)}
-            className="w-10 h-10 rounded-xl glass-card flex items-center justify-center text-secondary hover:text-ink transition-colors"
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <div>
-            <h2 className="text-2xl font-black text-ink uppercase tracking-tighter italic leading-none">
-              {studentProfile?.name || selectedStudent}
-            </h2>
-            <p className="text-secondary text-[10px] font-black uppercase tracking-[0.3em] mt-1">Gerenciar treinos do aluno</p>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="glass-card p-4 rounded-3xl">
-            <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Treinos Concluídos</p>
-            <p className="text-2xl font-black text-ink">{studentProfile?.totalWorkouts || 0}</p>
-          </div>
-          <div className="glass-card p-4 rounded-3xl">
-            <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Sequência Atual</p>
-            <p className="text-2xl font-black text-orange-500">{studentProfile?.streak || 0} dias</p>
-          </div>
-          <div className="glass-card p-4 rounded-3xl">
-            <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">Último Acesso</p>
-            <p className="text-sm font-black text-ink uppercase">
-              {studentProfile?.checkIns?.length ? new Date(studentProfile.checkIns[studentProfile.checkIns.length - 1]).toLocaleDateString('pt-BR') : 'Nunca'}
-            </p>
-          </div>
-        </div>
-
-        {/* Configured Exercises Summary */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-black text-ink uppercase tracking-widest">Exercícios Configurados</h3>
-          <div className="flex flex-wrap gap-2">
-            {Array.from(new Set(studentWorkouts.flatMap(w => w.exercises.map(e => e.name)))).map(exName => (
-              <span key={exName} className="px-3 py-1.5 glass-card rounded-full text-[10px] font-bold text-secondary uppercase tracking-tight">
-                {exName}
-              </span>
-            ))}
-            {studentWorkouts.length === 0 && (
-              <p className="text-secondary text-[10px] font-black uppercase tracking-widest">Nenhum exercício configurado.</p>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black text-ink uppercase tracking-widest">Planilhas de Treino</h3>
-            <button 
-              onClick={() => setIsAddingWorkout(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-accent rounded-xl text-[10px] font-black text-white uppercase tracking-widest hover:brightness-110 shadow-lg transition-all"
-            >
-              <Plus size={14} /> Novo Treino
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {studentWorkouts.map((workout, idx) => (
-              <div key={workout.id} className="glass-card rounded-3xl overflow-hidden group">
-                <div className="p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
-                      <Dumbbell size={24} className="text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-ink uppercase tracking-tight italic">Treino {String.fromCharCode(65 + idx)}: {workout.title}</h4>
-                      <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">{workout.exercises.length} exercícios</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => setEditingWorkout(workout)}
-                      className="p-3 rounded-xl glass-card text-secondary hover:text-accent transition-colors"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteWorkout(workout.id)}
-                      className="p-3 rounded-xl glass-card text-secondary hover:text-rose-500 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {studentWorkouts.length === 0 && (
-              <div className="p-12 text-center border-2 border-dashed border-line rounded-3xl">
-                <p className="text-secondary text-[10px] font-black uppercase tracking-widest">Nenhum treino atribuído.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Workout Editor Modal */}
-        {(isAddingWorkout || editingWorkout) && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-bg w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] border border-line flex flex-col shadow-2xl transition-colors duration-400">
-              <div className="p-6 border-b border-line flex items-center justify-between">
-                <h3 className="text-xl font-black text-ink uppercase tracking-tighter italic">
-                  {editingWorkout ? 'Editar Treino' : 'Novo Treino'}
-                </h3>
-                <button 
-                  onClick={() => { setIsAddingWorkout(false); setEditingWorkout(null); }}
-                  className="p-2 text-secondary hover:text-ink"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Título do Treino</label>
-                    <input 
-                      type="text"
-                      value={editingWorkout ? editingWorkout.title : newWorkoutData.title}
-                      onChange={(e) => editingWorkout ? setEditingWorkout({...editingWorkout, title: e.target.value}) : setNewWorkoutData({...newWorkoutData, title: e.target.value, color: 'orange'})}
-                      className="w-full bg-black border border-white/10 rounded-2xl p-4 text-ink font-bold outline-none focus:border-accent"
-                      placeholder="Ex: Peito e Tríceps"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-black text-secondary uppercase tracking-widest">Exercícios</h4>
-                    <button 
-                      onClick={() => setIsExercisePickerOpen(true)}
-                      className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-1"
-                    >
-                      <Plus size={14} /> Adicionar
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {(editingWorkout ? editingWorkout.exercises : newWorkoutData.exercises || []).map((ex, idx) => (
-                      <div key={ex.id} className="glass-card p-4 rounded-2xl border border-line flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-4 flex-1">
-                        <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-line text-secondary">
-                          <Dumbbell size={24}/>
-                        </div>
-                          <div className="flex-1">
-                            <p className="text-xs font-black text-ink uppercase tracking-tight">{ex.name}</p>
-                            <div className="flex gap-3 mt-1">
-                              <div className="flex items-center gap-1">
-                                <span className="text-[8px] font-black text-secondary uppercase">Séries:</span>
-                                <input 
-                                  type="number"
-                                  value={ex.sets}
-                                  onChange={(e) => {
-                                    const val = parseInt(e.target.value) || 0;
-                                    const updateEx = (exercises: Exercise[]) => exercises.map(item => item.id === ex.id ? {...item, sets: val} : item);
-                                    if (editingWorkout) setEditingWorkout({...editingWorkout, exercises: updateEx(editingWorkout.exercises)});
-                                    else setNewWorkoutData({...newWorkoutData, exercises: updateEx(newWorkoutData.exercises || [])});
-                                  }}
-                                  className="w-8 bg-transparent text-[10px] font-black text-accent outline-none"
-                                />
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <span className="text-[8px] font-black text-secondary uppercase">Reps:</span>
-                                <input 
-                                  type="text"
-                                  value={ex.reps}
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    const updateEx = (exercises: Exercise[]) => exercises.map(item => item.id === ex.id ? {...item, reps: val} : item);
-                                    if (editingWorkout) setEditingWorkout({...editingWorkout, exercises: updateEx(editingWorkout.exercises)});
-                                    else setNewWorkoutData({...newWorkoutData, exercises: updateEx(newWorkoutData.exercises || [])});
-                                  }}
-                                  className="w-12 bg-transparent text-[10px] font-black text-accent outline-none"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => removeExerciseFromWorkout(ex.id)}
-                          className="p-2 text-secondary hover:text-rose-500 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 border-t border-line bg-white/5">
-                <button 
-                  onClick={editingWorkout ? handleUpdateWorkout : handleAddWorkout}
-                  className="w-full py-4 bg-accent rounded-2xl text-white font-black uppercase tracking-[0.3em] shadow-xl flex items-center justify-center gap-2"
-                >
-                  <Save size={18} /> {editingWorkout ? 'Salvar Alterações' : 'Criar Treino'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Exercise Picker Modal */}
-        {isExercisePickerOpen && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-            <div className="bg-bg w-full max-w-lg max-h-[80vh] overflow-hidden rounded-[2.5rem] border border-line flex flex-col shadow-2xl transition-colors duration-400">
-              <div className="p-6 border-b border-line">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-black text-ink uppercase tracking-tighter italic">Escolher Exercício</h3>
-                  <button onClick={() => setIsExercisePickerOpen(false)} className="text-secondary hover:text-ink"><X size={24} /></button>
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={18} />
-                  <input 
-                    type="text"
-                    value={exerciseSearch}
-                    onChange={(e) => setExerciseSearch(e.target.value)}
-                    className="w-full glass-card rounded-xl p-3 pl-12 text-sm text-ink outline-none focus:border-accent"
-                    placeholder="Buscar exercício..."
-                  />
-                </div>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                {filteredExercises.map((ex, i) => (
-                  <button
-                    key={i}
-                    onClick={() => addExerciseToWorkout(ex)}
-                    className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition-colors text-left group"
-                  >
-                    <div className="w-12 h-12 rounded-xl glass-card flex items-center justify-center">
-                      <Dumbbell size={24} className="text-secondary/50 group-hover:text-accent transition-colors" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-black text-ink uppercase tracking-tight group-hover:text-accent transition-colors">{ex.name}</p>
-                      <p className="text-[9px] font-bold text-secondary uppercase tracking-widest">{ex.muscleGroup}</p>
-                    </div>
-                    <PlusCircle size={20} className="text-secondary/30 group-hover:text-accent transition-colors" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const selectedStudentProfile = students.find(s => s.username === selectedStudentUsername);
 
   return (
-    <div className="space-y-8 animate-slide-up pb-20">
-      <header className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-black text-ink uppercase tracking-tighter italic leading-none">
-            ÁREA DO <span className="text-accent">PROFESSOR</span>
-          </h2>
-          <p className="text-secondary text-[10px] font-black uppercase tracking-[0.3em] mt-2">Gestão de alunos e treinos</p>
-        </div>
-        <div className="flex glass-card p-1 rounded-2xl border border-line">
-          <button 
-            onClick={() => setActiveSubTab('students')}
-            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'students' ? 'bg-accent text-white shadow-lg' : 'text-secondary hover:text-ink'}`}
-          >
-            Alunos
-          </button>
-          <button 
-            onClick={() => setActiveSubTab('database')}
-            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'database' ? 'bg-accent text-white shadow-lg' : 'text-secondary hover:text-ink'}`}
-          >
-            Base
-          </button>
-        </div>
-      </header>
-
-      {activeSubTab === 'students' ? (
-        <div className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary" size={20} />
-              <input 
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full glass-card rounded-2xl p-5 pl-14 text-ink font-bold outline-none focus:border-accent backdrop-blur-sm"
-                placeholder="BUSCAR ALUNO..."
-              />
-            </div>
-            <button 
-              onClick={() => setIsAddingStudent(true)}
-              className="bg-accent hover:brightness-110 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl flex items-center justify-center gap-3 transition-all"
-            >
-              <Plus size={20} /> NOVO ALUNO
-            </button>
+    <div className="min-h-screen bg-[#09090B] text-zinc-200 flex flex-col lg:flex-row font-sans lg:overflow-hidden pb-safe-bottom w-full">
+      
+      {/* 1. DESKTOP PERMANENT GLOBAL SIDEBAR - Elegant and fine (Notion / Figma / Linear inspiration) */}
+      <aside className="hidden lg:flex flex-col w-[260px] h-screen bg-[#0F1014] border-r border-white/[0.015] p-6 shrink-0 justify-between select-none">
+        <div className="space-y-8">
+          
+          {/* Brand header */}
+          <div className="flex items-center gap-3">
+            <span className="font-black text-xl tracking-wider text-white uppercase italic">
+              HORUS<span className="text-zinc-650 font-normal">/</span>FIT
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            {filteredStudents.map((student) => (
-              <div 
-                key={student.username}
-                className="glass-card rounded-[2.5rem] hover:border-accent/30 transition-all group overflow-hidden"
-              >
-                <div className="p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-line group-hover:scale-110 transition-transform duration-500">
-                      <UserIcon size={32} className="text-secondary group-hover:text-accent transition-colors" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black text-ink uppercase tracking-tight italic">{student.name}</h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">@{student.username}</span>
-                        <div className="w-1 h-1 bg-line rounded-full"></div>
-                        <span className="text-[9px] font-black text-accent uppercase tracking-widest">{allWorkouts[student.username.toLowerCase()]?.length || 0} TREINOS</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <button 
-                      onClick={() => setSelectedStudent(student.username)}
-                      className="glass-card hover:bg-accent text-secondary hover:text-white w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
-                    >
-                      <ChevronRight size={24} />
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteStudent(student.username)}
-                      className="glass-card hover:bg-rose-500/10 text-secondary hover:text-rose-500 w-12 h-12 rounded-2xl flex items-center justify-center transition-all"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {filteredStudents.length === 0 && (
-              <div className="p-20 text-center border-2 border-dashed border-line rounded-[3rem]">
-                <Users size={48} className="text-secondary/50 mx-auto mb-4" />
-                <p className="text-secondary text-xs font-black uppercase tracking-[0.2em]">Nenhum aluno encontrado.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary" size={20} />
-            <input 
-              type="text"
-              value={exerciseSearch}
-              onChange={(e) => setExerciseSearch(e.target.value)}
-              className="w-full glass-card rounded-2xl p-5 pl-14 text-ink font-bold outline-none focus:border-accent backdrop-blur-sm"
-              placeholder="BUSCAR NA BASE DE EXERCÍCIOS..."
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredExercises.map((ex, i) => {
+          {/* Quick modules menu list */}
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-widest pl-1 mb-1">
+              Painel do Docente
+            </span>
+            {[
+              { id: 'alunos', label: 'Meus alunos', icon: Users },
+              { id: 'construtor', label: 'Construtor', icon: Dumbbell },
+              { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
+            ].map(item => {
+              const isActive = activeTab === item.id;
               return (
-                <div key={i} className="glass-card p-4 rounded-3xl flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-2xl bg-white/5 border border-line flex items-center justify-center">
-                    <Dumbbell size={40} className="text-secondary/30" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-black text-ink uppercase tracking-tight italic">{ex.name}</h4>
-                    <p className="text-[10px] font-black text-accent uppercase tracking-widest mt-1">{ex.muscleGroup}</p>
-                    <div className="flex gap-3 mt-2">
-                      <div className="flex flex-col">
-                        <span className="text-[7px] font-black text-secondary uppercase">Séries</span>
-                        <span className="text-[10px] font-bold text-secondary">{ex.defaultSets}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[7px] font-black text-secondary uppercase">Reps</span>
-                        <span className="text-[10px] font-bold text-secondary">{ex.defaultReps}</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[7px] font-black text-secondary uppercase">Descanso</span>
-                        <span className="text-[10px] font-bold text-secondary">{ex.defaultRest}s</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    if (item.id === 'construtor' && !selectedStudentUsername) {
+                      const first = students[0]?.username || null;
+                      if (first) setSelectedStudentUsername(first);
+                    }
+                    setActiveTab(item.id as any);
+                  }}
+                  className={`flex items-center gap-3.5 w-full py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 cursor-pointer border ${
+                    isActive 
+                      ? 'bg-[#171A20] border-white/[0.04] text-white font-extrabold shadow-sm' 
+                      : 'bg-transparent border-transparent text-zinc-500 hover:text-zinc-200 hover:bg-[#171A20]/25'
+                  }`}
+                >
+                  <item.icon size={14} className={isActive ? 'text-white' : 'text-zinc-500'} />
+                  <span>{item.label}</span>
+                </button>
               );
             })}
           </div>
         </div>
-      )}
 
-      {/* Add Student Modal */}
-      {isAddingStudent && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-bg w-full max-w-md rounded-[2.5rem] border border-line p-8 space-y-8 shadow-2xl transition-colors duration-400"
+        {/* User profile action section */}
+        <div className="space-y-4 pt-6 border-t border-white/[0.015]">
+          <div className="flex flex-col rounded-xl bg-[#111318] border border-white/[0.015] p-3.5 font-sans">
+            <span className="text-sm font-extrabold text-zinc-200">Prof. Teste3</span>
+            <span className="text-[9px] font-mono font-black uppercase text-zinc-500 mt-1 tracking-wider">Docente Credenciado</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center justify-center gap-1.5 py-3.5 w-full bg-zinc-100 hover:bg-white text-[#09090B] text-xs font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-sm"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-black text-ink uppercase tracking-tighter italic">Novo Aluno</h3>
-              <button onClick={() => setIsAddingStudent(false)} className="text-secondary hover:text-ink"><X size={24} /></button>
-            </div>
+            <UserPlus size={13} />
+            <span>Novo Aluno</span>
+          </button>
 
-            <form onSubmit={handleAddStudent} className="space-y-5">
-              <div className="space-y-2">
-                <label htmlFor="student-name" className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Nome Completo</label>
-                <input 
-                  id="student-name"
-                  name="name"
-                  autoComplete="name"
-                  type="text"
-                  required
-                  value={newStudentData.name}
-                  onChange={(e) => setNewStudentData({...newStudentData, name: e.target.value})}
-                  className="w-full glass-card rounded-2xl p-4 text-ink font-bold outline-none focus:border-accent"
-                  placeholder="Ex: João Silva"
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="student-username" className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Usuário (Login)</label>
-                <input 
-                  id="student-username"
-                  name="username"
-                  autoComplete="username"
-                  type="text"
-                  required
-                  value={newStudentData.username}
-                  onChange={(e) => setNewStudentData({...newStudentData, username: e.target.value})}
-                  className="w-full glass-card rounded-2xl p-4 text-ink font-bold outline-none focus:border-accent"
-                  placeholder="Ex: joaosilva"
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="student-password" className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Senha</label>
-                <input 
-                  id="student-password"
-                  name="password"
-                  autoComplete="new-password"
-                  type="password"
-                  required
-                  value={newStudentData.password}
-                  onChange={(e) => setNewStudentData({...newStudentData, password: e.target.value})}
-                  className="w-full glass-card rounded-2xl p-4 text-ink font-bold outline-none focus:border-accent"
-                  placeholder="••••••••"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-secondary uppercase tracking-widest ml-1">Idade (Opcional)</label>
-                <input 
-                  type="number"
-                  value={newStudentData.age}
-                  onChange={(e) => setNewStudentData({...newStudentData, age: e.target.value})}
-                  className="w-full glass-card rounded-2xl p-4 text-ink font-bold outline-none focus:border-accent"
-                  placeholder="Ex: 25"
-                />
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full py-5 bg-accent hover:brightness-110 text-white font-black uppercase tracking-[0.4em] rounded-2xl shadow-xl transition-all mt-4"
-              >
-                CADASTRAR ALUNO
-              </button>
-            </form>
-          </motion.div>
+          <button
+            type="button"
+            onClick={logout}
+            className="w-full py-3 bg-[#111318]/50 hover:bg-[#171A20] text-zinc-400 hover:text-zinc-200 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-white/[0.01]"
+          >
+            <LogOut size={12} />
+            <span>Desconectar</span>
+          </button>
         </div>
-      )}
+      </aside>
+
+      {/* 2. MOBILE TOP NAV (Visible only on small viewports) */}
+      <div className="flex lg:hidden flex-col w-full shrink-0 select-none">
+        <header className="flex flex-col justify-between py-4 px-4 border-b border-white/[0.015] gap-4 shrink-0 bg-[#0F1014]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-lg text-white tracking-tight uppercase">Horus<span className="text-zinc-650 font-normal">/</span>Fit</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="py-1.5 px-3 bg-zinc-100 hover:bg-white text-[#09090B] text-[11px] font-black uppercase rounded-lg transition-colors cursor-pointer shadow-sm"
+              >
+                + Aluno
+              </button>
+              <button
+                type="button"
+                onClick={logout}
+                className="text-zinc-400 hover:text-zinc-200 bg-[#111318] py-1.5 px-2 rounded-lg text-xs cursor-pointer border border-white/[0.01]"
+              >
+                <LogOut size={12} />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Switch segment picker */}
+          <div className="flex items-center gap-0.5 bg-[#111318] p-1 rounded-xl border border-white/[0.015]">
+            {[
+              { id: 'alunos', label: 'Alunado', icon: Users },
+              { id: 'construtor', label: 'Ficha', icon: Dumbbell },
+              { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  if (tab.id === 'construtor' && !selectedStudentUsername) {
+                    const first = students[0]?.username || null;
+                    if (first) setSelectedStudentUsername(first);
+                  }
+                  setActiveTab(tab.id as any);
+                }}
+                className={`flex items-center justify-center gap-1.5 flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === tab.id
+                    ? 'bg-[#171A20] text-white font-extrabold shadow'
+                    : 'text-zinc-500 hover:text-zinc-300'
+                }`}
+              >
+                <tab.icon size={12} />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </header>
+      </div>
+
+      {/* 3. RIGHT MASTER VIEWPORT CONTAINER - Spans 100% of the layout frame */}
+      <div className="flex-1 flex flex-col min-h-0 lg:h-screen lg:overflow-hidden bg-transparent">
+        
+        <main className="flex-grow flex flex-col min-h-0 lg:overflow-hidden h-auto lg:h-full">
+          
+          {/* TAB 1: MEUS ALUNOS (Students directory list view) */}
+          {activeTab === 'alunos' && (
+            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 md:p-8 xl:p-10">
+              <StudentsTab 
+                students={students}
+                onOpenEditModal={handleOpenEditModal}
+                onManageStudent={handleManageStudent}
+              />
+            </div>
+          )}
+ 
+          {/* TAB 2: CONSTRUTOR DE FICHA (Real Desktop Workspace App Layout) */}
+          {activeTab === 'construtor' && (
+            <div className="flex flex-col min-h-0 flex-grow lg:overflow-hidden lg:h-full h-auto">
+              
+              {!selectedStudentUsername ? (
+                <div className="flex-grow flex flex-col items-center justify-center p-8 md:p-16 text-center h-full">
+                  <div className="border border-zinc-900 border-dashed rounded-2xl p-10 max-w-md w-full bg-zinc-900/10 flex flex-col items-center">
+                    <Dumbbell className="text-zinc-650 mb-4 animate-pulse" size={36} />
+                    <p className="text-zinc-200 font-bold text-sm tracking-tight">Nenhum Aluno Ativo Selecionado</p>
+                    <p className="text-xs text-zinc-500 mt-2 leading-relaxed">Selecione um aluno da sua diretoria para começar a desenhar planilhas, ajustar cargas e criar rotinas de treinamento.</p>
+                    <button
+                      onClick={() => setActiveTab('alunos')}
+                      className="mt-6 py-3 px-8 bg-zinc-900 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      Ver Meus Alunos
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col flex-grow min-h-0 lg:h-full lg:overflow-hidden h-auto">
+                  
+                  {/* DEDICATED SUB-HEADER / ACTIONS STRIP - Spans fluidly above splits */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 px-6 md:px-8 border-b border-white/[0.015] shrink-0 bg-[#0F1014] select-none">
+                    
+                    {/* Active target profile badge block */}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2 bg-[#111318] border border-white/[0.015] px-3.5 py-1.5 rounded-xl select-none">
+                        <span className="text-[10px] uppercase font-black text-zinc-500 tracking-wider font-mono">Montando para</span>
+                        <span className="text-sm text-zinc-100 font-black tracking-tight font-sans">
+                          {selectedStudentProfile?.name || selectedStudentUsername}
+                        </span>
+                      </div>
+ 
+                      {/* Interactive workout frequency sheet layout dropdown */}
+                      {isDivisionSet ? (
+                        <div className="flex items-center gap-2.5 text-xs py-1.5 px-3.5 rounded-xl bg-[#111318] border border-white/[0.015] shadow-sm select-none">
+                          <span className="text-zinc-500 font-bold">Frequência:</span>
+                          <span className="text-white font-mono font-black tracking-widest uppercase">
+                            {sheetFrequency.split('').join('/')}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsDivisionSet(false)}
+                            className="text-zinc-400 hover:text-white underline cursor-pointer hover:no-underline text-xs font-bold transition-colors ml-2"
+                          >
+                            Alterar
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 bg-[#111318] border border-white/[0.015] p-1 px-3.5 rounded-xl select-none">
+                          <span className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Fichas:</span>
+                          <div className="flex gap-2 select-none">
+                            {(['AB', 'ABC', 'ABCD', 'ABCDE'] as const).map((freq) => {
+                              const isCurrentFreq = sheetFrequency === freq;
+                              return (
+                                <button
+                                  key={freq}
+                                  type="button"
+                                  onClick={() => {
+                                    setSheetFrequency(freq);
+                                    setIsDivisionSet(true);
+                                    if (activeRoutineIdx >= freq.length) {
+                                      setActiveRoutineIdx(0);
+                                    }
+                                  }}
+                                  className={`px-3 py-1 text-xs font-bold font-mono rounded-lg transition-colors cursor-pointer ${
+                                    isCurrentFreq
+                                      ? 'bg-[#171A20] text-white border border-white/5 shadow'
+                                      : 'bg-transparent text-zinc-500 hover:text-zinc-330'
+                                  }`}
+                                >
+                                  {freq}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+ 
+                    {/* Auto-saved checklist green flash metric and go back button */}
+                    <div className="flex items-center gap-5">
+                      <div className="flex items-center gap-2 text-zinc-500 select-none">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-xs font-bold font-sans text-zinc-400 tracking-tight">Sincronizado na nuvem</span>
+                      </div>
+ 
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedStudentUsername(null);
+                          setActiveTab('alunos');
+                        }}
+                        className="py-2.5 px-4 bg-[#111318] hover:bg-[#171A20] text-xs text-zinc-400 hover:text-zinc-100 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-white/[0.015]"
+                      >
+                        <ChevronLeft size={14} />
+                        <span>Voltar</span>
+                      </button>
+                    </div>
+                  </div>
+ 
+                  {/* FULL-CANVAS SIDE-BY-SIDE INTEGRATION (Zero external borders constraint) */}
+                  <div className="flex-grow flex flex-col lg:flex-row gap-0 lg:overflow-hidden min-h-0 w-full lg:h-full h-auto">
+                    
+                    {/* LEFT COL: EMBEDDED DOCKED EXERCISE LIBRARY PANEL - Exactly 420px */}
+                    <aside className="w-full lg:w-[420px] lg:h-full shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.015] bg-[#0F1014] h-auto lg:overflow-hidden">
+                      <ExerciseLibrary 
+                        filteredSuggestions={filteredSuggestions}
+                        searchExerciseQuery={searchExerciseQuery}
+                        setSearchExerciseQuery={setSearchExerciseQuery}
+                        selectedMuscleFilter={selectedMuscleFilter}
+                        setSelectedMuscleFilter={setSelectedMuscleFilter}
+                        recentAddedId={recentAddedId}
+                        onAddExercise={handleAddNewExercise}
+                        onInjectBlock={handleInjectBlock}
+                      />
+                    </aside>
+ 
+                    {/* RIGHT COL: MAIN DOMINANT WORKSPACE (Spans 100% of remaining screen space) */}
+                    <section className="flex-grow lg:h-full lg:overflow-hidden flex flex-col bg-[#111318] min-w-0 h-auto">
+                      <WorkoutWorkspace 
+                        localRoutines={localRoutines}
+                        activeRoutineIdx={activeRoutineIdx}
+                        setActiveRoutineIdx={setActiveRoutineIdx}
+                        expandedExerciseId={expandedExerciseId}
+                        setExpandedExerciseId={setExpandedExerciseId}
+                        sheetFrequency={sheetFrequency}
+                        getFrequencyCount={getFrequencyCount}
+                        onUpdateExerciseField={handleUpdateExerciseField}
+                        onRemoveExercise={handleRemoveExercise}
+                        onAddCustomExercise={handleAddCustomExercise}
+                        onUpdateRoutineTitle={(title) => {
+                          const updated = [...localRoutines];
+                          if (updated[activeRoutineIdx]) {
+                            updated[activeRoutineIdx].title = title;
+                            setLocalRoutines(updated);
+                          }
+                        }}
+                        students={students}
+                        onCloneRoutine={handleCloneRoutine}
+                        onCloneFromOtherStudent={handleCloneFromOtherStudent}
+                        onClearWorkoutRoutine={handleClearWorkoutRoutine}
+                        onInjectBlock={handleInjectBlock}
+                      />
+                    </section>
+                  </div>
+ 
+                </div>
+              )}
+            </div>
+          )}
+ 
+          {/* TAB 3: HISTÓRICO DE PROGRESSÃO */}
+          {activeTab === 'evolucao' && (
+            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 md:p-8 xl:p-10">
+              <EvolutionTab 
+                selectedStudentUsername={selectedStudentUsername}
+                selectedStudentProfile={selectedStudentProfile}
+                onTabChange={setActiveTab}
+              />
+            </div>
+          )}
+ 
+        </main>
+      </div>
+ 
+      {/* GLOBAL MODALS */}
+      <StudentModals 
+        showAddModal={showAddModal}
+        setShowAddModal={setShowAddModal}
+        newStudentData={newStudentData}
+        setNewStudentData={setNewStudentData}
+        onCreateStudentSubmit={handleCreateStudentSubmit}
+        editingStudent={editingStudent}
+        setEditingStudent={setEditingStudent}
+        editStudentData={editStudentData}
+        setEditStudentData={setEditStudentData}
+        onEditStudentSubmit={handleEditStudentSubmit}
+        onDeleteStudent={handleDeleteStudent}
+      />
+ 
     </div>
   );
 };

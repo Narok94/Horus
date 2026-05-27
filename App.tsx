@@ -148,17 +148,17 @@ const AppContent: React.FC = () => {
     
     if (user) {
       const uName = user.username.toLowerCase();
-      if (uName === 'teste2' || uName.includes('jessica') || uName.includes('jéssica')) {
+      const isFemale = uName === 'teste2' || uName.includes('jessica') || uName.includes('jéssica') || user.sex === 'feminino';
+      const isTeacher = uName === 'teste3' || uName.includes('flavia') || uName.includes('flávia');
+      
+      if (isFemale) {
         accentColor = '#FF007F'; // Female Theme Magenta/Pink Neon
         accentRgb = '255, 0, 127';
-      } else if (uName === 'teste3' || uName.includes('flavia') || uName.includes('flávia')) {
-        accentColor = '#D4AF37'; // Premium Gold / Gold Theme
-        accentRgb = '212, 175, 55';
-      } else if (uName === 'teste' || uName.includes('henrique')) {
-        accentColor = '#00F0FF'; // Male Theme Ciano Neon
-        accentRgb = '0, 240, 255';
+      } else if (isTeacher) {
+        accentColor = '#FFFFFF'; // Clean teacher white accent
+        accentRgb = '255, 255, 255';
       } else {
-        accentColor = '#00F0FF';
+        accentColor = '#00F0FF'; // Male / Default Theme Ciano Neon
         accentRgb = '0, 240, 255';
       }
     }
@@ -226,15 +226,98 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const handleQuickLogin = (uname: string) => {
+    handleVibrate();
+    const lowerUser = uname.toLowerCase();
+    let userData: User | null = null;
+    const profile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
+    if (profile) {
+      try {
+        userData = JSON.parse(profile);
+      } catch (e) {
+        console.error('[Login] Erro ao ler perfil salvo:', e);
+      }
+    }
+
+    if (!userData) {
+      if (lowerUser === 'teste') {
+        userData = {
+          username: 'teste',
+          name: 'Teste Masculino',
+          age: 25,
+          goal: 'Hipertrofia & Força',
+          totalWorkouts: 0,
+          history: [],
+          weights: {},
+          checkIns: [],
+          streak: 0,
+          badges: [],
+          isProfileComplete: true,
+          role: 'student'
+        };
+      } else if (lowerUser === 'teste2') {
+        userData = {
+          username: 'teste2',
+          name: 'Teste Feminino',
+          age: 23,
+          goal: 'Tônus muscular & Cardio',
+          totalWorkouts: 0,
+          history: [],
+          weights: {},
+          checkIns: [],
+          streak: 0,
+          badges: [],
+          isProfileComplete: true,
+          role: 'student'
+        };
+      } else {
+        userData = {
+          username: 'teste3',
+          name: 'Professor Teste',
+          age: 35,
+          goal: 'Orientar alunos',
+          totalWorkouts: 0,
+          history: [],
+          weights: {},
+          checkIns: [],
+          streak: 0,
+          badges: [],
+          isProfileComplete: true,
+          role: 'teacher'
+        };
+      }
+    }
+
+    setUser(userData);
+    setIsLoggedIn(true);
+    
+    if (userData.role === 'teacher') {
+      setActiveTab(AppTab.TEACHER);
+    } else {
+      setActiveTab(AppTab.DASHBOARD);
+    }
+    
+    // Auto sync username state so form inputs reflect current identity if logged out
+    setUsername(lowerUser);
+    setPassword('12345');
+    
+    localStorage.setItem('tatugym_remember_me_checked', rememberMe.toString());
+    if (rememberMe) {
+      localStorage.setItem('tatugym_remembered', JSON.stringify(userData));
+    } else {
+      localStorage.removeItem('tatugym_remembered');
+    }
+    
+    if (addToast) addToast(`Bem-vindo de volta, ${userData.name}!`, 'success');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     handleVibrate();
     const lowerUser = username.trim().toLowerCase();
     
     const isValidUser = 
-      (lowerUser === 'teste' && password === '1234') ||
-      (lowerUser === 'teste2' && password === '12345') ||
-      (lowerUser === 'teste3' && password === '12345');
+      ['teste', 'teste2', 'teste3'].includes(lowerUser) && password === '12345';
 
     if (isValidUser) {
       let userData: User | null = null;
@@ -457,7 +540,65 @@ const AppContent: React.FC = () => {
             </motion.button>
           </form>
 
+          {/* Quick Login Section */}
+          <div className="pt-2 border-t border-white/5 space-y-3">
+            <span className="text-white/40 text-[9px] uppercase tracking-[0.2em] font-mono text-center block">
+              Acesso Rápido de Teste
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('teste')}
+                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-[#00F0FF]/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                id="quick-login-teste"
+              >
+                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE</span>
+                <span className="text-[#00F0FF] text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">MASC</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('teste2')}
+                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-[#FF007F]/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                id="quick-login-teste2"
+              >
+                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE 2</span>
+                <span className="text-[#FF007F] text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">FEM</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('teste3')}
+                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-white/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                id="quick-login-teste3"
+              >
+                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE 3</span>
+                <span className="text-white/60 text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">DOCENTE</span>
+              </button>
+            </div>
+          </div>
+
         </motion.div>
+      </div>
+    );
+  }
+
+  // ISOLAMENTO CRUCIAL: Se for professor, renderize diretamente o workspace sem abas do aluno ou barra fixada
+  if (isLoggedIn && (user?.username.toLowerCase() === 'teste3' || user?.role === 'teacher')) {
+    return (
+      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col bg-[#050505] text-white select-none font-sans">
+        <svg className="absolute inset-0 w-full h-full opacity-5 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="teacher-grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.02)" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#teacher-grid-pattern)" />
+        </svg>
+
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-white/[0.01] blur-[100px] rounded-full pointer-events-none"></div>
+
+        <div className="flex-grow flex-1 min-h-0 w-full h-full relative z-10 flex flex-col justify-between overflow-hidden">
+          <TeacherView />
+        </div>
       </div>
     );
   }
