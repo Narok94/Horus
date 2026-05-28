@@ -97,7 +97,7 @@ export const WorkoutsListView: React.FC = () => {
                   {focus}
                 </h2>
 
-                <p className="text-[10px] text-zinc-500 leading-normal truncate max-w-[240px]">
+                <p className="text-[10px] text-zinc-500 leading-normal text-wrap whitespace-normal">
                   {cleanDesc}
                 </p>
               </div>

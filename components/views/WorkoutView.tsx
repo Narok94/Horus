@@ -319,11 +319,11 @@ export const WorkoutView: React.FC = () => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, targetHeight * 0.4, targetWidth, targetHeight * 0.6);
 
-      // Add "HORUS FIT" Branding (TOP LEFT)
+      // Add "HORUS TRAINING" Branding (TOP LEFT)
       ctx.font = '900 40px sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'left';
-      ctx.fillText('HORUS FIT', 60, 100);
+      ctx.fillText('HORUS TRAINING', 60, 100);
       
       // Accent Line
       ctx.fillStyle = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') ? '#FF007F' : '#00F0FF';
@@ -559,7 +559,7 @@ export const WorkoutView: React.FC = () => {
                   
                   <div className="absolute inset-0 p-3 flex flex-col justify-between pointer-events-none">
                     <div className="text-left font-black leading-none">
-                      <p className="text-white font-[950] text-xs tracking-tighter uppercase">HORUS FIT</p>
+                      <p className="text-white font-[950] text-xs tracking-tighter uppercase">HORUS TRAINING</p>
                       <div className="w-6 h-0.5 bg-accent mt-1"></div>
                     </div>
 
@@ -790,7 +790,7 @@ export const WorkoutView: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-white uppercase leading-none truncate max-w-[200px]">
+                  <h3 className="text-sm font-bold text-white uppercase leading-snug text-wrap whitespace-normal">
                     {ex.name}
                   </h3>
 

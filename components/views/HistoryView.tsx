@@ -48,57 +48,97 @@ export const HistoryView: React.FC = () => {
           <p className="text-zinc-500 text-[8.5px] font-black uppercase tracking-[0.15em]">Sua história começa agora.</p>
         </div>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar py-2 space-y-1.5 mt-1.5">
+        <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar py-2 space-y-3 mt-2">
           {user?.history.map((entry) => {
+            const isFemale = user?.username.toLowerCase() === 'teste2' || user?.username.toLowerCase().includes('jessica') || user?.sex === 'feminino';
+            const accentColor = isFemale ? '#FF007F' : '#00F0FF';
             return (
-              <div key={entry.id} className="bg-[#0c0c0c]/80 border border-white/5 p-2 rounded-xl space-y-1.5 border-l-2 border-l-accent shadow-sm">
-                <div className="flex justify-between items-start gap-2">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-xs font-black text-white uppercase tracking-tight italic leading-none truncate">{entry.workoutTitle}</h3>
-                    <div className="flex items-center gap-1 mt-1 text-white/40 leading-none">
-                        <Calendar size={8} />
-                        <span className="text-[7.5px] font-bold uppercase tracking-wider">
+              <div 
+                key={entry.id} 
+                className="bg-zinc-900/40 border border-zinc-850/80 rounded-2xl p-4.5 space-y-3.5 shadow-sm transition-all duration-200 hover:bg-zinc-900/60 hover:border-zinc-800"
+              >
+                <div className="flex justify-between items-center gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div 
+                      className="w-[3px] h-5.5 rounded-full shrink-0" 
+                      style={{ backgroundColor: accentColor }} 
+                    />
+                    <div className="min-w-0">
+                      <h3 className="text-[13px] font-black text-white uppercase tracking-tight italic leading-tight truncate">
+                        {entry.workoutTitle}
+                      </h3>
+                      <div className="flex items-center gap-1.5 mt-1 text-zinc-500 leading-none">
+                        <Calendar size={9} />
+                        <span className="text-[8px] font-mono font-bold uppercase tracking-wider">
                           {new Date(entry.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                         </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="bg-accent/10 text-accent border border-accent/20 px-1.5 py-0.5 rounded text-[6.5px] font-black uppercase tracking-wider leading-none">
-                      Finalizado
+                  
+                  <div className="flex flex-col items-end gap-1 shrink-0 text-right leading-none">
+                    <span 
+                      className="border px-2 py-0.5 rounded text-[7.5px] font-black uppercase tracking-wider font-mono leading-none"
+                      style={{ 
+                        color: accentColor, 
+                        borderColor: `${accentColor}25`, 
+                        backgroundColor: `${accentColor}08` 
+                      }}
+                    >
+                      CONCLUÍDO
                     </span>
                     {entry.duration && (
-                      <div className="flex items-center gap-0.5 text-[7.5px] font-bold text-white/40 uppercase leading-none">
-                        <Clock size={8} />
+                      <div className="flex items-center gap-0.5 text-[8px] font-mono font-extrabold text-zinc-400 uppercase leading-none mt-1">
+                        <Clock size={8.5} className="text-zinc-500" />
                         <span>{formatTime(entry.duration)}</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-white/5">
-                  {entry.exercises.slice(0, 4).map((ex, idx) => (
-                    <div key={idx} className="space-y-0.5 min-w-0">
-                      <p className="text-[7.5px] font-black text-white/40 uppercase truncate leading-none">{ex.name}</p>
-                      <div className="flex flex-wrap gap-0.5">
-                        {ex.performance && ex.performance.slice(0, 2).map((s, si) => (
-                          <div key={si} className="text-[6.5px] font-bold bg-white/[0.02] text-white/60 px-1 py-0.5 rounded border border-white/5 leading-none">
-                             {s.weight}kg x {s.reps}
-                          </div>
-                        ))}
+                {/* Exercises Done */}
+                <div className="pt-2.5 border-t border-white/[0.03] space-y-2">
+                  <span className="text-[7.5px] font-black uppercase tracking-widest text-zinc-500 font-mono block">
+                    Cargas e Exercícios Registrados:
+                  </span>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {entry.exercises.map((ex, idx) => (
+                      <div 
+                        key={idx} 
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 bg-zinc-950/20 border border-white/[0.015] p-2 rounded-xl"
+                      >
+                        <span className="text-[10px] font-bold text-zinc-200 uppercase tracking-tight leading-tight">
+                          {ex.name}
+                        </span>
+                        <div className="flex flex-wrap gap-1 shrink-0">
+                          {ex.performance && ex.performance.filter(p => p.completed).map((s, si) => (
+                            <div key={si} className="text-[7.5px] font-mono font-extrabold bg-[#111318]/60 text-zinc-300 px-1.5 py-0.5 rounded border border-white/5 leading-none">
+                              S{si + 1}: {s.weight}kg × {s.reps}
+                            </div>
+                          ))}
+                          {(!ex.performance || ex.performance.filter(p => p.completed).length === 0) && ex.performance && ex.performance.map((s, si) => (
+                            <div key={si} className="text-[7.5px] font-mono font-extrabold bg-[#111318]/40 text-zinc-500 px-1.5 py-0.5 rounded border border-white/[0.03] leading-none">
+                              S{si + 1}: {s.weight}kg × {s.reps}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  {entry.cardio && (
-                    <div className="space-y-0.5 min-w-0">
-                      <div className="flex items-center gap-0.5 leading-none">
-                        <Wind size={8} className="text-accent" />
-                        <p className="text-[7.5px] font-black text-accent uppercase truncate">Aeróbico</p>
+                    ))}
+                    
+                    {entry.cardio && (
+                      <div className="flex items-center justify-between gap-1.5 bg-zinc-950/20 border border-white/[0.015] p-2 rounded-xl">
+                        <div className="flex items-center gap-1.5 leading-none">
+                          <Wind size={10} style={{ color: accentColor }} />
+                          <span className="text-[10px] font-bold text-zinc-200 uppercase tracking-tight leading-none">
+                            Aeróbico Intercalar ({entry.cardio.exercise})
+                          </span>
+                        </div>
+                        <span className="text-[7.5px] font-mono font-extrabold bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/15 leading-none">
+                          {entry.cardio.duration} MINUTOS
+                        </span>
                       </div>
-                      <div className="text-[6.5px] font-bold bg-accent/5 text-accent px-1 py-0.5 rounded border border-accent/10 inline-block leading-none truncate max-w-full">
-                         {entry.cardio.exercise} - {entry.cardio.duration}min
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             );

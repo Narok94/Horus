@@ -450,7 +450,7 @@ const AppContent: React.FC = () => {
             <HorusLogoIcon size={56} className="text-accent drop-shadow-[0_0_20px_rgba(var(--accent-color-rgb),0.55)]" />
             <div className="space-y-1">
               <h1 className="text-3xl font-[950] italic uppercase tracking-wider text-white">
-                HORUS<span className="text-accent">FIT</span>
+                HORUS <span className="text-accent">TRAINING</span>
               </h1>
               <p className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-mono mt-1">
                 ELITE PERFORMANCE SYSTEM
@@ -651,14 +651,14 @@ const AppContent: React.FC = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
 
       {/* Main viewport-bounded view container */}
-      <div className="flex-grow flex-1 min-h-0 w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-2.5 md:px-4 lg:px-6 pt-1 pb-[74px] relative z-10 flex flex-col justify-between overflow-hidden">
+      <div className="flex-grow flex-1 min-h-0 w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2.5 md:px-4 lg:px-6 pt-1 pb-[74px] relative z-10 flex flex-col justify-between overflow-hidden">
         {renderView()}
       </div>
 
       {/* Navigation Bar */}
       {!selectedWorkout && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#050505] border-t border-white/[0.06] shadow-2xl select-none">
-          <div className="w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto h-[74px] px-4 flex items-center justify-around">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#050505]/85 backdrop-blur-md border-t border-white/[0.04] shadow-2xl select-none">
+          <div className="w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-6 flex items-center justify-around">
             {[
               ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
               { id: AppTab.DASHBOARD, icon: LayoutDashboard, label: 'Dashboard' },
@@ -674,14 +674,35 @@ const AppContent: React.FC = () => {
                     handleVibrate();
                     setActiveTab(item.id);
                   }}
-                  className="relative flex flex-col items-center justify-center flex-1 h-full py-1 focus:outline-none"
+                  className="relative flex flex-col items-center justify-center flex-1 h-full py-1 hover:scale-105 active:scale-95 transition-all duration-150 focus:outline-none group cursor-pointer"
                 >
+                  {/* Dynamic Neon Active Bar on Top */}
+                  {isActive && (
+                    <div 
+                      className="absolute top-0 h-[3px] w-8 rounded-b-md bg-accent animate-fade"
+                      style={{ 
+                        boxShadow: `0 1px 12px var(--accent-color), 0 0 6px var(--accent-color)` 
+                      }}
+                    />
+                  )}
+
                   <item.icon 
-                    size={20} 
-                    className={`transition-colors duration-200 ${isActive ? 'text-accent' : 'text-zinc-500'}`} 
-                    strokeWidth={isActive ? 3 : 2} 
+                    size={19} 
+                    className={`transition-all duration-300 ${
+                      isActive 
+                        ? 'text-accent scale-110' 
+                        : 'text-zinc-500 group-hover:text-zinc-350'
+                    }`} 
+                    style={{
+                      filter: isActive ? `drop-shadow(0 0 8px rgba(var(--accent-color-rgb), 0.55))` : undefined
+                    }}
+                    strokeWidth={isActive ? 2.5 : 2} 
                   />
-                  <span className={`text-[8.5px] font-black uppercase tracking-[0.14em] mt-1.5 transition-colors duration-200 ${isActive ? 'text-accent' : 'text-zinc-500'}`}>
+                  <span className={`text-[8.5px] font-[900] uppercase tracking-[0.14em] mt-1.5 transition-all duration-300 ${
+                    isActive 
+                      ? 'text-accent font-black' 
+                      : 'text-zinc-500 group-hover:text-zinc-350'
+                  }`}>
                     {item.label}
                   </span>
                 </button>

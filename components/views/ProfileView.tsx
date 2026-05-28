@@ -9,13 +9,15 @@ import {
   X, 
   Scale, 
   Ruler, 
-  Check 
+  Check,
+  Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export const ProfileView: React.FC = () => {
   const { user, updateUserProfile } = useStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
 
   // Form states
   const [editName, setEditName] = useState('');
@@ -96,6 +98,47 @@ export const ProfileView: React.FC = () => {
     Award: <Award size={14} className="text-accent" />
   };
 
+  const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
+  const accentColor = isFemale ? '#FF007F' : '#00F0FF';
+
+  const totalWorkoutsCount = user.totalWorkouts || 0;
+  const checkInsCount = user.checkIns?.length || 0;
+
+  const achievements = [
+    {
+      id: 'first_workout',
+      title: 'Primeiro Passo',
+      description: 'Sua jornada iniciou oficialmente! Desbloqueado ao concluir o primeiro treino.',
+      icon: Award,
+      unlocked: totalWorkoutsCount >= 1,
+      reward: '125 XP'
+    },
+    {
+      id: 'frequencia_ferro',
+      title: 'Consistência de Ferro',
+      description: 'Você está no ritmo certo! Desbloqueado ao atingir 3 ou mais check-ins rápidos.',
+      icon: Zap,
+      unlocked: checkInsCount >= 3,
+      reward: '200 XP'
+    },
+    {
+      id: 'disciplina_inabalavel',
+      title: 'Hábito Ativo',
+      description: 'Determinação lendária! Desbloqueado ao completar 5 ou mais sessões inteiras.',
+      icon: Trophy,
+      unlocked: totalWorkoutsCount >= 5,
+      reward: '500 XP'
+    },
+    {
+      id: 'streak_flame',
+      title: 'Fogo Sagrado',
+      description: 'A chama do treino está acesa! Desbloqueado ao obter uma sequência de 2+ dias.',
+      icon: Flame,
+      unlocked: user.streak >= 2,
+      reward: '150 XP'
+    }
+  ];
+
   return (
     <div className="h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent text-white font-sans antialiased select-none relative">
       
@@ -173,37 +216,45 @@ export const ProfileView: React.FC = () => {
           </div>
         </div>
 
-        {/* MEDALS SLIDER */}
+        {/* GALLERIA: Conquistas do Atleta row */}
         <div className="space-y-3 text-left">
-          <span className="text-[7.5px] font-extrabold tracking-[0.2em] text-zinc-500 uppercase font-mono block px-0.5">Minhas Conquistas</span>
+          <span className="text-[7.5px] font-extrabold tracking-[0.2em] text-zinc-500 uppercase font-mono block px-0.5">
+            Galeria de Conquistas (Achievements)
+          </span>
           
-          {user.badges && user.badges.length > 0 ? (
-            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1 max-w-full">
-              {user.badges.map((badge, idx) => (
-                <motion.div 
-                  key={badge.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.03 }}
-                  className="flex-shrink-0 w-28 bg-[#080808] border border-white/5 p-3 rounded-2xl flex flex-col items-center text-center space-y-2.5 shadow-sm"
+          <div className="grid grid-cols-4 gap-2">
+            {achievements.map((ach) => {
+              const Icon = ach.icon;
+              return (
+                <button
+                  key={ach.id}
+                  onClick={() => {
+                    handleVibrate(15);
+                    setSelectedAchievement(ach);
+                  }}
+                  className={`flex flex-col items-center justify-center text-center py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                    ach.unlocked 
+                      ? 'bg-[#0E0F13]/60 border-accent/15 hover:border-accent' 
+                      : 'bg-[#0F1014]/40 border-white/[0.04] hover:bg-[#0F1014]/65 hover:border-white/10'
+                  }`}
                 >
-                  <div className="w-8 h-8 bg-zinc-900 border border-white/5 rounded-xl flex items-center justify-center shrink-0">
-                    {badgeIcons[badge.icon] || <Award size={13} className="text-accent" />}
+                  <div className={`p-1.5 rounded-xl bg-zinc-900 border border-white/5 ${
+                    ach.unlocked 
+                      ? 'text-accent border-accent/15 shadow-[0_0_8px_rgba(var(--accent-color-rgb),0.1)]' 
+                      : 'text-zinc-400 border-white/[0.02]'
+                  }`}>
+                    <Icon size={14} strokeWidth={ach.unlocked ? 2.5 : 2} />
                   </div>
-                  <div className="min-w-0 w-full text-center">
-                    <p className="text-[9px] font-extrabold text-zinc-200 uppercase tracking-tight leading-tight truncate">{badge.name}</p>
-                    <p className="text-[7px] font-normal text-zinc-500 uppercase mt-0.5 leading-none truncate">{badge.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="w-full bg-zinc-950/10 p-5 rounded-2xl border border-dashed border-white/5 text-center flex items-center justify-center">
-              <span className="text-zinc-650 text-[8px] font-bold uppercase tracking-widest leading-normal">
-                Nenhuma medalha conquistada ainda.
-              </span>
-            </div>
-          )}
+                  
+                  <p className={`text-[8.5px] font-black uppercase tracking-tight mt-1.5 truncate max-w-full ${
+                    ach.unlocked ? 'text-white' : 'text-zinc-300'
+                  }`}>
+                    {ach.title.split(' ')[0]}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
       </div>
@@ -211,11 +262,11 @@ export const ProfileView: React.FC = () => {
       {/* PRESERVING USER FOOTER ALIGNMENTS */}
       <div className="px-1 shrink-0 pt-3 text-center">
         <span className="text-[7.5px] font-mono font-bold text-zinc-650 tracking-widest uppercase">
-          Horus Fit Elite Active Account
+          Horus Training Elite Active Account
         </span>
       </div>
 
-      {/* PREMIUM ATHLETE EDIT MODAL */}
+      {/* PREMIUM ATHLETE EDIT MODAL / ACHIEVEMENT DETAIL MODAL */}
       <AnimatePresence>
         {isEditing && (
           <div className="absolute inset-x-0 bottom-0 top-0 bg-black/90 backdrop-blur-md z-40 flex items-center justify-center p-3">
@@ -327,6 +378,53 @@ export const ProfileView: React.FC = () => {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+
+        {selectedAchievement && (
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-md z-40 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative w-full max-w-xs bg-zinc-950 border border-white/10 p-5 rounded-2xl flex flex-col items-center text-center gap-4 shadow-2xl leading-none text-left"
+            >
+              <div 
+                onClick={() => setSelectedAchievement(null)} 
+                className="absolute inset-0 bg-transparent"
+              />
+              <div className="relative z-10 flex flex-col items-center gap-4 w-full">
+                <div className={`p-4 rounded-full border ${
+                  selectedAchievement.unlocked 
+                    ? 'bg-accent/10 border-accent/25 text-accent shadow-[0_0_15px_rgba(var(--accent-color-rgb),0.3)]' 
+                    : 'bg-zinc-900 border-zinc-800 text-zinc-650'
+                }`}>
+                  {React.createElement(selectedAchievement.icon, { size: 28, strokeWidth: 2.2 })}
+                </div>
+
+                <div className="space-y-1 text-center leading-normal">
+                  <h4 className="text-sm font-black text-white uppercase tracking-tight">{selectedAchievement.title}</h4>
+                  <p className="text-[11px] text-zinc-400 font-semibold leading-relaxed">{selectedAchievement.description}</p>
+                </div>
+
+                {selectedAchievement.unlocked && (
+                  <div className="bg-emerald-500/5 border border-emerald-500/10 py-1.5 px-3.5 rounded-xl leading-none">
+                    <span className="text-[9px] font-mono text-emerald-400 font-black uppercase tracking-wider">
+                      BÔNUS LIBERADO: {selectedAchievement.reward}
+                    </span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedAchievement(null)}
+                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-850 text-white font-extrabold text-[10px] uppercase rounded-xl tracking-wider transition-all cursor-pointer text-center"
+                >
+                  Fechar Conquista
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

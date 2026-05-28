@@ -614,7 +614,7 @@ export const TeacherView: React.FC = () => {
         <header className="flex flex-col justify-between py-4 px-4 border-b border-white/[0.015] gap-4 shrink-0 bg-[#0F1014]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg text-white tracking-tight uppercase">Horus<span className="text-zinc-650 font-normal">/</span>Fit</span>
+              <span className="font-extrabold text-lg text-white tracking-tight uppercase">HORUS <span className="text-zinc-400 font-black">TRAINING</span></span>
             </div>
             
             <div className="flex items-center gap-2">

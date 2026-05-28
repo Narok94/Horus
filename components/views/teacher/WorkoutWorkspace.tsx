@@ -148,7 +148,7 @@ export const WorkoutWorkspace: React.FC<WorkoutWorkspaceProps> = ({
           {/* Quick copy/clone slot dropdown panel */}
           <div className="relative">
             <button
-              type="button; focus-visible=none"
+              type="button"
               onClick={() => {
                 setShowDuplicateMenu(!showDuplicateMenu);
                 setShowStudentMenu(false);
