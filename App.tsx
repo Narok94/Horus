@@ -29,7 +29,7 @@ import { WorkoutsListView } from './components/views/WorkoutsListView';
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
     <img 
-      src="https://raw.githubusercontent.com/Narok94/Horus/main/assets/Logo/logo.png" 
+      src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png" 
       alt="Horus Training Logo" 
       style={{ width: size, height: size }}
       className={`${className} object-contain`}

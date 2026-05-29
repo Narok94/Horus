@@ -21,7 +21,8 @@ import {
   Check, 
   Flame, 
   Pause, 
-  SkipForward 
+  SkipForward,
+  HelpCircle
 } from 'lucide-react';
 import { SetPerformance, WorkoutHistoryEntry, AppTab, Exercise } from '../../types';
 import { getExerciseDetails, getHorusGifUrl } from '../../src/utils/exerciseUtils';
@@ -63,6 +64,7 @@ export const WorkoutView: React.FC = () => {
   const [showCardioModal, setShowCardioModal] = React.useState(false);
   const [cardioInput, setCardioInput] = React.useState({ exercise: 'Esteira', duration: 15 });
   const [activeModalExercise, setActiveModalExercise] = React.useState<Exercise | null>(null);
+  const [showExerciseInfo, setShowExerciseInfo] = React.useState(false);
   const [expandedExerciseId, setExpandedExerciseId] = React.useState<string | null>(null);
   
   // Modal Rest Timer states
@@ -491,6 +493,7 @@ export const WorkoutView: React.FC = () => {
 
   const openExerciseModal = (ex: Exercise) => {
     setActiveModalExercise(ex);
+    setShowExerciseInfo(false);
   };
 
   const trackingTextPlaceholder = (ex: Exercise) => {
@@ -519,7 +522,7 @@ export const WorkoutView: React.FC = () => {
 
   if (showSummary) {
     return (
-      <div className="h-full max-h-full overflow-hidden flex flex-col justify-between py-2 px-1 text-center bg-transparent text-white font-sans antialiased selection:bg-accent/30 select-none w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto space-y-2">
+      <div className="h-full max-h-full overflow-y-auto flex flex-col justify-center py-4 px-1 text-center bg-transparent text-white font-sans antialiased selection:bg-accent/30 select-none w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto space-y-4 my-auto">
           
           {/* HEADER COMPACTO */}
           <div className="flex items-center gap-3 bg-[#0c0c0c]/90 border border-white/5 p-3 rounded-xl shrink-0 shadow-sm">
@@ -997,7 +1000,7 @@ export const WorkoutView: React.FC = () => {
       {/* Floating Single Exercise Detailed Modal Window / Premium Bottom Sheet */}
       <AnimatePresence>
         {activeModalExercise && (
-          <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm">
             {/* Backdrop translucent black filter */}
             <motion.div 
               initial={{ opacity: 0 }}
@@ -1009,15 +1012,12 @@ export const WorkoutView: React.FC = () => {
 
             {/* Modal Body Card / Bottom Sheet panel */}
             <motion.div 
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0 }}
+              initial={{ y: 20, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 20, opacity: 0, scale: 0.95 }}
               transition={{ type: "spring", damping: 28, stiffness: 220 }}
-              className="relative w-full sm:max-w-md bg-[#0c0c0f] p-5 rounded-t-3xl sm:rounded-2xl shadow-2xl border-t sm:border border-white/10 overflow-hidden space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar pb-10 sm:pb-6 z-10"
+              className="relative w-full sm:max-w-md bg-[#0c0c0f] p-5 rounded-2xl shadow-2xl border border-white/10 overflow-hidden space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar pb-6 z-10"
             >
-              {/* Premium drag handle signifying swipe bottom sheet on mobile */}
-              <div className="w-12 h-1 bg-white/15 rounded-full mx-auto mb-1 block sm:hidden"></div>
-
               {/* Header Container */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 leading-none">
@@ -1040,9 +1040,19 @@ export const WorkoutView: React.FC = () => {
 
               {/* Title Section */}
               <div className="space-y-1">
-                <h2 className="text-base font-black italic text-white tracking-tight uppercase leading-none">
-                  {activeModalExercise.name}
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-black italic text-white tracking-tight uppercase leading-none">
+                    {activeModalExercise.name}
+                  </h2>
+                  <button 
+                    onClick={() => setShowExerciseInfo(!showExerciseInfo)}
+                    className={`w-7 h-7 flex items-center justify-center rounded-full transition-all ${
+                      showExerciseInfo ? 'bg-accent/20 text-accent' : 'bg-zinc-900 border border-white/5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
+                    }`}
+                  >
+                    <HelpCircle size={14} strokeWidth={2.5} />
+                  </button>
+                </div>
                 <div className="w-12 h-0.5 bg-accent rounded"></div>
               </div>
 
@@ -1155,20 +1165,31 @@ export const WorkoutView: React.FC = () => {
                   </div>
 
                   {/* Standard Coaching Directives */}
-                  <div className="border border-white/5 bg-[#121216]/50 rounded-xl p-3 space-y-2.5 text-left leading-relaxed">
-                    <div>
-                      <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest block leading-none font-mono">Instruções de Movimento</span>
-                      <p className="text-[10.5px] text-white/75 font-normal mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).instructions}</p>
-                    </div>
-                    <div>
-                      <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest block leading-none font-mono">Execução Perfeita</span>
-                      <p className="text-[10.5px] text-emerald-200/95 font-medium mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).correctExecution}</p>
-                    </div>
-                    <div>
-                      <span className="text-[7px] font-black text-amber-500 uppercase tracking-widest block leading-none font-mono">Observações de Coach</span>
-                      <p className="text-[10.5px] text-amber-200/90 font-medium mt-0.5 leading-snug italic">"{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).technique}"</p>
-                    </div>
-                  </div>
+                  <AnimatePresence>
+                    {showExerciseInfo && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border border-white/5 bg-[#121216]/50 rounded-xl p-3 space-y-2.5 text-left leading-relaxed mt-4">
+                          <div>
+                            <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest block leading-none font-mono">Instruções de Movimento</span>
+                            <p className="text-[10.5px] text-white/75 font-normal mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).instructions}</p>
+                          </div>
+                          <div>
+                            <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest block leading-none font-mono">Execução Perfeita</span>
+                            <p className="text-[10.5px] text-emerald-200/95 font-medium mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).correctExecution}</p>
+                          </div>
+                          <div>
+                            <span className="text-[7px] font-black text-amber-500 uppercase tracking-widest block leading-none font-mono">Observações de Coach</span>
+                            <p className="text-[10.5px] text-amber-200/90 font-medium mt-0.5 leading-snug italic">"{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).technique}"</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Interactive steppers controller section */}
                   <div className="space-y-1.5 pt-1">
