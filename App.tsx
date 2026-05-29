@@ -28,81 +28,13 @@ import { WorkoutsListView } from './components/views/WorkoutsListView';
 
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg" 
-      className={className}
-    >
-      {/* Asas Geométricas Esquerda */}
-      <path 
-        d="M 22,28 L 3,42 L 23,52 L 13,62 L 33,57 Z" 
-        fill="currentColor" 
-        opacity="0.85" 
-      />
-      {/* Asas Geométricas Direita */}
-      <path 
-        d="M 78,28 L 97,42 L 77,52 L 87,62 L 67,57 Z" 
-        fill="currentColor" 
-        opacity="0.85" 
-      />
-      {/* Halter Vertical */}
-      {/* Barra central */}
-      <rect x="47" y="15" width="6" height="70" rx="3" fill="currentColor" />
-      {/* Peso superior */}
-      <rect x="36" y="10" width="28" height="8" rx="2" fill="currentColor" />
-      <rect x="40" y="5" width="20" height="5" rx="1.5" fill="currentColor" />
-      {/* Peso inferior */}
-      <rect x="36" y="82" width="28" height="8" rx="2" fill="currentColor" />
-      <rect x="40" y="90" width="20" height="5" rx="1.5" fill="currentColor" />
-      
-      {/* Olho de Hórus centralizado */}
-      <g>
-        {/* Contorno do Olho com máscara/fundo escuro */}
-        <path 
-          d="M 32,50 C 40,38 60,38 68,50 C 60,62 40,62 32,50 Z" 
-          stroke="#050505" 
-          strokeWidth="4" 
-          fill="#050505" 
-        />
-        <path 
-          d="M 32,50 C 40,38 60,38 68,50 C 60,62 40,62 32,50 Z" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          fill="none" 
-        />
-        {/* Íris do olho */}
-        <circle cx="50" cy="50" r="6" fill="#050505" />
-        <circle cx="50" cy="50" r="4.5" fill="currentColor" />
-        <circle cx="51.5" cy="48.5" r="1.5" fill="#050505" />
-        
-        {/* Lágrima/Sinal do Olho de Hórus (detalhe inferior) */}
-        <path 
-          d="M 44,55 L 40,70" 
-          stroke="currentColor" 
-          strokeWidth="3" 
-          strokeLinecap="round" 
-        />
-        {/* Linha espiral/curva inferior direita */}
-        <path 
-          d="M 54,54 Q 57,69 63,65 C 65,63 64,59 60,58" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          fill="none" 
-          strokeLinecap="round" 
-        />
-        {/* Traço superior da sobrancelha de Hórus */}
-        <path 
-          d="M 31,39 Q 50,29 69,39" 
-          stroke="currentColor" 
-          strokeWidth="3.2" 
-          fill="none" 
-          strokeLinecap="round" 
-        />
-      </g>
-    </svg>
+    <img 
+      src="https://raw.githubusercontent.com/Narok94/Horus/main/assets/Logo/logo.png" 
+      alt="Horus Training Logo" 
+      style={{ width: size, height: size }}
+      className={`${className} object-contain`}
+      referrerPolicy="no-referrer"
+    />
   );
 };
 
@@ -143,8 +75,8 @@ const AppContent: React.FC = () => {
 
   // Sync Dynamic User Accent Color with global CSS variables based on target layouts
   useEffect(() => {
-    let accentColor = '#00F0FF'; // Default / Horus Fit Ciano Neon
-    let accentRgb = '0, 240, 255';
+    let accentColor = '#D4AF37'; // Default / Horus Fit Dourado Sofisticado
+    let accentRgb = '212, 175, 55';
     
     if (user) {
       const uName = user.username.toLowerCase();
@@ -152,14 +84,14 @@ const AppContent: React.FC = () => {
       const isTeacher = uName === 'teste3' || uName.includes('flavia') || uName.includes('flávia');
       
       if (isFemale) {
-        accentColor = '#FF007F'; // Female Theme Magenta/Pink Neon
-        accentRgb = '255, 0, 127';
+        accentColor = '#D49D95'; // Female Theme Rose Gold Sofisticado
+        accentRgb = '212, 157, 149';
       } else if (isTeacher) {
-        accentColor = '#FFFFFF'; // Clean teacher white accent
-        accentRgb = '255, 255, 255';
+        accentColor = '#F3F4F6'; // Clean teacher ice white accent
+        accentRgb = '243, 244, 246';
       } else {
-        accentColor = '#00F0FF'; // Male / Default Theme Ciano Neon
-        accentRgb = '0, 240, 255';
+        accentColor = '#D4AF37'; // Male / Default Theme Dourado Sofisticado
+        accentRgb = '212, 175, 55';
       }
     }
     
@@ -167,7 +99,7 @@ const AppContent: React.FC = () => {
     root.style.setProperty('--accent-color', accentColor);
     root.style.setProperty('--accent-color-rgb', accentRgb);
     root.style.setProperty('--highlight-color', accentColor);
-    root.style.setProperty('--glow-color', `rgba(${accentRgb}, 0.15)`);
+    root.style.setProperty('--glow-color', `rgba(${accentRgb}, 0.08)`);
   }, [user]);
 
   // Safety sync for already logged-in users to ensure security rules work

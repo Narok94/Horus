@@ -31,10 +31,10 @@
   --text-auxiliary: rgba(255, 255, 255, 0.35);
   --border-color: rgba(255, 255, 255, 0.035);
   --glass-bg: #0F1014;
-  --accent-color: #00D2FF;
-  --accent-color-rgb: 0, 210, 255;
-  --highlight-color: #00D2FF;
-  --glow-color: rgba(0, 210, 255, 0.12);
+  --accent-color: #D4AF37;
+  --accent-color-rgb: 212, 175, 55;
+  --highlight-color: #D4AF37;
+  --glow-color: rgba(212, 175, 55, 0.08);
   --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);

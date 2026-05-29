@@ -24,6 +24,7 @@ import {
   SkipForward 
 } from 'lucide-react';
 import { SetPerformance, WorkoutHistoryEntry, AppTab, Exercise } from '../../types';
+import { getExerciseDetails, getHorusGifUrl } from '../../src/utils/exerciseUtils';
 import confetti from 'canvas-confetti';
 
 export const WorkoutView: React.FC = () => {
@@ -62,6 +63,7 @@ export const WorkoutView: React.FC = () => {
   const [showCardioModal, setShowCardioModal] = React.useState(false);
   const [cardioInput, setCardioInput] = React.useState({ exercise: 'Esteira', duration: 15 });
   const [activeModalExercise, setActiveModalExercise] = React.useState<Exercise | null>(null);
+  const [expandedExerciseId, setExpandedExerciseId] = React.useState<string | null>(null);
   
   // Modal Rest Timer states
   const [modalRestTimeLeft, setModalRestTimeLeft] = React.useState<number | null>(null);
@@ -685,7 +687,7 @@ export const WorkoutView: React.FC = () => {
   }, 0);
 
   return (
-    <div className="h-full max-h-full overflow-hidden flex flex-col justify-between pb-1.5 w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none">
+    <div className="min-h-screen py-1 flex flex-col justify-between pb-28 w-full max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none">
       {/* Upper Navigation Header */}
       <header className="flex items-center justify-between py-1.5 border-b border-white/5 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
@@ -755,84 +757,168 @@ export const WorkoutView: React.FC = () => {
       </div>
 
       {/* Filter Header separator matching attachment 1 */}
-      <div className="flex-1 min-h-0 flex flex-col pt-1.5 overflow-hidden">
-        <h3 className="text-[8px] font-black text-white/45 uppercase tracking-[0.2em] px-1 shrink-0 mb-1">
+      <div className="flex-1 mt-4">
+        <h3 className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] px-1 mb-2">
           LISTA DE EXERCÍCIOS PARA FILTRAR
         </h3>
 
-        {/* Exercises list - Inner scroll viewport ensures zero parent scrolling */}
-        <div className="flex-grow overflow-y-auto no-scrollbar space-y-1.5 py-0.5">
+        {/* Exercises list - Renders continuously with page scroll */}
+        <div className="space-y-3.5 py-1">
           {selectedWorkout.exercises.map((ex, idx) => {
             const perf = getExercisePerformance(ex);
             const completedCount = perf.filter(p => p.completed).length;
             const sizeSets = ex.sets;
             const isAllCompleted = sizeSets > 0 && completedCount === sizeSets;
+            
+            const isExpanded = expandedExerciseId === ex.id;
+            const details = getExerciseDetails(ex.name, ex.muscleGroup);
+
+            const handleCardClick = () => {
+              const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+              if (isMobile) {
+                openExerciseModal(ex);
+              } else {
+                setExpandedExerciseId(prev => prev === ex.id ? null : ex.id);
+              }
+            };
 
             return (
-              <motion.div
-                key={ex.id}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.03 }}
-                onClick={() => openExerciseModal(ex)}
-                className={`group relative overflow-hidden rounded-xl border border-white/5 bg-[#0b0b0d]/70 p-2 hover:border-accent/40 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-2.5 shadow-sm ${
-                  isAllCompleted ? 'opacity-40' : 'opacity-100'
-                }`}
-              >
-                {/* Body Card */}
-                <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center gap-1.5 leading-none">
-                    <span className="bg-zinc-800 text-zinc-300 text-[6.5px] font-black px-1 py-0.5 rounded font-mono">
-                      #{idx + 1}
+              <div key={ex.id} className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.03 }}
+                  onClick={handleCardClick}
+                  className={`group relative overflow-hidden rounded-xl border border-white/5 bg-[#0e0e12]/70 p-3 hover:border-accent/40 hover:bg-[#121217]/90 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 shadow-sm ${
+                    isAllCompleted ? 'opacity-40' : 'opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center min-w-0 flex-1">
+                    {/* Elegant big index number */}
+                    <span className="text-3xl font-light font-sans text-white/10 tracking-tight mr-4 shrink-0 font-mono group-hover:text-accent/20 transition-colors">
+                      {String(idx + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-accent text-[8px] font-black uppercase tracking-wider">
-                      {ex.muscleGroup.toUpperCase()}
-                    </span>
+
+                    {/* Compact Details Column */}
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center gap-2 leading-none">
+                        <span className="bg-[#1b1b22] text-[#e3e3e8] text-[7px] font-black px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
+                          {ex.muscleGroup}
+                        </span>
+                        {ex.dropSet && (
+                          <span className="bg-orange-500/10 text-orange-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
+                            Drop Set
+                          </span>
+                        )}
+                        {ex.restPause && (
+                          <span className="bg-red-500/10 text-red-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
+                            Rest-Pause
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className="text-sm font-bold text-white uppercase leading-snug text-wrap whitespace-normal group-hover:text-accent transition-colors">
+                        {ex.name}
+                      </h3>
+
+                      {/* Technical specifications row */}
+                      <p className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5 flex-wrap">
+                        <span className="text-white font-semibold">{ex.sets}x{ex.reps}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span>{ex.rest}s descanso</span>
+                        {ex.notes && (
+                          <>
+                            <span className="text-zinc-600">•</span>
+                            <span className="text-amber-200/80 truncate max-w-[150px] italic">{ex.notes}</span>
+                          </>
+                        )}
+                      </p>
+                    </div>
                   </div>
 
-                  <h3 className="text-sm font-bold text-white uppercase leading-snug text-wrap whitespace-normal">
-                    {ex.name}
-                  </h3>
-
-                  {/* Sets horizontal indicators Pills */}
-                  <div className="flex flex-wrap gap-0.5">
-                    {perf.map((s, sIdx) => (
-                      <span 
-                        key={sIdx} 
-                        className={`text-[6.5px] font-black px-1.5 py-0.5 rounded border tracking-tight transition-all leading-none ${
-                          s.completed 
-                            ? 'bg-accent/15 border-accent text-accent' 
-                            : 'bg-zinc-950/20 border-zinc-800/60 text-zinc-500'
-                        }`}
-                      >
-                        S{sIdx + 1}
+                  {/* Right Column: Sets Quick Progression Indicators */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right flex flex-col justify-center items-end min-w-[45px] leading-none">
+                      <span className="text-[6.5px] font-black text-white/40 uppercase tracking-widest block mb-1">
+                        SÉRIES
                       </span>
-                    ))}
-                  </div>
-                </div>
+                      <span className="text-xs font-black text-white font-mono block">
+                        {completedCount}/{sizeSets}
+                      </span>
+                    </div>
 
-                {/* Right Side: Progress column and open button */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="text-right flex flex-col justify-center items-end min-w-[40px] leading-none">
-                    <span className="text-[6.5px] font-black text-white/40 uppercase tracking-widest block mb-0.5">
-                      PROGRESSO
-                    </span>
-                    <span className="text-sm font-black text-white font-mono block">
-                      {completedCount}/{sizeSets}
-                    </span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openExerciseModal(ex);
+                      }}
+                      className="w-8 h-8 rounded-full bg-accent/5 border border-accent/20 hover:bg-accent hover:border-accent hover:text-black text-accent flex items-center justify-center active:scale-95 transition-all font-sans shrink-0"
+                    >
+                      <Plus size={14} strokeWidth={3} />
+                    </button>
                   </div>
+                </motion.div>
 
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openExerciseModal(ex);
-                    }}
-                    className="w-8 h-8 rounded-full bg-accent/10 border border-accent/20 hover:bg-accent hover:border-accent hover:text-black text-accent flex items-center justify-center active:scale-90 transition-all font-sans"
-                  >
-                    <Plus size={14} strokeWidth={3} />
-                  </button>
-                </div>
-              </motion.div>
+                {/* Inline Expanded View Drawer for Desktop */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden bg-[#0c0c0e]/90 border border-white/5 rounded-xl px-4 py-4"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 leading-normal">
+                        {/* Animated Video/GIF */}
+                        <div className="md:col-span-4 flex flex-col justify-start items-center">
+                          <div className="relative rounded-xl overflow-hidden bg-zinc-950 border border-white/5 w-full max-w-[200px] h-40 flex items-center justify-center">
+                            <img 
+                              src={details.gif} 
+                              alt={ex.name} 
+                              className="max-h-[150px] w-auto max-w-[180px] rounded-lg object-contain"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          <span className="text-[7px] text-zinc-500 uppercase tracking-widest font-mono font-black mt-2">GIF Demonstrativo Oficial</span>
+                        </div>
+
+                        {/* Educational Information Checklist */}
+                        <div className="md:col-span-8 space-y-4 text-left">
+                          <div className="space-y-2">
+                            <div>
+                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Instruções de Movimento</span>
+                              <p className="text-xs text-white/70 mt-0.5 leading-relaxed">{details.instructions}</p>
+                            </div>
+
+                            <div>
+                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Execução Perfeita</span>
+                              <p className="text-xs text-white/70 mt-0.5 leading-relaxed">{details.correctExecution}</p>
+                            </div>
+
+                            <div>
+                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Observação de Coach</span>
+                              <p className="text-xs text-amber-200/90 mt-0.5 italic leading-relaxed">
+                                "{details.technique}"
+                              </p>
+                            </div>
+
+                            <div>
+                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Dicas Práticas Extra</span>
+                              <ul className="list-disc list-inside mt-1 text-xs text-white/70 space-y-0.5">
+                                {details.tips.map((tip, tIdx) => (
+                                  <li key={tIdx} className="leading-relaxed">{tip}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
         </div>
@@ -908,34 +994,37 @@ export const WorkoutView: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Single Exercise Detailed Modal Window exactly matching attachment 2 & 3 */}
+      {/* Floating Single Exercise Detailed Modal Window / Premium Bottom Sheet */}
       <AnimatePresence>
         {activeModalExercise && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm">
             {/* Backdrop translucent black filter */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveModalExercise(null)}
-              className="absolute inset-0 bg-black/85 backdrop-blur-md"
+              className="absolute inset-0 bg-transparent"
             />
 
-            {/* Modal Body Card */}
+            {/* Modal Body Card / Bottom Sheet panel */}
             <motion.div 
-              initial={{ scale: 0.92, opacity: 0, y: -20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: -20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-sm bg-zinc-950 p-3.5 rounded-xl shadow-2xl border border-white/10 overflow-hidden space-y-3 max-h-[95vh] overflow-y-auto no-scrollbar"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 28, stiffness: 220 }}
+              className="relative w-full sm:max-w-md bg-[#0c0c0f] p-5 rounded-t-3xl sm:rounded-2xl shadow-2xl border-t sm:border border-white/10 overflow-hidden space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar pb-10 sm:pb-6 z-10"
             >
+              {/* Premium drag handle signifying swipe bottom sheet on mobile */}
+              <div className="w-12 h-1 bg-white/15 rounded-full mx-auto mb-1 block sm:hidden"></div>
+
               {/* Header Container */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 leading-none">
                   <span className="bg-accent text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded font-mono">
                     SÉRIE ATIVA
                   </span>
-                  <span className="text-zinc-400 text-[10px] font-black uppercase font-mono">
+                  <span className="text-zinc-400 text-[10px] font-black uppercase font-mono tracking-wider">
                     {activeModalExercise.muscleGroup.toUpperCase()}
                   </span>
                 </div>
@@ -943,7 +1032,7 @@ export const WorkoutView: React.FC = () => {
                 {/* Close Button X */}
                 <button 
                   onClick={() => setActiveModalExercise(null)} 
-                  className="w-7 h-7 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-400 hover:text-white active:scale-90 transition-all"
+                  className="w-7 h-7 rounded-sm bg-[#1b1b22] border border-white/5 flex items-center justify-center text-zinc-400 hover:text-white active:scale-90 transition-all"
                 >
                   <X size={13} strokeWidth={2.5} />
                 </button>
@@ -954,7 +1043,7 @@ export const WorkoutView: React.FC = () => {
                 <h2 className="text-base font-black italic text-white tracking-tight uppercase leading-none">
                   {activeModalExercise.name}
                 </h2>
-                <div className="w-8 h-0.5 bg-accent rounded"></div>
+                <div className="w-12 h-0.5 bg-accent rounded"></div>
               </div>
 
               {/* Active Rest Countdown Timer Panel (Depicted in image 3) */}
@@ -1050,37 +1139,45 @@ export const WorkoutView: React.FC = () => {
                 )}
               </AnimatePresence>
 
-              {/* Coaching advise layout blocks */}
+              {/* Educational info checklist with GIF - ONLY if not completed success */}
               {!exerciseCompletedSuccess && (
-                <div className="space-y-2 pb-1">
-                  {/* Coaching Motivational Line */}
-                  <p className="text-[10px] font-medium text-white/50 leading-relaxed italic px-0.5">
-                    "{trackingTextPlaceholder(activeModalExercise)}"
-                  </p>
+                <div className="space-y-4 pb-2">
+                  {/* Custom exercise video/GIF of high-tech Horus */}
+                  <div className="relative rounded-xl overflow-hidden bg-zinc-950 border border-white/5 h-44 w-full flex flex-col items-center justify-center p-1.5 shadow-inner">
+                    <img 
+                      src={getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).gif} 
+                      alt={activeModalExercise.name} 
+                      className="max-h-[150px] w-auto max-w-[200px] rounded-lg object-contain animate-fade-in"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                    <span className="absolute bottom-1.5 px-2 py-0.5 rounded bg-black/60 border border-white/5 font-mono text-[6px] font-bold text-zinc-400 uppercase tracking-widest leading-none">DEMONSTRAÇÃO DE EXECUÇÃO</span>
+                  </div>
 
-                  {/* Highlights cue container */}
-                  <div className="border border-accent/15 bg-accent/5 rounded-lg p-2.5 flex gap-2.5 items-start">
-                    <div className="w-6 h-6 rounded bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0 mt-0.5">
-                      <Shield size={12} />
+                  {/* Standard Coaching Directives */}
+                  <div className="border border-white/5 bg-[#121216]/50 rounded-xl p-3 space-y-2.5 text-left leading-relaxed">
+                    <div>
+                      <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest block leading-none font-mono">Instruções de Movimento</span>
+                      <p className="text-[10.5px] text-white/75 font-normal mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).instructions}</p>
                     </div>
-                    <div className="space-y-0.5 min-w-0">
-                      <h4 className="text-[7.5px] font-black tracking-wider text-accent uppercase">
-                        {activeModalExercise.muscleGroup.toUpperCase()} & PROTEÇÃO:
-                      </h4>
-                      <p className="text-[9.5px] font-bold text-orange-200/90 leading-normal italic truncate whitespace-normal">
-                        {coachingInstructions(activeModalExercise)}
-                      </p>
+                    <div>
+                      <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest block leading-none font-mono">Execução Perfeita</span>
+                      <p className="text-[10.5px] text-emerald-200/95 font-medium mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).correctExecution}</p>
+                    </div>
+                    <div>
+                      <span className="text-[7px] font-black text-amber-500 uppercase tracking-widest block leading-none font-mono">Observações de Coach</span>
+                      <p className="text-[10.5px] text-amber-200/90 font-medium mt-0.5 leading-snug italic">"{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).technique}"</p>
                     </div>
                   </div>
 
                   {/* Interactive steppers controller section */}
-                  <div className="space-y-1.5 pt-1.5">
-                    <div className="flex items-center justify-between text-[8px] font-black text-white/40 uppercase tracking-widest px-0.5 leading-none">
-                      <span>SÉRIES E CARGAS ESTÉTICAS</span>
-                      <span className="font-mono">CARGA (KG) - REPS</span>
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex items-center justify-between text-[7px] font-black text-white/40 uppercase tracking-widest px-0.5 leading-none">
+                      <span>SÉRIES E REGISTRO DE CARGA</span>
+                      <span className="font-mono">PESO (KG) — REPS</span>
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="space-y-1 max-h-[170px] overflow-y-auto no-scrollbar animate-fade-in">
                       {getExercisePerformance(activeModalExercise).map((set, setIdx) => {
                         const isSetCompleted = set.completed;
                         return (
@@ -1088,7 +1185,7 @@ export const WorkoutView: React.FC = () => {
                             key={setIdx} 
                             className={`grid grid-cols-12 items-center gap-1.5 p-1 px-1.5 rounded-lg border transition-all duration-300 ${
                               isSetCompleted 
-                                ? 'bg-[#00DDA2]/5 border-[#00DDA2]/20' 
+                                ? 'bg-[#00DDA2]/5 border-[#00DDA2]/25' 
                                 : 'bg-zinc-900/50 border-white/5'
                             }`}
                           >
@@ -1098,7 +1195,7 @@ export const WorkoutView: React.FC = () => {
                                 S{setIdx + 1}
                               </span>
                               {setIdx === 0 && (
-                                <span className="text-[6.5px] font-black text-accent uppercase tracking-wider -mt-0.5 block italic leading-none font-mono">
+                                <span className="text-[6px] font-black text-accent uppercase tracking-widest mt-0.5 block italic leading-none font-mono font-bold">
                                   REP
                                 </span>
                               )}
@@ -1110,7 +1207,7 @@ export const WorkoutView: React.FC = () => {
                                 <button 
                                   onClick={() => handleModifyWeight(activeModalExercise.id, setIdx, -1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-90 transition-all font-mono disabled:opacity-40"
+                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
                                 >
                                   -
                                 </button>
@@ -1127,7 +1224,7 @@ export const WorkoutView: React.FC = () => {
                                 <button 
                                   onClick={() => handleModifyWeight(activeModalExercise.id, setIdx, 1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-90 transition-all font-mono disabled:opacity-40"
+                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
                                 >
                                   +
                                 </button>
@@ -1140,7 +1237,7 @@ export const WorkoutView: React.FC = () => {
                                 <button 
                                   onClick={() => handleModifyReps(activeModalExercise.id, setIdx, -1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-90 transition-all font-mono disabled:opacity-40"
+                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
                                 >
                                   -
                                 </button>
@@ -1157,18 +1254,18 @@ export const WorkoutView: React.FC = () => {
                                 <button 
                                   onClick={() => handleModifyReps(activeModalExercise.id, setIdx, 1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-90 transition-all font-mono disabled:opacity-40"
+                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
                                 >
                                   +
                                 </button>
                               </div>
                             </div>
 
-                            {/* Column 4: Glow Vibe Check Checkbox */}
+                            {/* Column 4: Glowing check indicator */}
                             <div className="col-span-2 flex items-center justify-end pr-0.5">
                               <button 
                                 onClick={() => handleUpdateModalSet(activeModalExercise.id, setIdx, { completed: !isSetCompleted })}
-                                className={`w-7 h-7 rounded-lg border flex items-center justify-center active:scale-90 transition-all ${
+                                className={`w-7 h-7 rounded-sm border flex items-center justify-center active:scale-95 transition-all ${
                                   isSetCompleted 
                                     ? 'bg-[#00DDA2] border-[#00DDA2] text-[#050505] shadow-[0_0_8px_rgba(0,221,162,0.25)]' 
                                     : 'bg-zinc-950 border-white/5 text-zinc-600 hover:text-zinc-400'
@@ -1183,13 +1280,13 @@ export const WorkoutView: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Manual video/tutorial linkage at bottom of popup */}
-                  <div className="pt-1.5 text-center leading-none">
+                  {/* Manual video/tutorial guide link */}
+                  <div className="pt-2 text-center leading-none">
                     <a 
                       href={`https://www.google.com/search?q=gif+execução+exercicio+${encodeURIComponent(activeModalExercise.name)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[8px] font-black text-accent hover:brightness-110 transition-all uppercase tracking-[0.15em] font-mono"
+                      className="text-[8.5px] font-black text-accent hover:brightness-110 transition-all uppercase tracking-[0.15em] font-mono block"
                     >
                       VER GUIA TÉCNICO INTERATIVO
                     </a>
