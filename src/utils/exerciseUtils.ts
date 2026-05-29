@@ -214,6 +214,10 @@ export const getExerciseGifUrlVariations = (exerciseName: string, originalUrl?: 
  * Lista de nomes de arquivos GIF do Horus para correspondência precisa
  */
 export const HORUS_EXERCISE_GIFS = [
+  "supino_inclinado",
+  "supino_reto",
+  "crucifixo_maquina",
+  "desenvolvimento_maquina",
   "Barra fixa",
   "abdominal_invertido",
   "abduçao_de_quadril_em_pé",
@@ -652,7 +656,7 @@ export const getHorusGifUrl = (name: string): string => {
     'elevacao lateral halteres': 'elevacao-lateral-de-bracos',
     'elevacao lateral': 'elevacao-lateral-de-bracos',
     'supino maquina': 'supino-declinado-no-smit',
-    'desenvolvimento maquina': 'desenvolvimento-de-ombro-com-kettlebell',
+    'desenvolvimento maquina pegada neutra': 'desenvolvimento_maquina',
     'desenvolvimento': 'desenvolvimento-de-ombro-com-kettlebell',
     'peck deck': 'crucifixo-suspenso',
     'remada alta kettlebell': 'puxada-alta-com-alavanca',
@@ -673,10 +677,10 @@ export const getHorusGifUrl = (name: string): string => {
     'rosca direta': 'rosca-biceps-com-faixa-elastica',
     'peck deck invertido': 'crucifixo-invertido-com-gymstick-para-deltoides-posterior',
     'manguito rotador polia': 'rotacao-externa-com-cabo-a-90-graus',
-    'supino inclinado maquina': 'supino-declinado-no-smit',
-    'supino reto halteres pegada neutra': 'triceps-com-halteres-no-banco-reto',
-    'crucifixo maquina': 'crucifixo-suspenso',
-    'desenvolvimento de ombros': 'desenvolvimento-de-ombro-com-kettlebell',
+    'supino inclinado maquina ou halteres': 'supino_inclinado',
+    'supino reto maquina ou halteres': 'supino_reto',
+    'crucifixo maquina': 'crucifixo_maquina',
+    'desenvolvimento maquina': 'desenvolvimento_maquina',
     'elevacao lateral no cabo': 'elevacao-frontal-lateral-com-elastico',
     'triceps frances unilateral': 'triceps-frances-unilateral-no-corss',
     'abdomen supra': 'abdominal-invertido',
@@ -762,8 +766,18 @@ export const getHorusGifUrl = (name: string): string => {
     return { bestGif, highestScore };
   };
 
-  // 1. Tentar busca direta primeiro
+  
+  // 1. Tentar sinônimos exatos primeiro
+  if (synonyms[cleanName]) {
+    const directMatch = findBestMatch(synonyms[cleanName]);
+    if (directMatch.highestScore > 0) {
+      return `https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/${encodeURIComponent(directMatch.bestGif)}.gif`;
+    }
+  }
+
+  // 2. Busca direta
   let match = findBestMatch(cleanName);
+
 
   // 2. Tentar sinônimos se a busca direta for fraca
   if (match.highestScore < 4) {
