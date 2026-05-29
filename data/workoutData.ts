@@ -78,7 +78,7 @@ export const jessicaWorkouts: WorkoutRoutine[] = [
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
     id: 'h-a',
-    title: 'Treino A — Shape Estético (Push)',
+    title: 'TREINO A',
     description: 'Foco: Peitoral superior + ombro lateral SEM destruir articulação',
     color: 'orange',
     exercises: [
@@ -92,13 +92,12 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
       { id: 'ha-8', name: 'Tríceps corda', muscleGroup: 'Tríceps', sets: 4, reps: '10-12', rest: 60, notes: 'Extensão máxima abrindo as pontas da corda no final', image: getExerciseGifUrl('Tríceps corda') },
       { id: 'ha-9', name: 'Tríceps francês unilateral', muscleGroup: 'Tríceps', sets: 3, reps: '12', rest: 60, notes: 'Foco na cabeça longa do tríceps, cotovelo apontado reto para cima', image: getExerciseGifUrl('Tríceps francês unilateral') },
       { id: 'ha-10', name: 'Abdômen supra', muscleGroup: 'Abdômen', sets: 3, reps: '20', rest: 60, notes: 'Esmagar o abdômen sem puxar o pescoço', image: getExerciseGifUrl('Abdômen supra') }
-    ],
-    cardio: { exercise: 'Caminhada inclinada (20-30min tempo, inclinação 8-15, vel. moderada)', duration: 30 }
+    ]
   },
   {
     id: 'h-b',
-    title: 'Treino B — Costas + Trapézio (V-Taper)',
-    description: 'Foco: Construir o "V", asas e trapézio (V-Taper massivo)',
+    title: 'TREINO B — COSTAS + TRAPÉZIO',
+    description: 'NÃO é só subir peso. Faça: ✅ contração máxima no topo ✅ 1 segundo segurando ✅ descida controlada ✅ sem girar ombro Trapézio responde MUITO bem a: * volume alto * controle * frequência',
     color: 'purple',
     exercises: [
       { id: 'hb-1', name: 'Puxada alta aberta', muscleGroup: 'Costas', sets: 4, reps: '8-12', rest: 90, notes: 'Foco em asas e latíssimo, puxar com cotovelo', image: getExerciseGifUrl('Puxada alta aberta') },
@@ -110,13 +109,12 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
       { id: 'hb-7', name: 'Encolhimento barra guiada', muscleGroup: 'Trapézio', sets: 4, reps: '10-12', rest: 60, notes: '✅ CONTRAÇÃO MÁXIMA NO TOPO (1s segurando) • descida controlada • SEM girar os ombros', image: getExerciseGifUrl('Encolhimento barra guiada') },
       { id: 'hb-8', name: 'Rosca martelo', muscleGroup: 'Bíceps', sets: 3, reps: '12', rest: 60, notes: 'Pegada neutra para trabalhar braquial e braquiorradial', image: getExerciseGifUrl('Rosca martelo') },
       { id: 'hb-9', name: 'Rosca direta barra W', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 60, notes: 'Pegada anatômica para proteger punho e cotovelo', image: getExerciseGifUrl('Rosca direta barra W') }
-    ],
-    cardio: { exercise: 'Caminhada inclinada (20-30min tempo, inclinação 8-15, vel. moderada)', duration: 30 }
+    ]
   },
   {
     id: 'h-c',
-    title: 'Treino C — Pernas + Core',
-    description: 'Foco: Pernas estéticas sem "pesar" cintura/quadril',
+    title: 'TREINO C — PERNAS',
+    description: 'Pernas estéticas sem “pesar” cintura/quadril',
     color: 'emerald',
     exercises: [
       { id: 'hc-1', name: 'Agachamento Smith', muscleGroup: 'Pernas', sets: 4, reps: '8-10', rest: 90, notes: 'Posicionamento seguro dos pés, coluna ereta', image: getExerciseGifUrl('Agachamento Smith') },
@@ -128,8 +126,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
       { id: 'hc-7', name: 'Elevação de pernas', muscleGroup: 'Abdômen', sets: 4, reps: '15', rest: 60, notes: 'Foco em abdômen infra e controle de descida', image: getExerciseGifUrl('Elevação de pernas') },
       { id: 'hc-8', name: 'Prancha', muscleGroup: 'CORE', sets: 3, reps: '60s', rest: 60, notes: 'Alinhamento espinhal perfeito e contração absoluta de abdômen e glúteos', image: getExerciseGifUrl('Prancha') },
       { id: 'hc-9', name: 'Vacuum abdominal', muscleGroup: 'Estômago', sets: 3, reps: '30-40s', rest: 60, notes: 'Soltar todo o ar dos pulmões e sugar o abdômen ao máximo para dentro', image: getExerciseGifUrl('Vacuum abdominal') }
-    ],
-    cardio: { exercise: 'Caminhada inclinada (20-30min tempo, inclinação 8-15, vel. moderada)', duration: 30 }
+    ]
   }
 ];
 

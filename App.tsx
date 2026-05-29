@@ -337,114 +337,86 @@ const AppContent: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="h-screen overflow-hidden bg-[#050505] relative flex flex-col justify-center items-center p-6 font-sans selection:bg-accent/30 select-none">
+      <div className="min-h-screen overflow-y-auto flex flex-col justify-center items-center py-10 px-4 sm:p-6 font-sans selection:bg-accent/30 select-none bg-black relative">
         
-        {/* Fundo Tecnológico (Efeito de Linhas Conexas) */}
-        <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-              <circle cx="40" cy="0" r="1.5" fill="rgba(var(--accent-color-rgb), 0.08)" />
-              <circle cx="0" cy="40" r="1.5" fill="rgba(var(--accent-color-rgb), 0.08)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-          
-          <line x1="10%" y1="20%" x2="30%" y2="40%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="30%" y1="40%" x2="25%" y2="70%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="25%" y1="70%" x2="60%" y2="85%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="60%" y1="85%" x2="80%" y2="45%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="80%" y1="45%" x2="55%" y2="25%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="55%" y1="25%" x2="10%" y2="20%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="30%" y1="40%" x2="55%" y2="25%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="25%" y1="70%" x2="55%" y2="25%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          <line x1="60%" y1="85%" x2="55%" y2="25%" stroke="rgba(var(--accent-color-rgb), 0.03)" strokeWidth="0.5" />
-          
-          <circle cx="10%" cy="20%" r="2" fill="rgba(var(--accent-color-rgb), 0.15)" />
-          <circle cx="30%" cy="40%" r="2.5" fill="rgba(var(--accent-color-rgb), 0.2)" />
-          <circle cx="25%" cy="70%" r="2" fill="rgba(var(--accent-color-rgb), 0.15)" />
-          <circle cx="60%" cy="85%" r="3" fill="rgba(var(--accent-color-rgb), 0.2)" />
-          <circle cx="80%" cy="45%" r="2" fill="rgba(var(--accent-color-rgb), 0.15)" />
-          <circle cx="55%" cy="25%" r="2.5" fill="rgba(var(--accent-color-rgb), 0.2)" />
-        </svg>
-
-        {/* Efeito de iluminação sutil no topo */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
+        {/* Fundo Luxuoso Otimizado e Escuro */}
+        <div className="absolute inset-0 pointer-events-none fixed">
+          <div className="absolute top-0 w-full h-[50vh] bg-gradient-to-b from-accent/5 to-transparent"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] w-[350px] h-[350px] sm:w-[600px] sm:h-[600px] bg-accent/10 blur-[130px] rounded-full animate-pulse duration-[10000ms]"></div>
+          <div className="absolute bottom-0 w-full h-[30vh] bg-gradient-to-t from-black to-transparent"></div>
+        </div>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full max-w-sm space-y-10 relative z-10"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-sm relative z-10 flex flex-col my-auto"
         >
           {/* Bloco do Logotipo (Brand Header) */}
-          <div className="flex flex-col items-center text-center space-y-4">
-            <HorusLogoIcon size={56} className="text-accent drop-shadow-[0_0_20px_rgba(var(--accent-color-rgb),0.55)]" />
+          <div className="flex flex-col items-center text-center space-y-5 mb-10 pt-8 sm:pt-4">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
+              className="relative mt-4"
+            >
+              <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full scale-110"></div>
+              <HorusLogoIcon size={180} className="text-accent drop-shadow-[0_0_25px_rgba(var(--accent-color-rgb),0.5)] relative z-10" />
+            </motion.div>
             <div className="space-y-1">
-              <h1 className="text-3xl font-[950] italic uppercase tracking-wider text-white">
+              <h1 className="text-4xl sm:text-5xl font-[950] italic uppercase tracking-widest text-[#f5f5f5] drop-shadow-lg">
                 HORUS <span className="text-accent">TRAINING</span>
               </h1>
-              <p className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-mono mt-1">
+              <p className="text-white/40 text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-mono font-bold shadow-sm">
                 ELITE PERFORMANCE SYSTEM
               </p>
             </div>
           </div>
 
-          {" "}
-          {/* Formulário com Inputs Otimizados */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          {/* Formulário com Inputs Otimizados e Premium (Mobile First) */}
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               {/* Input Usuário */}
               <div className="space-y-1.5">
-                <label className="text-white/50 text-[11px] uppercase tracking-wider font-bold mb-1.5 px-1 block">
-                  USUÁRIO
+                <label className="text-white/60 text-[10px] sm:text-[11px] uppercase tracking-widest font-black px-1 flex items-center gap-2">
+                  <UserIcon size={12} className="text-accent/80" /> Usuário
                 </label>
-                <div className="bg-[#0c0c0c] border border-white/5 focus-within:border-accent/40 rounded-2xl p-4 transition-all flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <UserIcon className="text-accent shrink-0" size={18} />
-                    <input 
-                      type="text" 
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-transparent text-white font-bold outline-none text-sm placeholder:text-white/20"
-                      placeholder="Seu usuário"
-                      required
-                    />
-                  </div>
-                  <Plus className="text-white/20 shrink-0" size={16} />
+                <div className="bg-[#121215]/80 backdrop-blur-md border border-white/5 hover:border-white/10 focus-within:border-accent/40 focus-within:bg-[#0a0a0c] rounded-2xl p-4 sm:p-5 transition-all duration-300 flex items-center justify-between gap-3 shadow-inner">
+                  <input 
+                    type="text" 
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full bg-transparent text-white font-bold outline-none text-base sm:text-lg tracking-wide placeholder:text-white/20 placeholder:font-medium"
+                    placeholder="Seu usuário"
+                    required
+                  />
                 </div>
               </div>
               
-              {" "}
               {/* Input Senha */}
               <div className="space-y-1.5">
-                <label className="text-white/50 text-[11px] uppercase tracking-wider font-bold mb-1.5 px-1 block">
-                  SENHA
+                <label className="text-white/60 text-[10px] sm:text-[11px] uppercase tracking-widest font-black px-1 flex items-center gap-2">
+                  <Lock size={12} className="text-accent/80" /> Senha
                 </label>
-                <div className="bg-[#0c0c0c] border border-white/5 focus-within:border-accent/40 rounded-2xl p-4 transition-all flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <Lock className="text-accent shrink-0" size={18} />
-                    <input 
-                      type="password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-transparent text-white font-bold outline-none text-sm placeholder:text-white/20"
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  <Plus className="text-white/20 shrink-0" size={16} />
+                <div className="bg-[#121215]/80 backdrop-blur-md border border-white/5 hover:border-white/10 focus-within:border-accent/40 focus-within:bg-[#0a0a0c] rounded-2xl p-4 sm:p-5 transition-all duration-300 flex items-center justify-between gap-3 shadow-inner">
+                  <input 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent text-white font-bold outline-none text-base sm:text-lg tracking-widest placeholder:text-white/20 placeholder:font-medium placeholder:tracking-normal"
+                    placeholder="••••••••"
+                    required
+                  />
                 </div>
               </div>
             </div>
 
-            {" "}
             {/* Opção Unica de Lembrar Acesso */}
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-2">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <div 
-                  className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
-                    rememberMe ? 'bg-accent border-accent' : 'border-white/10 bg-[#0c0c0c]'
+                  className={`w-[22px] h-[22px] rounded-md flex items-center justify-center transition-all duration-300 ${
+                    rememberMe ? 'bg-accent shadow-[0_0_10px_rgba(var(--accent-color-rgb),0.5)]' : 'bg-[#121215] border border-white/10 group-hover:border-white/20'
                   }`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -452,62 +424,60 @@ const AppContent: React.FC = () => {
                     setRememberMe(!rememberMe);
                   }}
                 >
-                  {rememberMe && <Check size={11} className="text-black" strokeWidth={4.5} />}
+                  {rememberMe && <Check size={14} className="text-[#050505]" strokeWidth={4} />}
                 </div>
-                <span className="text-[11px] font-black text-white/50 uppercase tracking-widest">
+                <span className="text-xs font-black text-white/50 uppercase tracking-widest group-hover:text-white/70 transition-colors pt-0.5">
                   Lembrar acesso
                 </span>
               </label>
             </div>
 
-            {" "}
             {/* Botão de Entrada Massivo (CTA) */}
             <motion.button 
               whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.97 }}
               type="submit"
-              className="w-full mt-6 bg-accent hover:opacity-90 text-[#050505] font-black italic uppercase py-4 rounded-3xl text-[15px] tracking-widest shadow-[0_0_25px_rgba(var(--accent-color-rgb),0.35)] active:scale-[0.98] transition-all flex justify-center items-center gap-2 font-sans cursor-pointer border-0"
+              className="w-full mt-6 bg-accent hover:brightness-110 text-black font-[950] italic uppercase py-4 sm:py-5 rounded-2xl text-[16px] sm:text-lg tracking-[0.2em] shadow-[0_0_30px_rgba(var(--accent-color-rgb),0.3)] transition-all flex justify-center items-center gap-2 cursor-pointer border-0"
             >
-              ENTRAR <ArrowRight size={18} strokeWidth={3} />
+              ENTRAR NO SISTEMA <ArrowRight size={20} strokeWidth={3} className="ml-1" />
             </motion.button>
           </form>
 
           {/* Quick Login Section */}
-          <div className="pt-2 border-t border-white/5 space-y-3">
-            <span className="text-white/40 text-[9px] uppercase tracking-[0.2em] font-mono text-center block">
-              Acesso Rápido de Teste
+          <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
+            <span className="text-white/30 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium text-center block pb-2">
+              Acesso Rápido Limitado
             </span>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => handleQuickLogin('teste')}
-                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-[#00F0FF]/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                className="bg-[#121215]/60 hover:bg-[#1a1a1f] border border-white/5 hover:border-[#00F0FF]/40 rounded-xl py-4 flex flex-col items-center justify-center transition-all cursor-pointer backdrop-blur-md overflow-hidden relative group"
                 id="quick-login-teste"
               >
-                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE</span>
-                <span className="text-[#00F0FF] text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">MASC</span>
+                <div className="absolute inset-0 bg-gradient-to-b from-[#00F0FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="text-white text-[11px] sm:text-[12px] font-black tracking-wider block relative max-w-full truncate px-1">TESTE M.</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin('teste2')}
-                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-[#FF007F]/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                className="bg-[#121215]/60 hover:bg-[#1a1a1f] border border-white/5 hover:border-[#FF007F]/40 rounded-xl py-4 flex flex-col items-center justify-center transition-all cursor-pointer backdrop-blur-md overflow-hidden relative group"
                 id="quick-login-teste2"
               >
-                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE 2</span>
-                <span className="text-[#FF007F] text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">FEM</span>
+                <div className="absolute inset-0 bg-gradient-to-b from-[#FF007F]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="text-white text-[11px] sm:text-[12px] font-black tracking-wider block relative max-w-full truncate px-1">TESTE F.</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin('teste3')}
-                className="bg-[#0c0c0c] hover:bg-[#121212] border border-white/5 hover:border-white/40 rounded-2xl py-2.5 px-1 text-center transition-all cursor-pointer"
+                className="bg-[#121215]/60 hover:bg-[#1a1a1f] border border-white/5 hover:border-white/40 rounded-xl py-4 flex flex-col items-center justify-center transition-all cursor-pointer backdrop-blur-md overflow-hidden relative group"
                 id="quick-login-teste3"
               >
-                <span className="text-white text-[11px] font-black uppercase tracking-tight block">TESTE 3</span>
-                <span className="text-white/60 text-[8px] font-mono uppercase tracking-widest mt-0.5 block font-bold">DOCENTE</span>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="text-white text-[11px] sm:text-[12px] font-black tracking-wider block relative max-w-full truncate px-1">DOCENTE</span>
               </button>
             </div>
           </div>
-
         </motion.div>
       </div>
     );
