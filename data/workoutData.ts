@@ -2,78 +2,93 @@
 import { WorkoutRoutine } from '../types';
 import { getExerciseGifUrl } from '../src/utils/exerciseUtils';
 
-export const jessicaWorkouts: WorkoutRoutine[] = [
+
+export const teste2Workouts: WorkoutRoutine[] = [
   {
-    id: 'fortalecimento',
-    title: 'Fortalecimento (CORE)',
-    description: 'Foco em estabilização e controle para Fibromialgia.',
+    id: 't2-a',
+    title: 'TREINO A — SEGUNDA',
+    description: 'Glúteo + Quadríceps',
     color: 'emerald',
     exercises: [
-      { id: 'f1', name: 'Pingus (Abdomen Infra)', muscleGroup: 'CORE', sets: 1, reps: '8', rest: 30, image: getExerciseGifUrl('Pingus (Abdomen Infra)') },
-      { id: 'f2', name: 'Frog (Pilates)', muscleGroup: 'CORE', sets: 1, reps: '8', rest: 30, image: getExerciseGifUrl('Frog (Pilates)') },
-      { id: 'f3', name: 'One Hundred', muscleGroup: 'CORE', sets: 1, reps: '50', rest: 30, image: getExerciseGifUrl('One Hundred') },
-      { id: 'f4', name: 'Single Leg Stretch', muscleGroup: 'CORE', sets: 1, reps: '4/4', rest: 30, image: getExerciseGifUrl('Single Leg Stretch') },
-      { id: 'f5', name: 'Double Leg Stretch', muscleGroup: 'CORE', sets: 1, reps: '8', rest: 30, image: getExerciseGifUrl('Double Leg Stretch') },
-      { id: 'f6', name: 'Elevação Pélvica Solo', muscleGroup: 'Glúteo/CORE', sets: 1, reps: '8', rest: 30, image: getExerciseGifUrl('Elevação Pélvica Solo') }
-    ]
+      { id: 't2a-1', name: 'Agachamento Livre', muscleGroup: 'Quadríceps', sets: 4, reps: '10', rest: 60, image: getExerciseGifUrl('Agachamento Livre') },
+      { id: 't2a-2', name: 'Leg Press 45', muscleGroup: 'Quadríceps', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Leg Press 45') },
+      { id: 't2a-3', name: 'Afundo Caminhando', muscleGroup: 'Pernas', sets: 3, reps: '12/12', rest: 60, image: getExerciseGifUrl('Afundo Caminhando') },
+      { id: 't2a-4', name: 'Cadeira Extensora', muscleGroup: 'Quadríceps', sets: 3, reps: '15 + 10 parciais', rest: 60, image: getExerciseGifUrl('Cadeira Extensora') },
+      { id: 't2a-5', name: 'Elevação Pélvica Barra', muscleGroup: 'Glúteo', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Elevação Pélvica Barra') },
+      { id: 't2a-6', name: 'Abdutora Máquina', muscleGroup: 'Glúteo', sets: 4, reps: '20', rest: 60, image: getExerciseGifUrl('Abdutora Máquina') },
+      { id: 't2a-7', name: 'Panturrilha em pé', muscleGroup: 'Panturrilha', sets: 4, reps: '15', rest: 60, image: getExerciseGifUrl('Panturrilha em pé') }
+    ],
+    cardio: { exercise: 'Caminhada inclinada e final', duration: 30 }
   },
   {
-    id: 'a',
-    title: 'Treino A - Inferiores',
-    description: 'Foco em pernas e abdômen infra.',
+    id: 't2-b',
+    title: 'TREINO B — TERÇA',
+    description: 'Superiores + Core',
     color: 'blue',
     exercises: [
-      { id: 'a1', name: 'Abdomen Infra', muscleGroup: 'Abdomen', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Abdomen Infra') },
-      { id: 'a2', name: 'Agachamento Livre Banco', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Agachamento Livre Banco') },
-      { id: 'a3', name: 'Cadeira Adutora', muscleGroup: 'Adutores', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Cadeira Adutora') },
-      { id: 'a4', name: 'Afundo', muscleGroup: 'Pernas', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Afundo') },
-      { id: 'a5', name: 'Cadeira Extensora', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Cadeira Extensora') },
-      { id: 'a6', name: 'Panturrilha em pé', muscleGroup: 'Panturrilha', sets: 3, reps: '15', rest: 45, image: getExerciseGifUrl('Panturrilha em pé') }
-    ]
+      { id: 't2b-1', name: 'Supino Máquina', muscleGroup: 'Peito', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Supino Máquina') },
+      { id: 't2b-2', name: 'Remada Baixa', muscleGroup: 'Costas', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Remada Baixa') },
+      { id: 't2b-3', name: 'Desenvolvimento Halteres', muscleGroup: 'Ombros', sets: 3, reps: '12', rest: 60, image: getExerciseGifUrl('Desenvolvimento Halteres') },
+      { id: 't2b-4', name: 'Puxada Frontal', muscleGroup: 'Costas', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Puxada Frontal') },
+      { id: 't2b-5', name: 'Elevação Lateral', muscleGroup: 'Ombros', sets: 3, reps: '15', rest: 60, image: getExerciseGifUrl('Elevação Lateral') },
+      { id: 't2b-6', name: 'Rosca Direta', muscleGroup: 'Bíceps', sets: 3, reps: '12', rest: 60, image: getExerciseGifUrl('Rosca Direta') },
+      { id: 't2b-7', name: 'Tríceps Corda', muscleGroup: 'Tríceps', sets: 3, reps: '12', rest: 60, image: getExerciseGifUrl('Tríceps Corda') },
+      { id: 't2b-8', name: 'Prancha para o Core', muscleGroup: 'Core', sets: 3, reps: '40s', rest: 60, image: getExerciseGifUrl('Prancha') },
+      { id: 't2b-9', name: 'Dead Bug', muscleGroup: 'Abdomen', sets: 3, reps: '12/12', rest: 60, image: getExerciseGifUrl('Dead Bug') },
+      { id: 't2b-10', name: 'Abdômen Infra Banco', muscleGroup: 'Abdomen', sets: 3, reps: '15', rest: 60, image: getExerciseGifUrl('Abdomen Infra Banco') }
+    ],
+    cardio: { exercise: 'HIIT leve (bike ou esteira)', duration: 18 }
   },
   {
-    id: 'b',
-    title: 'Treino B - Superiores',
-    description: 'Tronco e membros superiores.',
-    color: 'orange',
-    exercises: [
-      { id: 'b1', name: 'Abdomen Reto', muscleGroup: 'Abdomen', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Abdomen Reto') },
-      { id: 'b2', name: 'Elevação Lateral Halteres', muscleGroup: 'Ombros', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Elevação Lateral Halteres') },
-      { id: 'b3', name: 'Supino Máquina', muscleGroup: 'Peitoral', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Supino Máquina') },
-      { id: 'b4', name: 'Desenvolvimento Máquina', muscleGroup: 'Ombros', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Desenvolvimento Máquina') },
-      { id: 'b5', name: 'Peck Deck', muscleGroup: 'Peitoral', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Peck Deck') },
-      { id: 'b6', name: 'Remada Alta Kettlebell', muscleGroup: 'Costas/Ombro', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Remada Alta Kettlebell') }
-    ]
-  },
-  {
-    id: 'c',
-    title: 'Treino C - Posterior e Glúteo',
-    description: 'Cadeia posterior e estabilização.',
+    id: 't2-c',
+    title: 'TREINO C — QUARTA',
+    description: 'Posterior + Glúteo',
     color: 'purple',
     exercises: [
-      { id: 'c1', name: 'Prancha', muscleGroup: 'CORE', sets: 3, reps: '90s', rest: 60, image: getExerciseGifUrl('Prancha') },
-      { id: 'c2', name: 'Abdução Solo Pilates', muscleGroup: 'Quadril', sets: 3, reps: '16', rest: 60, image: getExerciseGifUrl('Abdução Solo Pilates') },
-      { id: 'c3', name: 'Stiff Barra', muscleGroup: 'Posterior', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Stiff Barra') },
-      { id: 'c4', name: 'Gluteo Máquina Coice', muscleGroup: 'Glúteo', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Gluteo Máquina Coice') },
-      { id: 'c5', name: 'Cadeira Flexora', muscleGroup: 'Posterior', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Cadeira Flexora') },
-      { id: 'c6', name: 'Elevação Pélvica', muscleGroup: 'Glúteo', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Elevação Pélvica') }
-    ]
+      { id: 't2c-1', name: 'Stiff Barra', muscleGroup: 'Posterior', sets: 4, reps: '10', rest: 60, image: getExerciseGifUrl('Stiff Barra') },
+      { id: 't2c-2', name: 'Mesa Flexora', muscleGroup: 'Posterior', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Mesa Flexora') },
+      { id: 't2c-3', name: 'Elevação Pélvica', muscleGroup: 'Glúteo', sets: 4, reps: '10', rest: 60, image: getExerciseGifUrl('Elevação Pélvica') },
+      { id: 't2c-4', name: 'Coice Máquina', muscleGroup: 'Glúteo', sets: 3, reps: '15', rest: 60, image: getExerciseGifUrl('Coice Máquina') },
+      { id: 't2c-5', name: 'Cadeira Abdutora', muscleGroup: 'Glúteo', sets: 4, reps: '20', rest: 60, image: getExerciseGifUrl('Cadeira Abdutora') },
+      { id: 't2c-6', name: 'Passada no Smith', muscleGroup: 'Pernas', sets: 3, reps: '12/12', rest: 60, image: getExerciseGifUrl('Passada no Smith') },
+      { id: 't2c-7', name: 'Panturrilha Sentada', muscleGroup: 'Panturrilha', sets: 4, reps: '15', rest: 60, image: getExerciseGifUrl('Panturrilha Sentada') }
+    ],
+    cardio: { exercise: 'Bike moderada', duration: 15 }
   },
   {
-    id: 'd',
-    title: 'Treino D - Tração e Braços',
-    description: 'Costas e braços.',
+    id: 't2-d',
+    title: 'TREINO D — QUINTA',
+    description: 'Metabólico + Abdômen (Circuito Sem Descanso)',
+    color: 'orange',
+    exercises: [
+      { id: 't2d-1', name: 'Agachamento Goblet', muscleGroup: 'Pernas', sets: 4, reps: '15', rest: 0, image: getExerciseGifUrl('Agachamento Goblet') },
+      { id: 't2d-2', name: 'Kettlebell Swing', muscleGroup: 'Corpo Todo', sets: 4, reps: '15', rest: 0, image: getExerciseGifUrl('Kettlebell Swing') },
+      { id: 't2d-3', name: 'Step-up Banco', muscleGroup: 'Pernas', sets: 4, reps: '12/12', rest: 0, image: getExerciseGifUrl('Step-up Banco') },
+      { id: 't2d-4', name: 'Battle Rope / Corda Naval', muscleGroup: 'Cardio', sets: 4, reps: '30s', rest: 0, image: getExerciseGifUrl('Battle Rope') },
+      { id: 't2d-5', name: 'Burpee Adaptado', muscleGroup: 'Cardio', sets: 4, reps: '10', rest: 0, image: getExerciseGifUrl('Burpee Adaptado') },
+      { id: 't2d-6', name: 'Bicicleta Abdominal', muscleGroup: 'Abdomen', sets: 4, reps: '20', rest: 90, notes: 'Descanse 90s ao final da volta', image: getExerciseGifUrl('Bicicleta Abdominal') }
+    ],
+    cardio: { exercise: 'Esteira Caminhada Inclinada', duration: 25 }
+  },
+  {
+    id: 't2-e',
+    title: 'TREINO E — SEXTA',
+    description: 'Glúteo Premium 🍑',
     color: 'red',
     exercises: [
-      { id: 'd1', name: 'Canoa Estática', muscleGroup: 'CORE', sets: 3, reps: '90s', rest: 60, image: getExerciseGifUrl('Canoa Estática') },
-      { id: 'd2', name: 'Puxada Supinada', muscleGroup: 'Costas', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Puxada Supinada') },
-      { id: 'd3', name: 'Triceps Pulley Barra W', muscleGroup: 'Tríceps', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Triceps Pulley Barra W') },
-      { id: 'd4', name: 'Remada Baixa Máquina', muscleGroup: 'Costas', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Remada Baixa Máquina') },
-      { id: 'd5', name: 'Rosca Direta Pulley', muscleGroup: 'Bíceps', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Rosca Direta Pulley') },
-      { id: 'd6', name: 'Peck Deck Invertido', muscleGroup: 'Ombro', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Peck Deck Invertido') }
+      { id: 't2e-1', name: 'Elevação Pélvica Extrema', muscleGroup: 'Glúteo', sets: 5, reps: '10', rest: 60, image: getExerciseGifUrl('Elevação Pélvica') },
+      { id: 't2e-2', name: 'Agachamento Sumô', muscleGroup: 'Glúteo', sets: 4, reps: '12', rest: 60, image: getExerciseGifUrl('Agachamento Sumô') },
+      { id: 't2e-3', name: 'Bulgarian Split Squat', muscleGroup: 'Pernas', sets: 3, reps: '10/10', rest: 60, image: getExerciseGifUrl('Bulgarian Split Squat') },
+      { id: 't2e-4', name: 'Cadeira Abdutora', muscleGroup: 'Glúteo', sets: 4, reps: '20', rest: 60, image: getExerciseGifUrl('Cadeira Abdutora') },
+      { id: 't2e-5', name: 'Glúteo Cabo / Coice', muscleGroup: 'Glúteo', sets: 4, reps: '15', rest: 60, image: getExerciseGifUrl('Glúteo Cabo') },
+      { id: 't2e-6', name: 'Stiff Halteres', muscleGroup: 'Posterior', sets: 3, reps: '12', rest: 60, image: getExerciseGifUrl('Stiff Halteres') },
+      { id: 't2e-7', name: 'Frog Pump', muscleGroup: 'Glúteo', sets: 3, reps: '25', rest: 60, image: getExerciseGifUrl('Frog Pump') }
     ]
   }
 ];
+
+
+export const jessicaWorkouts = teste2Workouts;
 
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
