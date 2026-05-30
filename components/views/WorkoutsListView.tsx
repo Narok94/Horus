@@ -9,6 +9,7 @@ export const WorkoutsListView: React.FC = () => {
 
   if (!user) return null;
 
+  const isTeste1 = user.username.toLowerCase() === 'teste1';
   const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || [];
 
   const handleVibrate = (ms = 10) => {
@@ -52,15 +53,15 @@ export const WorkoutsListView: React.FC = () => {
   };
 
   return (
-    <div className="h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent select-none font-sans text-white">
+    <div className={`h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       
       {/* HEADER: Ultra-clean and aligned with Dashboard */}
       <div className="space-y-1 px-1 shrink-0 mb-4">
         <span className="text-[9px] font-black uppercase tracking-[0.3em] text-accent font-mono">Rotinas</span>
-        <h1 className="text-xl font-extrabold text-white tracking-tight leading-none mt-1">
+        <h1 className={`text-xl font-extrabold tracking-tight leading-none mt-1 ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>
           Fichas de Treino
         </h1>
-        <p className="text-xs text-zinc-500 leading-normal">
+        <p className={`text-xs leading-normal ${isTeste1 ? 'text-zinc-650' : 'text-zinc-500'}`}>
           Selecione uma das divisões prescritas para iniciar.
         </p>
       </div>
@@ -80,30 +81,48 @@ export const WorkoutsListView: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
               onClick={() => startWorkout(workout)}
-              className="group relative bg-[#080808] border border-white/5 rounded-2xl p-4.5 hover:border-accent/40 hover:bg-[#0c0c0c]/80 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 shadow-sm active:scale-[0.99]"
+              className={`group relative rounded-2xl p-4.5 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 active:scale-[0.99] border ${
+                isTeste1 
+                  ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg shadow-blue-900/5' 
+                  : 'bg-[#080808] border-white/5 hover:border-accent/40 hover:bg-[#0c0c0c]/80 shadow-sm'
+              }`}
             >
               {/* Left Zone: Details */}
               <div className="min-w-0 flex-1 space-y-1.5 text-left">
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-bold bg-zinc-900 border border-white/5 text-zinc-400 px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
+                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono border ${
+                    isTeste1 
+                      ? 'bg-white/15 border-white/10 text-white' 
+                      : 'bg-zinc-900 border-white/5 text-zinc-400'
+                  }`}>
                     {label}
                   </span>
-                  <span className="text-[7.5px] font-mono text-zinc-500 font-bold uppercase tracking-wider">
+                  <span className={`text-[7.5px] font-mono font-bold uppercase tracking-wider ${
+                    isTeste1 ? 'text-white/60' : 'text-zinc-500'
+                  }`}>
                     {exerciseCount} Exercícios
                   </span>
                 </div>
 
-                <h2 className="text-base font-extrabold text-white tracking-tight group-hover:text-accent transition-colors leading-tight">
+                <h2 className={`text-base font-extrabold tracking-tight group-hover:text-[#93C5FD] transition-colors leading-tight ${
+                  isTeste1 ? 'text-white font-[900]' : 'text-white'
+                }`}>
                   {focus}
                 </h2>
 
-                <p className="text-[10px] text-zinc-500 leading-normal text-wrap whitespace-normal">
+                <p className={`text-[10px] leading-normal text-wrap whitespace-normal ${
+                  isTeste1 ? 'text-white/80' : 'text-zinc-500'
+                }`}>
                   {cleanDesc}
                 </p>
               </div>
 
               {/* Right Zone: Clean, floating Action Icon */}
-              <div className="w-9 h-9 rounded-xl bg-zinc-900/50 border border-white/5 group-hover:border-accent/20 group-hover:bg-accent/5 flex items-center justify-center text-zinc-400 group-hover:text-accent transition-all duration-300 shrink-0 select-none">
+              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-300 shrink-0 select-none ${
+                isTeste1 
+                  ? 'bg-white border-transparent text-[#1E40AF] shadow-md group-hover:scale-105' 
+                  : 'bg-zinc-900/50 border-white/5 text-zinc-400 group-hover:border-accent/20 group-hover:bg-accent/5 group-hover:text-accent'
+              }`}>
                 <Play size={11} className="fill-current group-hover:scale-110 ml-0.5 transition-all duration-300" />
               </div>
             </motion.div>
@@ -113,8 +132,10 @@ export const WorkoutsListView: React.FC = () => {
 
       {/* SUBTLE FOOTER METADATA (Instead of a heavy glowing motivational box) */}
       <div className="px-1 shrink-0 pt-4 text-center">
-        <div className="flex items-center justify-center gap-1.5 text-[8.5px] font-mono font-bold text-zinc-650 tracking-wider uppercase leading-none">
-          <Activity size={10} className="text-zinc-500" />
+        <div className={`flex items-center justify-center gap-1.5 text-[8.5px] font-mono font-bold tracking-wider uppercase leading-none ${
+          isTeste1 ? 'text-zinc-500' : 'text-zinc-650'
+        }`}>
+          <Activity size={10} className={isTeste1 ? 'text-zinc-400' : 'text-zinc-500'} />
           <span>Fichas atualizadas pelo Treinador</span>
         </div>
       </div>

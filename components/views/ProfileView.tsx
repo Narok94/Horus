@@ -99,6 +99,7 @@ export const ProfileView: React.FC = () => {
   };
 
   const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
+  const isTeste1 = user.username.toLowerCase() === 'teste1';
   const accentColor = isFemale ? '#FF007F' : '#00F0FF';
 
   const totalWorkoutsCount = user.totalWorkouts || 0;
@@ -140,15 +141,15 @@ export const ProfileView: React.FC = () => {
   ];
 
   return (
-    <div className="h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent text-white font-sans antialiased select-none relative">
+    <div className={`h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent font-sans antialiased select-none relative ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       
       {/* HEADER: Minimalist header matching Dashboard and Workouts */}
       <div className="space-y-1 px-1 shrink-0 mb-4 text-left">
-        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-accent font-mono">Configurações</span>
-        <h1 className="text-xl font-extrabold text-white tracking-tight leading-none mt-1">
+        <span className={`text-[9px] font-black uppercase tracking-[0.3em] font-mono ${isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}`}>Configurações</span>
+        <h1 className={`text-xl font-extrabold tracking-tight leading-none mt-1 ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>
           Meu Perfil
         </h1>
-        <p className="text-xs text-zinc-500 leading-normal">
+        <p className={`text-xs leading-normal ${isTeste1 ? 'text-zinc-500 font-semibold' : 'text-zinc-500'}`}>
           Monitore sua evolução e dados de atleta.
         </p>
       </div>
@@ -157,21 +158,33 @@ export const ProfileView: React.FC = () => {
       <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-6 px-1">
         
         {/* ATHLETE IDENTIFIER CARD */}
-        <div className="bg-[#080808] border border-white/5 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-sm relative">
+        <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 border transition-all duration-200 shadow-md ${
+          isTeste1 
+            ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+            : 'bg-[#080808] border-white/5 text-white'
+        }`}>
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center text-base font-black text-accent shrink-0 select-none">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-base font-black shrink-0 select-none border ${
+              isTeste1 
+                ? 'bg-white/15 border-white/10 text-white' 
+                : 'bg-zinc-900 border-white/5 text-accent'
+            }`}>
               {bio.initial}
             </div>
             <div className="min-w-0 text-left">
-              <span className="text-[7.5px] font-mono text-zinc-500 font-extrabold uppercase tracking-widest block mb-1">Membro Confirmado Pro</span>
+              <span className={`text-[7.5px] font-mono font-extrabold uppercase tracking-widest block mb-1 ${isTeste1 ? 'text-white/60' : 'text-zinc-500'}`}>Membro Confirmado Pro</span>
               <h2 className="text-[15px] font-black text-white uppercase tracking-tight leading-none truncate mb-1.5">{user.name}</h2>
-              <p className="text-[9px] text-zinc-400 font-mono font-bold leading-none uppercase">{bio.level}</p>
+              <p className={`text-[9px] font-mono font-bold leading-none uppercase ${isTeste1 ? 'text-white/80' : 'text-zinc-400'}`}>{bio.level}</p>
             </div>
           </div>
           
           <button 
             onClick={handleOpenEdit}
-            className="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-white/5 flex items-center justify-center text-zinc-400 hover:text-accent transition-colors shrink-0"
+            className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0 border ${
+              isTeste1 
+                ? 'bg-white/15 hover:bg-white/25 border-white/10 text-white' 
+                : 'bg-zinc-900 hover:bg-zinc-850 border-white/5 text-zinc-400 hover:text-accent'
+            }`}
             title="Editar Perfil"
           >
             <Edit2 size={11} />
@@ -181,34 +194,42 @@ export const ProfileView: React.FC = () => {
         {/* BIOMETRICS & METRICS ROW */}
         <div className="grid grid-cols-2 gap-3.5">
           {/* Biometrics widget */}
-          <div className="bg-[#080808] border border-white/5 p-4 rounded-2xl space-y-3.5 shadow-sm text-left">
-            <span className="text-[7.5px] font-extrabold tracking-[0.2em] text-zinc-500 uppercase font-mono block">Biometria</span>
+          <div className={`p-4 rounded-2xl space-y-3.5 border transition-all duration-200 shadow-md ${
+            isTeste1 
+              ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+              : 'bg-[#080808] border-white/5'
+          }`}>
+            <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block ${isTeste1 ? 'text-white/60' : 'text-zinc-500'}`}>Biometria</span>
             <div className="space-y-2.5">
               <div className="flex justify-between items-baseline font-mono text-xs">
-                <span className="text-zinc-550 uppercase text-[8px] tracking-wider font-semibold">PESO</span>
-                <span className="font-extrabold text-zinc-200">{bio.weight} kg</span>
+                <span className={`uppercase text-[8px] tracking-wider font-semibold ${isTeste1 ? 'text-white/70' : 'text-zinc-550'}`}>PESO</span>
+                <span className={`font-extrabold ${isTeste1 ? 'text-white' : 'text-zinc-200'}`}>{bio.weight} kg</span>
               </div>
-              <div className="h-px bg-white/[0.03]" />
+              <div className={`h-px ${isTeste1 ? 'bg-white/10' : 'bg-white/[0.03]'}`} />
               <div className="flex justify-between items-baseline font-mono text-xs">
-                <span className="text-zinc-550 uppercase text-[8px] tracking-wider font-semibold">ALTURA</span>
-                <span className="font-extrabold text-zinc-200">{bio.height} m</span>
+                <span className={`uppercase text-[8px] tracking-wider font-semibold ${isTeste1 ? 'text-white/70' : 'text-zinc-550'}`}>ALTURA</span>
+                <span className={`font-extrabold ${isTeste1 ? 'text-white' : 'text-zinc-200'}`}>{bio.height} m</span>
               </div>
             </div>
           </div>
 
           {/* Activity counts widget */}
-          <div className="bg-[#080808] border border-white/5 p-4 rounded-2xl space-y-3.5 shadow-sm text-left">
-            <span className="text-[7.5px] font-extrabold tracking-[0.2em] text-zinc-500 uppercase font-mono block">Consistência</span>
+          <div className={`p-4 rounded-2xl space-y-3.5 border transition-all duration-200 shadow-md ${
+            isTeste1 
+              ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+              : 'bg-[#080808] border-white/5'
+          }`}>
+            <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block ${isTeste1 ? 'text-white/60' : 'text-zinc-500'}`}>Consistência</span>
             <div className="space-y-2.5">
               <div className="flex justify-between items-baseline font-mono text-xs">
-                <span className="text-zinc-550 uppercase text-[8px] tracking-wider font-semibold">TOTAL</span>
-                <span className="font-extrabold text-zinc-200">{user.totalWorkouts || 0} treinos</span>
+                <span className={`uppercase text-[8px] tracking-wider font-semibold ${isTeste1 ? 'text-white/70' : 'text-zinc-550'}`}>TOTAL</span>
+                <span className={`font-extrabold ${isTeste1 ? 'text-white' : 'text-zinc-200'}`}>{user.totalWorkouts || 0} treinos</span>
               </div>
-              <div className="h-px bg-white/[0.03]" />
+              <div className={`h-px ${isTeste1 ? 'bg-white/10' : 'bg-white/[0.03]'}`} />
               <div className="flex justify-between items-baseline font-mono text-xs">
-                <span className="text-zinc-550 uppercase text-[8px] tracking-wider font-semibold">STREAK</span>
-                <span className="font-extrabold text-amber-500 flex items-center gap-0.5">
-                  <Flame size={10} className="fill-amber-500/10" />
+                <span className={`uppercase text-[8px] tracking-wider font-semibold ${isTeste1 ? 'text-white/70' : 'text-zinc-550'}`}>STREAK</span>
+                <span className={`font-extrabold flex items-center gap-0.5 ${isTeste1 ? 'text-amber-300' : 'text-amber-500'}`}>
+                  <Flame size={10} className={isTeste1 ? 'fill-amber-300/10 text-amber-300' : 'fill-amber-500/10 text-amber-500'} />
                   {user.streak || 0} dias
                 </span>
               </div>
@@ -218,7 +239,7 @@ export const ProfileView: React.FC = () => {
 
         {/* GALLERIA: Conquistas do Atleta row */}
         <div className="space-y-3 text-left">
-          <span className="text-[7.5px] font-extrabold tracking-[0.2em] text-zinc-500 uppercase font-mono block px-0.5">
+          <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block px-0.5 ${isTeste1 ? 'text-zinc-500 font-bold' : 'text-zinc-500'}`}>
             Galeria de Conquistas (Achievements)
           </span>
           
@@ -233,21 +254,31 @@ export const ProfileView: React.FC = () => {
                     setSelectedAchievement(ach);
                   }}
                   className={`flex flex-col items-center justify-center text-center py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer ${
-                    ach.unlocked 
-                      ? 'bg-[#0E0F13]/60 border-accent/15 hover:border-accent' 
-                      : 'bg-[#0F1014]/40 border-white/[0.04] hover:bg-[#0F1014]/65 hover:border-white/10'
+                    isTeste1
+                      ? (ach.unlocked 
+                          ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-transparent text-white shadow-md hover:scale-[1.02]' 
+                          : 'bg-zinc-100 border-zinc-200 text-zinc-500 hover:bg-zinc-155')
+                      : (ach.unlocked 
+                          ? 'bg-[#0E0F13]/60 border-accent/15 hover:border-accent text-white' 
+                          : 'bg-[#0F1014]/40 border-white/[0.04] hover:bg-[#0F1014]/65 hover:border-white/10 text-[#a3a3a3]')
                   }`}
                 >
-                  <div className={`p-1.5 rounded-xl bg-zinc-900 border border-white/5 ${
-                    ach.unlocked 
-                      ? 'text-accent border-accent/15 shadow-[0_0_8px_rgba(var(--accent-color-rgb),0.1)]' 
-                      : 'text-zinc-400 border-white/[0.02]'
+                  <div className={`p-1.5 rounded-xl border ${
+                    isTeste1
+                      ? (ach.unlocked 
+                          ? 'bg-white/15 border-white/10 text-white' 
+                          : 'bg-zinc-50 border-zinc-200 text-zinc-400')
+                      : (ach.unlocked 
+                          ? 'bg-zinc-900 border-white/5 text-accent border-accent/15' 
+                          : 'bg-zinc-900 border-white/5 text-zinc-400')
                   }`}>
                     <Icon size={14} strokeWidth={ach.unlocked ? 2.5 : 2} />
                   </div>
                   
                   <p className={`text-[8.5px] font-black uppercase tracking-tight mt-1.5 truncate max-w-full ${
-                    ach.unlocked ? 'text-white' : 'text-zinc-300'
+                    isTeste1
+                      ? (ach.unlocked ? 'text-white font-[900]' : 'text-zinc-500')
+                      : (ach.unlocked ? 'text-white' : 'text-zinc-350')
                   }`}>
                     {ach.title.split(' ')[0]}
                   </p>
@@ -261,7 +292,7 @@ export const ProfileView: React.FC = () => {
 
       {/* PRESERVING USER FOOTER ALIGNMENTS */}
       <div className="px-1 shrink-0 pt-3 text-center">
-        <span className="text-[7.5px] font-mono font-bold text-zinc-650 tracking-widest uppercase">
+        <span className={`text-[7.5px] font-mono font-bold tracking-widest uppercase ${isTeste1 ? 'text-zinc-400' : 'text-zinc-650'}`}>
           Horus Training Elite Active Account
         </span>
       </div>

@@ -53,6 +53,11 @@ export const WorkoutView: React.FC = () => {
     workoutStartTime
   } = useStore();
 
+  const isFemale = user?.username.toLowerCase() === 'teste2' || user?.username.toLowerCase().includes('jessica') || user?.sex === 'feminino';
+  const isTeste1 = user?.username.toLowerCase() === 'teste1';
+  const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
+  const accentColor = isTeste1 ? '#1E40AF' : (isFemale ? '#FF007F' : '#00F0FF');
+
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -330,7 +335,7 @@ export const WorkoutView: React.FC = () => {
       ctx.fillText('HORUS TRAINING', 60, 100);
       
       // Accent Line
-      ctx.fillStyle = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') ? '#FF007F' : '#00F0FF';
+      ctx.fillStyle = accentColor;
       ctx.fillRect(60, 115, 60, 8);
 
       // Infer Focus
@@ -522,26 +527,26 @@ export const WorkoutView: React.FC = () => {
 
   if (showSummary) {
     return (
-      <div className="h-full max-h-full overflow-y-auto flex flex-col justify-center py-4 px-1 text-center bg-transparent text-white font-sans antialiased selection:bg-accent/30 select-none w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto space-y-4 my-auto">
+      <div className={`h-full max-h-full overflow-y-auto flex flex-col justify-center py-4 px-1 text-center bg-transparent font-sans antialiased selection:bg-accent/30 select-none w-full max-w-sm md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto space-y-4 my-auto ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
           
           {/* HEADER COMPACTO */}
-          <div className="flex items-center gap-3 bg-[#0c0c0c]/90 border border-white/5 p-3 rounded-xl shrink-0 shadow-sm">
+          <div className={`flex items-center gap-3 ${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/90 border-white/5'} border p-3 rounded-xl shrink-0 shadow-sm`}>
             <div className="w-9 h-9 bg-accent/10 border border-accent/20 rounded-xl flex items-center justify-center text-accent shrink-0">
-              <CheckCircle2 size={18} className="text-accent" strokeWidth={3} />
+               <CheckCircle2 size={18} className="text-accent" strokeWidth={3} />
             </div>
             <div className="text-left leading-none">
-              <h1 className="text-base font-[950] text-white uppercase tracking-tight italic">Missão <span className="text-accent">Cumprida!</span></h1>
-              <p className="text-white/40 text-[8px] mt-1 uppercase tracking-widest font-mono font-black">REGISTRO SALVO COM SUCESSO</p>
+              <h1 className={`text-base font-[950] ${isTeste1 ? 'text-zinc-950' : 'text-white'} uppercase tracking-tight italic`}>Missão <span className="text-accent">Cumprida!</span></h1>
+              <p className={`${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'} text-[8px] mt-1 uppercase tracking-widest font-mono font-black`}>REGISTRO SALVO COM SUCESSO</p>
             </div>
           </div>
 
           {" "}
           {/* FOTO DE VITÓRIA EXTRA COMPACTA */}
-          <div className="bg-[#0c0c0c]/90 border border-white/5 p-2 rounded-xl space-y-2 shrink-0 shadow-sm">
+          <div className={`${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/90 border-white/5'} border p-2 rounded-xl space-y-2 shrink-0 shadow-sm`}>
             <div className="flex items-center justify-between px-1.5">
-               <span className="text-[8px] font-black text-white/45 uppercase tracking-widest font-mono">Foto de Vitória</span>
+               <span className={`text-[8px] font-black ${isTeste1 ? 'text-zinc-500' : 'text-white/45'} uppercase tracking-widest font-mono`}>Foto de Vitória</span>
                {capturedImage && (
-                 <button onClick={() => setCapturedImage(null)} className="text-white/40 hover:text-red-500 transition-colors">
+                 <button onClick={() => setCapturedImage(null)} className={`transition-colors ${isTeste1 ? 'text-zinc-400 hover:text-red-650' : 'text-white/40 hover:text-red-500'}`}>
                     <Trash2 size={12} />
                  </button>
                )}
@@ -550,9 +555,9 @@ export const WorkoutView: React.FC = () => {
             {!capturedImage ? (
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full h-24 border border-dashed border-white/10 hover:border-accent/30 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all bg-white/[0.01] cursor-pointer"
+                className={`w-full h-24 border border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${isTeste1 ? 'border-zinc-300 hover:border-accent bg-zinc-50' : 'border-white/10 hover:border-accent/30 bg-white/[0.01]'}`}
               >
-                <div className="w-8 h-8 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isTeste1 ? 'bg-zinc-100 border-zinc-200' : 'bg-white/[0.02] border-white/5'}`}>
                   <Camera size={14} className="text-accent" />
                 </div>
                 <p className="text-[8px] font-black text-accent/90 uppercase tracking-widest">Registrar Vitória</p>
@@ -635,35 +640,36 @@ export const WorkoutView: React.FC = () => {
 
           {/* METRICAS DE PERFORMANCE EXTRA COMPACTAS */}
           <div className="grid grid-cols-2 gap-2 mt-1 shrink-0">
-             <div className="bg-[#0c0c0c]/80 border border-white/5 p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left">
+             <div className={`${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/80 border-white/5'} border p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left`}>
                 <div className="leading-none min-w-0">
-                   <p className="text-[7.5px] font-black text-white/40 uppercase tracking-widest font-mono truncate">DURAÇÃO</p>
-                   <span className="text-xs font-black text-white font-mono mt-0.5 block italic">{workoutDuration ? formatTime(workoutDuration) : '00:00'}</span>
+                   <p className={`text-[7.5px] font-black ${isTeste1 ? 'text-zinc-500' : 'text-white/40'} uppercase tracking-widest font-mono truncate`}>DURAÇÃO</p>
+                   <span className={`text-xs font-black ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'} font-mono mt-0.5 block italic`}>{workoutDuration ? formatTime(workoutDuration) : '00:00'}</span>
                 </div>
                 <Clock size={14} className="text-accent shrink-0" />
              </div>
              
              {currentCardioProgress ? (
-                <div className="bg-[#0c0c0c]/80 border border-white/5 p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left">
+                <div className={`${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/80 border-white/5'} border p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left`}>
                    <div className="leading-none min-w-0">
-                      <p className="text-[7.5px] font-black text-white/40 uppercase tracking-widest font-mono truncate">AERÓBICO</p>
-                      <span className="text-xs font-black text-white font-mono mt-0.5 block italic truncate">{currentCardioProgress.duration}m ({currentCardioProgress.exercise})</span>
+                      <p className={`text-[7.5px] font-black ${isTeste1 ? 'text-zinc-500' : 'text-white/40'} uppercase tracking-widest font-mono truncate`}>AERÓBICO</p>
+                      <span className={`text-xs font-black ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'} font-mono mt-0.5 block italic truncate`}>{currentCardioProgress.duration}m ({currentCardioProgress.exercise})</span>
                    </div>
                    <Wind size={14} className="text-accent shrink-0" />
                 </div>
              ) : (
-                <div className="bg-[#0c0c0c]/80 border border-white/5 p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left">
+                <div className={`${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/80 border-white/5'} border p-2 rounded-xl flex items-center justify-between gap-1 shadow-sm font-sans text-left`}>
                    <div className="leading-none min-w-0">
-                      <p className="text-[7.5px] font-black text-white/40 uppercase tracking-widest font-mono truncate">CARGATONELADA (VOL)</p>
-                      <span className="text-xs font-black text-white font-mono mt-0.5 block italic">{calculateVolume()} kg</span>
+                      <p className={`text-[7.5px] font-black ${isTeste1 ? 'text-zinc-500' : 'text-white/40'} uppercase tracking-widest font-mono truncate`}>CARGATONELADA (VOL)</p>
+                      <span className={`text-xs font-black ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'} font-mono mt-0.5 block italic`}>{calculateVolume()} kg</span>
                    </div>
                    <Dumbbell size={14} className="text-accent shrink-0" />
                 </div>
              )}
           </div>
 
+          {" "}
           {/* MOTIVAÇÃO EXTRA SLIM */}
-          <div className="bg-[#0c0c0c]/90 border border-white/5 py-1.5 px-3 rounded-lg shrink-0">
+          <div className={`${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0c0c0c]/90 border-white/5'} border py-1.5 px-3 rounded-lg shrink-0`}>
              <p className="text-accent font-bold italic text-[8.5px] uppercase tracking-wider">
                "A constância é a mãe da evolução. Parabéns por hoje!"
              </p>
@@ -673,7 +679,7 @@ export const WorkoutView: React.FC = () => {
           <div className="shrink-0 pt-1">
             <button 
               onClick={closeSummary} 
-              className="w-full bg-accent hover:bg-accent/90 text-[#050505] font-[950] py-3.5 rounded-xl shadow-[0_0_15px_rgba(var(--accent-color-rgb),0.25)] text-center active:scale-95 text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 font-sans shrink-0"
+              className={`w-full bg-accent hover:bg-accent/90 ${isTeste1 ? 'text-white' : 'text-[#050505]'} font-[950] py-3.5 rounded-xl shadow-[0_0_15px_rgba(var(--accent-color-rgb),0.25)] text-center active:scale-95 text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 font-sans shrink-0`}
             >
               <LayoutDashboard size={14} /> VOLTAR PARA O DASHBOARD
             </button>
@@ -690,29 +696,33 @@ export const WorkoutView: React.FC = () => {
   }, 0);
 
   return (
-    <div className="min-h-screen py-1 flex flex-col justify-between pb-28 w-full max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none">
+    <div className={`min-h-screen py-1 flex flex-col justify-between pb-28 w-full max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none duration-300 ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       {/* Upper Navigation Header */}
-      <header className="flex items-center justify-between py-1.5 border-b border-white/5 shrink-0">
+      <header className={`flex items-center justify-between py-1.5 border-b ${isTeste1 ? 'border-zinc-200' : 'border-white/5'} shrink-0`}>
         <div className="flex items-center gap-2 min-w-0">
-          <button onClick={exitWorkout} className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-all bg-[#0c0c0c]/80 border border-white/5 rounded-xl active:scale-95">
+          <button onClick={exitWorkout} className={`w-8 h-8 flex items-center justify-center transition-all rounded-xl active:scale-95 ${
+            isTeste1 ? 'text-zinc-950 bg-white border-zinc-250 hover:bg-zinc-100' : 'text-zinc-400 hover:text-white bg-[#0c0c0c]/80 border border-white/5'
+          }`}>
             <ChevronLeft size={16}/>
           </button>
           <div className="min-w-0">
-            <h1 className="text-xs font-black text-white italic truncate leading-none uppercase tracking-tight">{selectedWorkout.title}</h1>
+            <h1 className={`text-xs font-black italic truncate leading-none uppercase tracking-tight ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>{selectedWorkout.title}</h1>
             {isWorkoutActive && (
-              <span className="text-[7.5px] font-black text-white/40 mt-0.5 block tracking-wider uppercase leading-none">SESSÃO EM ANDAMENTO ⏱️</span>
+              <span className={`text-[7.5px] font-black mt-0.5 block tracking-wider uppercase leading-none ${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'}`}>SESSÃO EM ANDAMENTO ⏱️</span>
             )}
           </div>
         </div>
 
         {isWorkoutActive && (
           <div className="flex items-center gap-1.5 shrink-0">
-            <div className="px-2 py-1 bg-[#0c0c0c]/80 border border-white/5 rounded-lg font-mono text-xs font-black tracking-tight text-white leading-none">
+            <div className={`px-2 py-1 rounded-lg font-mono text-xs font-black tracking-tight leading-none ${
+              isTeste1 ? 'bg-white border border-zinc-250 text-zinc-950' : 'bg-[#0c0c0c]/80 border-white/5 text-white'
+            }`}>
               {formatTime(elapsedTime)}
             </div>
             <button 
               onClick={handleFinishWorkout}
-              className="px-2.5 py-1.5 bg-accent text-black font-black text-[8px] tracking-wider uppercase rounded-lg hover:brightness-110 active:scale-95 transition-all font-sans leading-none"
+              className={`px-2.5 py-1.5 bg-accent ${isTeste1 ? 'text-white' : 'text-black'} font-black text-[8px] tracking-wider uppercase rounded-lg hover:brightness-110 active:scale-95 transition-all font-sans leading-none`}
             >
               SALVAR
             </button>
@@ -721,14 +731,20 @@ export const WorkoutView: React.FC = () => {
       </header>
 
       {/* Selected Workout Upper Banner matching attachment 1 */}
-      <div className="relative overflow-hidden rounded-xl border border-white/5 bg-gradient-to-br from-zinc-950/90 to-zinc-900/50 p-3 text-center space-y-2 shadow-lg shrink-0 mt-1.5 ">
+      <div className={`relative overflow-hidden rounded-xl border p-3 text-center space-y-2 shadow-lg shrink-0 mt-1.5 ${
+        isTeste1 
+          ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10' 
+          : 'border-white/5 bg-gradient-to-br from-zinc-950/90 to-zinc-900/50'
+      }`}>
         {/* Play Icon centering frame */}
-        <div className="mx-auto w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
-          <Play size={14} className="fill-accent ml-0.5" />
+        <div className={`mx-auto w-8 h-8 rounded-lg flex items-center justify-center text-accent ${
+          isTeste1 ? 'bg-white/15 border border-white/10 text-white' : 'bg-accent/10 border border-accent/20'
+        }`}>
+          <Play size={14} className={isTeste1 ? 'fill-white text-white ml-0.5' : 'fill-accent ml-0.5'} />
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-xs font-black italic tracking-tight text-white/60 uppercase leading-none">
+          <h2 className={`text-xs font-black italic tracking-tight uppercase leading-none ${isTeste1 ? 'text-white/80' : 'text-white/60'}`}>
             TREINO SELECIONADO: <span className="text-white font-[950] italic">{getWorkoutFocus(selectedWorkout)}</span>
           </h2>
         </div>
@@ -751,9 +767,13 @@ export const WorkoutView: React.FC = () => {
           ) : (
             <button 
               onClick={startWorkout}
-              className="w-full max-w-xs py-3 bg-accent hover:brightness-110 text-[#050505] font-black text-[10px] uppercase tracking-[0.15em] rounded-xl active:scale-95 transition-all shadow-xl flex items-center justify-center gap-1.5 font-sans"
+              className={`w-full max-w-xs py-3 font-black text-[10px] uppercase tracking-[0.15em] rounded-xl active:scale-95 transition-all shadow-xl flex items-center justify-center gap-1.5 font-sans border-0 ${
+                isTeste1 
+                  ? 'bg-white text-[#1E40AF] hover:bg-zinc-100' 
+                  : 'bg-accent hover:brightness-110 text-[#050505]'
+              }`}
             >
-              <Play size={10} className="fill-[#050505]" /> INICIAR TREINO 🔥
+              <Play size={10} className={isTeste1 ? 'fill-[#1E40AF] text-[#1E40AF]' : 'fill-[#050505]'} /> INICIAR TREINO 🔥
             </button>
           )}
         </div>
@@ -761,7 +781,7 @@ export const WorkoutView: React.FC = () => {
 
       {/* Filter Header separator matching attachment 1 */}
       <div className="flex-1 mt-4">
-        <h3 className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] px-1 mb-2">
+        <h3 className={`text-[9px] font-black uppercase tracking-[0.2em] px-1 mb-2 ${isTeste1 ? 'text-zinc-500' : 'text-white/50'}`}>
           LISTA DE EXERCÍCIOS PARA FILTRAR
         </h3>
 
@@ -792,47 +812,59 @@ export const WorkoutView: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.03 }}
                   onClick={handleCardClick}
-                  className={`group relative overflow-hidden rounded-xl border border-white/5 bg-[#0e0e12]/70 p-3 hover:border-accent/40 hover:bg-[#121217]/90 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 shadow-sm ${
+                  className={`group relative overflow-hidden rounded-xl border p-3 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 shadow-md ${
+                    isTeste1 
+                      ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+                      : 'bg-[#0e0e12]/70 border-white/5 hover:border-accent/40 hover:bg-[#121217]/90'
+                  } ${
                     isAllCompleted ? 'opacity-40' : 'opacity-100'
                   }`}
                 >
                   <div className="flex items-center min-w-0 flex-1">
                     {/* Elegant big index number */}
-                    <span className="text-3xl font-light font-sans text-white/10 tracking-tight mr-4 shrink-0 font-mono group-hover:text-accent/20 transition-colors">
+                    <span className={`text-3xl font-light font-sans tracking-tight mr-4 shrink-0 font-mono group-hover:text-white/30 transition-colors ${
+                      isTeste1 ? 'text-white/20' : 'text-white/10'
+                    }`}>
                       {String(idx + 1).padStart(2, '0')}
                     </span>
 
                     {/* Compact Details Column */}
                     <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex items-center gap-2 leading-none">
-                        <span className="bg-[#1b1b22] text-[#e3e3e8] text-[7px] font-black px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">
+                        <span className={`text-[7px] font-black px-1.5 py-0.5 rounded font-mono uppercase tracking-wider ${
+                          isTeste1 ? 'bg-white/15 border border-white/10 text-white' : 'bg-[#1b1b22] text-[#e3e3e8]'
+                        }`}>
                           {ex.muscleGroup}
                         </span>
                         {ex.dropSet && (
-                          <span className="bg-orange-500/10 text-orange-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
+                          <span className="bg-orange-500/20 text-orange-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
                             Drop Set
                           </span>
                         )}
                         {ex.restPause && (
-                          <span className="bg-red-500/10 text-red-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
+                          <span className="bg-red-500/20 text-red-400 text-[6.5px] font-black px-1 rounded-sm uppercase tracking-wider font-mono">
                             Rest-Pause
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-sm font-bold text-white uppercase leading-snug text-wrap whitespace-normal group-hover:text-accent transition-colors">
+                      <h3 className={`text-xs sm:text-sm font-bold uppercase leading-snug text-wrap whitespace-normal group-hover:text-[#93C5FD] transition-colors ${
+                        isTeste1 ? 'text-white' : 'text-white'
+                      }`}>
                         {ex.name}
                       </h3>
 
                       {/* Technical specifications row */}
-                      <p className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5 flex-wrap">
-                        <span className="text-white font-semibold">{ex.sets}x{ex.reps}</span>
-                        <span className="text-zinc-600">•</span>
+                      <p className={`text-[10px] font-mono flex items-center gap-1.5 flex-wrap ${
+                        isTeste1 ? 'text-white/75' : 'text-zinc-400'
+                      }`}>
+                        <span className={`${isTeste1 ? 'text-white font-bold' : 'text-white'} font-semibold`}>{ex.sets}x{ex.reps}</span>
+                        <span className={`${isTeste1 ? 'text-white/40' : 'text-zinc-650'}`}>•</span>
                         <span>{ex.rest}s descanso</span>
                         {ex.notes && (
                           <>
-                            <span className="text-zinc-600">•</span>
-                            <span className="text-amber-200/80 truncate max-w-[150px] italic">{ex.notes}</span>
+                            <span className={`${isTeste1 ? 'text-white/40' : 'text-zinc-650'}`}>•</span>
+                            <span className="text-amber-400 font-bold truncate max-w-[150px] italic">{ex.notes}</span>
                           </>
                         )}
                       </p>
@@ -842,10 +874,10 @@ export const WorkoutView: React.FC = () => {
                   {/* Right Column: Sets Quick Progression Indicators */}
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right flex flex-col justify-center items-end min-w-[45px] leading-none">
-                      <span className="text-[6.5px] font-black text-white/40 uppercase tracking-widest block mb-1">
+                      <span className={`text-[6.5px] font-black uppercase tracking-widest block mb-1 ${isTeste1 ? 'text-white/50' : 'text-white/40'}`}>
                         SÉRIES
                       </span>
-                      <span className="text-xs font-black text-white font-mono block">
+                      <span className={`text-xs font-black font-mono block ${isTeste1 ? 'text-white' : 'text-white'}`}>
                         {completedCount}/{sizeSets}
                       </span>
                     </div>
@@ -855,7 +887,11 @@ export const WorkoutView: React.FC = () => {
                         e.stopPropagation();
                         openExerciseModal(ex);
                       }}
-                      className="w-8 h-8 rounded-full bg-accent/5 border border-accent/20 hover:bg-accent hover:border-accent hover:text-black text-accent flex items-center justify-center active:scale-95 transition-all font-sans shrink-0"
+                      className={`w-8 h-8 rounded-full border flex items-center justify-center active:scale-95 transition-all font-sans shrink-0 ${
+                        isTeste1 
+                          ? 'bg-white border-transparent text-[#1E40AF] hover:scale-105 shadow-md hover:text-[#1e3a8a]' 
+                          : 'bg-accent/5 border border-accent/20 hover:bg-accent hover:border-accent hover:text-black text-accent'
+                      }`}
                     >
                       <Plus size={14} strokeWidth={3} />
                     </button>
@@ -870,12 +906,16 @@ export const WorkoutView: React.FC = () => {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden bg-[#0c0c0e]/90 border border-white/5 rounded-xl px-4 py-4"
+                      className={`overflow-hidden border rounded-xl px-4 py-4 ${
+                        isTeste1 ? 'bg-zinc-50 border-zinc-250 shadow-inner' : 'bg-[#0c0c0e]/90 border-white/5'
+                      }`}
                     >
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 leading-normal">
                         {/* Animated Video/GIF */}
                         <div className="md:col-span-4 flex flex-col justify-start items-center">
-                          <div className="relative rounded-xl overflow-hidden bg-zinc-950 border border-white/5 w-full max-w-[200px] h-40 flex items-center justify-center">
+                          <div className={`relative rounded-xl overflow-hidden border w-full max-w-[200px] h-40 flex items-center justify-center ${
+                            isTeste1 ? 'bg-white border-zinc-250' : 'bg-zinc-950 border-white/5'
+                          }`}>
                             <img 
                               src={details.gif} 
                               alt={ex.name} 
@@ -884,32 +924,32 @@ export const WorkoutView: React.FC = () => {
                               referrerPolicy="no-referrer"
                             />
                           </div>
-                          <span className="text-[7px] text-zinc-500 uppercase tracking-widest font-mono font-black mt-2">GIF Demonstrativo Oficial</span>
+                          <span className={`text-[7px] uppercase tracking-widest font-mono font-black mt-2 ${isTeste1 ? 'text-zinc-500' : 'text-zinc-500'}`}>GIF Demonstrativo Oficial</span>
                         </div>
 
                         {/* Educational Information Checklist */}
                         <div className="md:col-span-8 space-y-4 text-left">
                           <div className="space-y-2">
                             <div>
-                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Instruções de Movimento</span>
-                              <p className="text-xs text-white/70 mt-0.5 leading-relaxed">{details.instructions}</p>
+                              <span className={`text-[8px] font-black uppercase font-mono tracking-widest ${isTeste1 ? 'text-zinc-650' : 'text-zinc-400'}`}>Instruções de Movimento</span>
+                              <p className={`text-xs mt-0.5 leading-relaxed ${isTeste1 ? 'text-zinc-900 font-bold' : 'text-white/70'}`}>{details.instructions}</p>
                             </div>
 
                             <div>
-                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Execução Perfeita</span>
-                              <p className="text-xs text-white/70 mt-0.5 leading-relaxed">{details.correctExecution}</p>
+                              <span className={`text-[8px] font-black uppercase font-mono tracking-widest ${isTeste1 ? 'text-zinc-650' : 'text-zinc-400'}`}>Execução Perfeita</span>
+                              <p className={`text-xs mt-0.5 leading-relaxed ${isTeste1 ? 'text-zinc-900 font-bold' : 'text-white/70'}`}>{details.correctExecution}</p>
                             </div>
 
                             <div>
-                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Observação de Coach</span>
-                              <p className="text-xs text-amber-200/90 mt-0.5 italic leading-relaxed">
+                              <span className={`text-[8px] font-black uppercase font-mono tracking-widest ${isTeste1 ? 'text-zinc-650' : 'text-zinc-400'}`}>Observação de Coach</span>
+                              <p className="text-xs text-amber-500/90 mt-0.5 font-bold italic leading-relaxed">
                                 "{details.technique}"
                               </p>
                             </div>
 
                             <div>
-                              <span className="text-[8px] font-black text-zinc-400 uppercase font-mono tracking-widest">Dicas Práticas Extra</span>
-                              <ul className="list-disc list-inside mt-1 text-xs text-white/70 space-y-0.5">
+                              <span className={`text-[8px] font-black uppercase font-mono tracking-widest ${isTeste1 ? 'text-zinc-650' : 'text-zinc-400'}`}>Dicas Práticas Extra</span>
+                              <ul className={`list-disc list-inside mt-1 text-xs space-y-0.5 ${isTeste1 ? 'text-zinc-800' : 'text-white/70'}`}>
                                 {details.tips.map((tip, tIdx) => (
                                   <li key={tIdx} className="leading-relaxed">{tip}</li>
                                 ))}
@@ -931,15 +971,15 @@ export const WorkoutView: React.FC = () => {
       {isWorkoutActive && (
         <div className="pt-1.5 shrink-0">
           {currentCardioProgress ? (
-             <div className="bg-[#0c0c0c]/85 border border-accent/20 p-2 rounded-xl flex items-center justify-between group transition-all">
+             <div className={`${isTeste1 ? 'bg-white border-accent' : 'bg-[#0c0c0c]/85 border-accent/20'} border p-2 rounded-xl flex items-center justify-between group transition-all`}>
                 <div className="flex items-center gap-2">
                    <div className="w-8 h-8 bg-accent/15 rounded-lg flex items-center justify-center text-accent shrink-0">
                       <Wind size={15} className="animate-pulse" />
                    </div>
                    <div className="leading-none">
                       <p className="text-[6.5px] font-black text-accent uppercase tracking-widest mb-0.5">AERÓBICO CONCLUÍDO</p>
-                      <h4 className="text-xs font-black text-white uppercase tracking-tight">{currentCardioProgress.exercise}</h4>
-                      <p className="text-[8px] font-bold text-white/45 uppercase tracking-wider mt-0.5">{currentCardioProgress.duration} MINUTOS</p>
+                      <h4 className={`text-xs font-black uppercase tracking-tight ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>{currentCardioProgress.exercise}</h4>
+                      <p className={`text-[8px] font-bold uppercase tracking-wider mt-0.5 ${isTeste1 ? 'text-zinc-550 font-bold' : 'text-white/45'}`}>{currentCardioProgress.duration} MINUTOS</p>
                    </div>
                 </div>
                 <button 
@@ -947,7 +987,9 @@ export const WorkoutView: React.FC = () => {
                      handleVibrate(15);
                      setCurrentCardioProgress(null);
                    }}
-                   className="w-7 h-7 rounded-lg bg-zinc-950 border border-white/5 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all shrink-0"
+                   className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0 border ${
+                     isTeste1 ? 'bg-zinc-100 border-zinc-250 text-zinc-650 hover:text-red-650' : 'bg-zinc-950 border-white/5 text-zinc-500 hover:text-red-500'
+                   }`}
                 >
                    <Trash2 size={13} />
                 </button>
@@ -958,10 +1000,14 @@ export const WorkoutView: React.FC = () => {
                  handleVibrate(15);
                  setShowCardioModal(true);
                }}
-               className="w-full bg-[#0b0b0d]/50 border border-dashed border-white/5 p-2 rounded-xl flex items-center justify-center gap-1.5 group hover:border-accent/40 transition-all shrink-0 py-2.5"
+               className={`w-full p-2 rounded-xl flex items-center justify-center gap-1.5 group transition-all shrink-0 py-2.5 border border-dashed ${
+                 isTeste1 
+                   ? 'bg-white border-zinc-300 hover:border-accent hover:bg-zinc-50' 
+                   : 'bg-[#0b0b0d]/50 border-white/5 hover:border-accent/40'
+               }`}
             >
                <Wind size={13} className="text-zinc-500 group-hover:text-accent" />
-               <p className="text-[8.5px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-white">Adicionar Aeróbico</p>
+               <p className={`text-[8.5px] font-black uppercase tracking-widest ${isTeste1 ? 'text-zinc-500 group-hover:text-zinc-950 font-black' : 'text-zinc-400 group-hover:text-white'}`}>Adicionar Aeróbico</p>
             </button>
           )}
         </div>
@@ -978,8 +1024,10 @@ export const WorkoutView: React.FC = () => {
             disabled={completedSets === 0}
             className={`w-full py-2.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
               completedSets > 0 
-              ? 'bg-accent text-black shadow-lg hover:brightness-110 active:scale-98' 
-              : 'bg-zinc-900/40 border border-white/5 text-zinc-500 cursor-not-allowed'
+              ? `bg-accent ${isTeste1 ? 'text-white' : 'text-black'} shadow-lg hover:brightness-110 active:scale-98` 
+              : (isTeste1 
+                  ? 'bg-zinc-200 border border-zinc-200 text-zinc-400 cursor-not-allowed'
+                  : 'bg-zinc-900/40 border border-white/5 text-zinc-500 cursor-not-allowed')
             }`}
           >
             FINALIZAR SESSÃO
@@ -990,24 +1038,25 @@ export const WorkoutView: React.FC = () => {
               handleVibrate(10);
               cancelWorkout();
             }}
-            className="w-full py-1 text-[8px] font-black text-zinc-600 hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-1"
+            className={`w-full py-1 text-[8px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 ${
+              isTeste1 ? 'text-zinc-400 hover:text-zinc-950 font-black' : 'text-zinc-650 hover:text-white'
+            }`}
           >
             DESCARTAR ESTE TREINO
           </button>
         </div>
       )}
-
       {/* Floating Single Exercise Detailed Modal Window / Premium Bottom Sheet */}
       <AnimatePresence>
         {activeModalExercise && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm">
             {/* Backdrop translucent black filter */}
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setActiveModalExercise(null)}
-              className="absolute inset-0 bg-transparent"
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               onClick={() => setActiveModalExercise(null)}
+               className="absolute inset-0 bg-transparent"
             />
 
             {/* Modal Body Card / Bottom Sheet panel */}
@@ -1016,15 +1065,21 @@ export const WorkoutView: React.FC = () => {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 20, opacity: 0, scale: 0.95 }}
               transition={{ type: "spring", damping: 28, stiffness: 220 }}
-              className="relative w-full sm:max-w-md bg-[#0c0c0f] p-5 rounded-2xl shadow-2xl border border-white/10 overflow-hidden space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar pb-6 z-10"
+              className={`relative w-full sm:max-w-md p-5 rounded-2xl shadow-2xl overflow-hidden space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar pb-6 z-10 border ${
+                isTeste1 ? 'bg-white border-zinc-200 text-zinc-950 font-black' : 'bg-[#0c0c0f] border-white/10 text-white'
+              }`}
             >
               {/* Header Container */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 leading-none">
-                  <span className="bg-accent text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded font-mono">
+                  <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded font-mono ${
+                    isTeste1 ? 'bg-zinc-100 text-zinc-950 font-black' : 'bg-accent text-[#050505]'
+                  }`}>
                     SÉRIE ATIVA
                   </span>
-                  <span className="text-zinc-400 text-[10px] font-black uppercase font-mono tracking-wider">
+                  <span className={`text-[10px] font-black uppercase font-mono tracking-wider ${
+                    isTeste1 ? 'text-zinc-500 font-bold' : 'text-zinc-400'
+                  }`}>
                     {activeModalExercise.muscleGroup.toUpperCase()}
                   </span>
                 </div>
@@ -1032,7 +1087,9 @@ export const WorkoutView: React.FC = () => {
                 {/* Close Button X */}
                 <button 
                   onClick={() => setActiveModalExercise(null)} 
-                  className="w-7 h-7 rounded-sm bg-[#1b1b22] border border-white/5 flex items-center justify-center text-zinc-400 hover:text-white active:scale-90 transition-all"
+                  className={`w-7 h-7 rounded-sm flex items-center justify-center active:scale-90 transition-all border ${
+                    isTeste1 ? 'bg-zinc-100 border-zinc-250 text-zinc-650 hover:bg-zinc-250' : 'bg-[#1b1b22] border-white/5 text-zinc-400 hover:text-white'
+                  }`}
                 >
                   <X size={13} strokeWidth={2.5} />
                 </button>
@@ -1041,13 +1098,19 @@ export const WorkoutView: React.FC = () => {
               {/* Title Section */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-black italic text-white tracking-tight uppercase leading-none">
+                  <h2 className={`text-base font-black italic tracking-tight uppercase leading-none ${
+                    isTeste1 ? 'text-zinc-950 font-[950]' : 'text-white'
+                  }`}>
                     {activeModalExercise.name}
                   </h2>
                   <button 
                     onClick={() => setShowExerciseInfo(!showExerciseInfo)}
                     className={`w-7 h-7 flex items-center justify-center rounded-full transition-all ${
-                      showExerciseInfo ? 'bg-accent/20 text-accent' : 'bg-zinc-900 border border-white/5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
+                      showExerciseInfo 
+                        ? 'bg-accent/20 text-accent' 
+                        : (isTeste1 
+                            ? 'bg-zinc-100 border border-zinc-250 text-zinc-500 hover:text-zinc-950' 
+                            : 'bg-zinc-900 border border-white/5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800')
                     }`}
                   >
                     <HelpCircle size={14} strokeWidth={2.5} />
@@ -1065,9 +1128,13 @@ export const WorkoutView: React.FC = () => {
                     exit={{ height: 0, opacity: 0, y: -10 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-3 rounded-lg bg-gradient-to-br from-zinc-900 to-zinc-950 border border-accent/20 text-center space-y-2">
+                    <div className={`p-3 rounded-lg border text-center space-y-2 ${
+                      isTeste1 ? 'bg-zinc-50 border-accent/40' : 'bg-gradient-to-br from-zinc-900 to-zinc-950 border-accent/20'
+                    }`}>
                        <div className="space-y-0.5 leading-none">
-                        <span className="text-[6.5px] font-black text-zinc-400 uppercase tracking-widest block">
+                        <span className={`text-[6.5px] font-black uppercase tracking-widest block ${
+                          isTeste1 ? 'text-zinc-500 font-bold' : 'text-zinc-400'
+                        }`}>
                           INTERVALO ATIVO DE REPOUSO
                         </span>
                         <h3 className="text-2xl font-black text-accent font-mono leading-none tracking-tight animate-pulse pt-0.5">
@@ -1076,8 +1143,10 @@ export const WorkoutView: React.FC = () => {
                       </div>
 
                       {/* Display set descriptor text natively */}
-                      <p className="text-[7.5px] font-black text-zinc-400 uppercase tracking-wider leading-relaxed px-1">
-                        PRÓXIMA: <span className="text-white font-semibold">{getNextSetLabelForTimer(activeModalExercise)}</span> DE <span className="text-white font-semibold">{activeModalExercise.name.toUpperCase()}</span>
+                      <p className={`text-[7.5px] font-black uppercase tracking-wider leading-relaxed px-1 ${
+                        isTeste1 ? 'text-zinc-650' : 'text-zinc-400'
+                      }`}>
+                        PRÓXIMA: <span className={`${isTeste1 ? 'text-zinc-950 font-bold' : 'text-white'} font-semibold`}>{getNextSetLabelForTimer(activeModalExercise)}</span> DE <span className={`${isTeste1 ? 'text-zinc-950 font-bold' : 'text-white'} font-semibold`}>{activeModalExercise.name.toUpperCase()}</span>
                       </p>
 
                       {/* Control Panel centered rows */}
@@ -1085,7 +1154,9 @@ export const WorkoutView: React.FC = () => {
                         {/* Subtract 10s */}
                         <button 
                           onClick={() => setModalRestTimeLeft(prev => prev !== null ? Math.max(0, prev - 10) : 0)}
-                          className="w-7 h-7 rounded-full border border-white/5 bg-zinc-950 text-[9px] font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-90 transition-all font-mono"
+                          className={`w-7 h-7 rounded-full border text-[9px] font-bold flex items-center justify-center active:scale-90 transition-all font-mono ${
+                            isTeste1 ? 'bg-white border-zinc-250 text-zinc-950 font-black' : 'bg-zinc-950 border-white/5 text-zinc-300 hover:text-white'
+                          }`}
                         >
                           -10
                         </button>
@@ -1093,21 +1164,23 @@ export const WorkoutView: React.FC = () => {
                         {/* Play / Pause Toggle button */}
                         <button 
                           onClick={() => setIsModalRestPaused(p => !p)}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all text-[#050505] ${
-                            isModalRestPaused ? 'bg-emerald-600' : 'bg-accent'
+                          className={`w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all text-white ${
+                            isModalRestPaused ? 'bg-emerald-600' : 'bg-accent text-white'
                           }`}
                         >
                           {isModalRestPaused ? (
                             <Play size={11} className="fill-white ml-0.5 text-white" />
                           ) : (
-                            <Pause size={11} className="fill-[#050505] text-[#050505]" />
+                            <Pause size={11} className="fill-white text-white" />
                           )}
                         </button>
 
                         {/* Add 10s */}
                         <button 
                           onClick={() => setModalRestTimeLeft(prev => prev !== null ? prev + 10 : 10)}
-                          className="w-7 h-7 rounded-full border border-white/5 bg-zinc-950 text-[9px] font-bold text-zinc-300 hover:text-white flex items-center justify-center active:scale-90 transition-all font-mono"
+                          className={`w-7 h-7 rounded-full border text-[9px] font-bold flex items-center justify-center active:scale-90 transition-all font-mono ${
+                            isTeste1 ? 'bg-white border-zinc-250 text-zinc-950 font-black' : 'bg-zinc-950 border-white/5 text-zinc-300 hover:text-white'
+                          }`}
                         >
                           +10
                         </button>
@@ -1115,7 +1188,9 @@ export const WorkoutView: React.FC = () => {
                         {/* Skip rest completely */}
                         <button 
                           onClick={() => setModalRestTimeLeft(null)}
-                          className="w-7 h-7 rounded-full border border-white/5 bg-zinc-950 text-zinc-300 hover:text-white flex items-center justify-center active:scale-90 transition-all"
+                          className={`w-7 h-7 rounded-full border flex items-center justify-center active:scale-90 transition-all ${
+                            isTeste1 ? 'bg-white border-zinc-250 text-zinc-950 font-black' : 'bg-zinc-950 border-white/5 text-zinc-300 hover:text-white'
+                          }`}
                         >
                           <SkipForward size={11} />
                         </button>
@@ -1153,11 +1228,13 @@ export const WorkoutView: React.FC = () => {
               {!exerciseCompletedSuccess && (
                 <div className="space-y-4 pb-2">
                   {/* Custom exercise video/GIF of high-tech Horus */}
-                  <div className="relative rounded-xl overflow-hidden bg-zinc-950 border border-white/5 h-44 w-full flex flex-col items-center justify-center p-1.5 shadow-inner">
+                  <div className={`relative rounded-xl overflow-hidden h-44 w-full flex flex-col items-center justify-center p-1.5 shadow-inner border animate-fade-in ${
+                    isTeste1 ? 'bg-white border-zinc-250' : 'bg-zinc-950 border-white/5'
+                  }`}>
                     <img 
                       src={getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).gif} 
                       alt={activeModalExercise.name} 
-                      className="max-h-[150px] w-auto max-w-[200px] rounded-lg object-contain animate-fade-in"
+                      className="max-h-[150px] w-auto max-w-[200px] rounded-lg object-contain"
                       loading="lazy"
                       referrerPolicy="no-referrer"
                     />
@@ -1173,18 +1250,28 @@ export const WorkoutView: React.FC = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="border border-white/5 bg-[#121216]/50 rounded-xl p-3 space-y-2.5 text-left leading-relaxed mt-4">
+                        <div className={`border rounded-xl p-3 space-y-2.5 text-left leading-relaxed mt-4 ${
+                          isTeste1 ? 'border-zinc-250 bg-zinc-50' : 'border-white/5 bg-[#121216]/50'
+                        }`}>
                           <div>
-                            <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest block leading-none font-mono">Instruções de Movimento</span>
-                            <p className="text-[10.5px] text-white/75 font-normal mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).instructions}</p>
+                            <span className={`text-[7px] font-black uppercase tracking-widest block leading-none font-mono ${
+                              isTeste1 ? 'text-zinc-650' : 'text-zinc-400'
+                            }`}>Instruções de Movimento</span>
+                            <p className={`text-[10.5px] font-normal mt-0.5 leading-snug ${
+                              isTeste1 ? 'text-zinc-950 font-bold' : 'text-white/75'
+                            }`}>{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).instructions}</p>
                           </div>
                           <div>
-                            <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest block leading-none font-mono">Execução Perfeita</span>
-                            <p className="text-[10.5px] text-emerald-200/95 font-medium mt-0.5 leading-snug">{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).correctExecution}</p>
+                            <span className="text-[7px] font-black text-emerald-600 uppercase tracking-widest block leading-none font-mono">Execução Perfeita</span>
+                            <p className={`text-[10.5px] font-medium mt-0.5 leading-snug ${
+                              isTeste1 ? 'text-emerald-950 font-bold' : 'text-emerald-200/95'
+                            }`}>{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).correctExecution}</p>
                           </div>
                           <div>
                             <span className="text-[7px] font-black text-amber-500 uppercase tracking-widest block leading-none font-mono">Observações de Coach</span>
-                            <p className="text-[10.5px] text-amber-200/90 font-medium mt-0.5 leading-snug italic">"{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).technique}"</p>
+                            <p className={`text-[10.5px] font-medium mt-0.5 leading-snug italic font-bold ${
+                              isTeste1 ? 'text-amber-650' : 'text-amber-200/90'
+                            }`}>"{getExerciseDetails(activeModalExercise.name, activeModalExercise.muscleGroup).technique}"</p>
                           </div>
                         </div>
                       </motion.div>
@@ -1193,7 +1280,9 @@ export const WorkoutView: React.FC = () => {
 
                   {/* Interactive steppers controller section */}
                   <div className="space-y-1.5 pt-1">
-                    <div className="flex items-center justify-between text-[7px] font-black text-white/40 uppercase tracking-widest px-0.5 leading-none">
+                    <div className={`flex items-center justify-between text-[7px] font-black uppercase tracking-widest px-0.5 leading-none ${
+                        isTeste1 ? 'text-zinc-550 font-bold' : 'text-white/40'
+                    }`}>
                       <span>SÉRIES E REGISTRO DE CARGA</span>
                       <span className="font-mono">PESO (KG) — REPS</span>
                     </div>
@@ -1207,12 +1296,12 @@ export const WorkoutView: React.FC = () => {
                             className={`grid grid-cols-12 items-center gap-1.5 p-1 px-1.5 rounded-lg border transition-all duration-300 ${
                               isSetCompleted 
                                 ? 'bg-[#00DDA2]/5 border-[#00DDA2]/25' 
-                                : 'bg-zinc-900/50 border-white/5'
+                                : (isTeste1 ? 'bg-zinc-100 border-zinc-200' : 'bg-zinc-900/50 border-white/5')
                             }`}
                           >
                             {/* Column 1: Row Title */}
                             <div className="col-span-2 text-left shrink-0 leading-none">
-                              <span className="text-sm font-black text-white font-mono block">
+                              <span className={`text-sm font-black font-mono block ${isTeste1 ? 'text-zinc-950' : 'text-white'}`}>
                                 S{setIdx + 1}
                               </span>
                               {setIdx === 0 && (
@@ -1224,11 +1313,15 @@ export const WorkoutView: React.FC = () => {
 
                             {/* Column 2: Weight Stepper */}
                             <div className="col-span-4 select-none">
-                              <div className="flex items-center justify-between bg-zinc-950/80 border border-white/5 rounded-lg px-0.5 h-8">
+                              <div className={`flex items-center justify-between border rounded-lg px-0.5 h-8 ${
+                                isTeste1 ? 'bg-white border-zinc-300' : 'bg-zinc-950/80 border-white/5'
+                              }`}>
                                 <button 
                                   onClick={() => handleModifyWeight(activeModalExercise.id, setIdx, -1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
+                                  className={`px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45 ${
+                                    isTeste1 ? 'text-zinc-650 hover:text-zinc-950 font-black' : 'text-zinc-400 hover:text-white'
+                                  }`}
                                 >
                                   -
                                 </button>
@@ -1239,13 +1332,17 @@ export const WorkoutView: React.FC = () => {
                                   disabled={isSetCompleted}
                                   onFocus={(e) => e.target.select()}
                                   onChange={(e) => handleUpdateModalSet(activeModalExercise.id, setIdx, { weight: parseFloat(e.target.value) || 0 })}
-                                  className="w-9 bg-transparent text-center text-white font-bold font-mono text-xs focus:outline-none placeholder:text-zinc-700 disabled:opacity-80"
+                                  className={`w-9 bg-transparent text-center font-bold font-mono text-xs focus:outline-none placeholder:text-zinc-700 disabled:opacity-80 ${
+                                    isTeste1 ? 'text-zinc-950 font-black' : 'text-white'
+                                  }`}
                                   placeholder="0"
                                 />
                                 <button 
                                   onClick={() => handleModifyWeight(activeModalExercise.id, setIdx, 1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
+                                  className={`px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45 ${
+                                    isTeste1 ? 'text-zinc-650 hover:text-zinc-950 font-black' : 'text-zinc-400 hover:text-white'
+                                  }`}
                                 >
                                   +
                                 </button>
@@ -1254,11 +1351,15 @@ export const WorkoutView: React.FC = () => {
 
                             {/* Column 3: Reps Stepper */}
                             <div className="col-span-4 select-none">
-                              <div className="flex items-center justify-between bg-zinc-950/80 border border-white/5 rounded-lg px-0.5 h-8">
+                              <div className={`flex items-center justify-between border rounded-lg px-0.5 h-8 ${
+                                isTeste1 ? 'bg-white border-zinc-300' : 'bg-zinc-950/80 border-white/5'
+                              }`}>
                                 <button 
                                   onClick={() => handleModifyReps(activeModalExercise.id, setIdx, -1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
+                                  className={`px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45 ${
+                                    isTeste1 ? 'text-zinc-650 hover:text-zinc-950 font-black' : 'text-zinc-400 hover:text-white'
+                                  }`}
                                 >
                                   -
                                 </button>
@@ -1269,13 +1370,17 @@ export const WorkoutView: React.FC = () => {
                                   disabled={isSetCompleted}
                                   onFocus={(e) => e.target.select()}
                                   onChange={(e) => handleUpdateModalSet(activeModalExercise.id, setIdx, { reps: parseInt(e.target.value) || 0 })}
-                                  className="w-9 bg-transparent text-center text-white font-bold font-mono text-xs focus:outline-none placeholder:text-zinc-700 disabled:opacity-80"
+                                  className={`w-9 bg-transparent text-center font-bold font-mono text-xs focus:outline-none placeholder:text-zinc-700 disabled:opacity-80 ${
+                                    isTeste1 ? 'text-zinc-950 font-black' : 'text-white'
+                                  }`}
                                   placeholder="0"
                                 />
                                 <button 
                                   onClick={() => handleModifyReps(activeModalExercise.id, setIdx, 1)}
                                   disabled={isSetCompleted}
-                                  className="text-zinc-400 hover:text-white px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45"
+                                  className={`px-1.5 h-full flex items-center justify-center font-bold text-xs active:scale-95 transition-all font-mono disabled:opacity-45 ${
+                                    isTeste1 ? 'text-zinc-650 hover:text-zinc-950 font-black' : 'text-zinc-400 hover:text-white'
+                                  }`}
                                 >
                                   +
                                 </button>
@@ -1288,8 +1393,8 @@ export const WorkoutView: React.FC = () => {
                                 onClick={() => handleUpdateModalSet(activeModalExercise.id, setIdx, { completed: !isSetCompleted })}
                                 className={`w-7 h-7 rounded-sm border flex items-center justify-center active:scale-95 transition-all ${
                                   isSetCompleted 
-                                    ? 'bg-[#00DDA2] border-[#00DDA2] text-[#050505] shadow-[0_0_8px_rgba(0,221,162,0.25)]' 
-                                    : 'bg-zinc-950 border-white/5 text-zinc-600 hover:text-zinc-400'
+                                    ? 'bg-[#00DDA2] border-[#00DDA2] text-white shadow-[0_0_8px_rgba(0,221,162,0.25)]' 
+                                    : (isTeste1 ? 'bg-zinc-100 border-zinc-200 text-zinc-400 hover:text-zinc-950' : 'bg-zinc-950 border-white/5 text-zinc-600 hover:text-zinc-400')
                                 }`}
                               >
                                 <Check size={14} strokeWidth={4} />
@@ -1322,36 +1427,47 @@ export const WorkoutView: React.FC = () => {
       {/* Auxiliary Cardio Selector Modal */}
       <AnimatePresence>
         {showCardioModal && (
-          <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4">
+          <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
              <motion.div 
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                onClick={() => setShowCardioModal(false)}
-               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+               className="absolute inset-0 bg-transparent"
              />
              <motion.div 
                initial={{ y: "100%" }}
                animate={{ y: 0 }}
                exit={{ y: "100%" }}
                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-               className="relative w-full max-w-sm glass-card bg-bg p-8 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl border-t border-line"
+               className={`relative w-full max-w-sm p-8 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl border-t ${
+                 isTeste1 ? 'bg-white border-zinc-200 text-zinc-950' : 'bg-[#0c0c0f] border-white/10 text-white'
+               }`}
              >
                 <div className="flex items-center justify-between mb-8">
                    <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center text-accent">
                          <Wind size={20} />
                       </div>
-                      <h2 className="text-xl font-black text-ink uppercase italic tracking-tighter">Aeróbico</h2>
+                      <h2 className={`text-xl font-black uppercase italic tracking-tighter ${
+                        isTeste1 ? 'text-zinc-950 font-[950]' : 'text-white'
+                      }`}>Aeróbico</h2>
                    </div>
-                   <button onClick={() => setShowCardioModal(false)} className="w-10 h-10 rounded-full glass-card flex items-center justify-center text-secondary">
+                   <button 
+                     onClick={() => setShowCardioModal(false)} 
+                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all border ${
+                       isTeste1 ? 'bg-zinc-100 border-zinc-250 text-zinc-500 hover:text-zinc-950' : 'bg-zinc-950 border-white/5 text-zinc-400 hover:text-white'
+                     }`}
+                   >
                       <X size={20} />
                    </button>
                 </div>
 
                 <div className="space-y-6">
                    <div>
-                      <label className="text-[10px] font-black text-secondary uppercase tracking-widest mb-3 block">Exercício</label>
+                      <label className={`text-[10px] font-black uppercase tracking-widest mb-3 block ${
+                        isTeste1 ? 'text-zinc-550 font-bold' : 'text-white/40'
+                      }`}>Exercício</label>
                       <div className="grid grid-cols-2 gap-2">
                          {['Esteira', 'Bike', 'Elíptico', 'Escada'].map(ex => (
                             <button 
@@ -1362,8 +1478,10 @@ export const WorkoutView: React.FC = () => {
                                 }}
                                className={`py-3 rounded-xl font-black text-[10px] uppercase tracking-widest border transition-all ${
                                   cardioInput.exercise === ex 
-                                  ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20' 
-                                  : 'bg-ink/[0.03] border-line text-secondary'
+                                  ? 'bg-accent border-accent text-white shadow-lg' 
+                                  : (isTeste1 
+                                      ? 'bg-zinc-100 border-zinc-200 text-zinc-750 hover:bg-zinc-200' 
+                                      : 'bg-[#0e0e12]/70 border-white/5 text-zinc-500 hover:text-white')
                                }`}
                             >
                                {ex}
@@ -1374,26 +1492,32 @@ export const WorkoutView: React.FC = () => {
                          type="text" 
                          value={cardioInput.exercise}
                          onChange={(e) => setCardioInput({ ...cardioInput, exercise: e.target.value })}
-                         className="w-full mt-3 bg-ink/[0.03] border border-line p-4 rounded-xl text-ink font-bold placeholder:text-secondary/50 focus:border-accent transition-all"
+                         className={`w-full mt-3 border p-4 rounded-xl font-bold placeholder:text-zinc-500 transition-all ${
+                           isTeste1 ? 'bg-zinc-50 border-zinc-250 text-zinc-950' : 'bg-black/30 border-white/5 text-white'
+                         }`}
                          placeholder="Outro..."
                       />
                    </div>
 
                    <div>
-                      <label className="text-[10px] font-black text-secondary uppercase tracking-widest mb-3 block">Tempo (Minutos)</label>
+                      <label className={`text-[10px] font-black uppercase tracking-widest mb-3 block ${
+                        isTeste1 ? 'text-zinc-550 font-bold' : 'text-white/45'
+                      }`}>Tempo (Minutos)</label>
                       <div className="flex items-center gap-4">
                          <input 
                             type="range" 
                             min="5" 
                             max="60" 
-                            step="5"
+                            type-step="5"
                             value={cardioInput.duration}
                             onChange={(e) => setCardioInput({ ...cardioInput, duration: parseInt(e.target.value) })}
                             className="flex-grow accent-accent"
                          />
-                         <div className="w-20 bg-ink/[0.03] border border-line p-3 rounded-xl text-center">
-                            <span className="text-xl font-black text-ink font-mono">{cardioInput.duration}</span>
-                            <span className="text-[8px] font-black text-secondary block -mt-1 ml-1">MIN</span>
+                         <div className={`w-20 border p-3 rounded-xl text-center ${
+                           isTeste1 ? 'bg-zinc-50 border-zinc-250' : 'bg-[#0f0f12] border-white/5'
+                         }`}>
+                            <span className={`text-xl font-black font-mono ${isTeste1 ? 'text-zinc-950' : 'text-white'}`}>{cardioInput.duration}</span>
+                            <span className={`text-[8px] font-black block -mt-1 ml-1 ${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'}`}>MIN</span>
                          </div>
                       </div>
                    </div>
@@ -1404,7 +1528,7 @@ export const WorkoutView: React.FC = () => {
                          setCurrentCardioProgress({ ...cardioInput, completed: true });
                          setShowCardioModal(false);
                       }}
-                      className="w-full bg-accent text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 font-black"
+                      className={`w-full bg-accent ${isTeste1 ? 'text-white font-black' : 'text-[#050505]'} py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3`}
                    >
                       CONCLUIR CARDIO <CheckCircle2 size={18} />
                    </button>

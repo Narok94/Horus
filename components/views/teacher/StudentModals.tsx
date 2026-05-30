@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
+import { X, UserPlus, Save, AlertCircle } from 'lucide-react';
 import { User } from '../../../types';
 
 interface StudentModalsProps {
@@ -36,64 +36,67 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
       {/* CADASTRO DE ALUNO NOVO */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade">
-            <div className="bg-zinc-950 border border-zinc-900 w-full max-w-sm rounded-xl p-5 space-y-4 shadow-2xl relative">
-              <div className="flex items-center justify-between border-b border-zinc-900 pb-2.5">
-                <span className="text-sm font-medium text-zinc-200">Cadastrar novo aluno</span>
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade">
+            <div className="bg-white border border-gray-100 w-full max-w-md rounded-2xl p-6 space-y-5 shadow-2xl relative">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <UserPlus size={18} className="text-blue-600" />
+                  <span className="text-base font-bold text-gray-900">Cadastrar Novo Aluno</span>
+                </div>
                 <button 
                   type="button"
                   onClick={() => setShowAddModal(false)} 
-                  className="text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors p-1"
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-1 rounded-lg hover:bg-gray-100"
                 >
-                  <X size={15} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <form onSubmit={onCreateStudentSubmit} className="space-y-3.5">
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Nome completo</label>
+              <form onSubmit={onCreateStudentSubmit} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Nome completo</label>
                   <input 
                     type="text"
                     required
                     value={newStudentData.name}
                     onChange={(e) => setNewStudentData({ ...newStudentData, name: e.target.value })}
                     placeholder="Ex: Ana Souza"
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 placeholder-zinc-650 focus:outline-none focus:border-zinc-800"
+                    className="w-full bg-gray-50 border border-gray-250 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Login (Usuário)</label>
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Login (Usuário)</label>
                   <input 
                     type="text"
                     required
                     value={newStudentData.username}
                     onChange={(e) => setNewStudentData({ ...newStudentData, username: e.target.value })}
                     placeholder="Ex: anasouza"
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 placeholder-zinc-650 focus:outline-none focus:border-zinc-800 font-mono"
+                    className="w-full bg-gray-50 border border-gray-250 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-mono font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Senha de entrada</label>
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Senha de entrada</label>
                   <input 
                     type="text"
                     value={newStudentData.password}
                     onChange={(e) => setNewStudentData({ ...newStudentData, password: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800 font-mono"
+                    className="w-full bg-gray-50 border border-gray-250 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-mono font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1.5">Gênero (Configuração de tema)</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Gênero</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setNewStudentData({ ...newStudentData, sex: 'masculino' })}
-                      className={`py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                      className={`py-3 text-xs font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
                         newStudentData.sex === 'masculino' 
-                          ? 'bg-zinc-800 text-zinc-100 border-zinc-700' 
-                          : 'bg-transparent border-zinc-900 text-zinc-500 hover:text-zinc-400'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-sm' 
+                          : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700'
                       }`}
                     >
                       Masculino (Azul)
@@ -101,10 +104,10 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
                     <button
                       type="button"
                       onClick={() => setNewStudentData({ ...newStudentData, sex: 'feminino' })}
-                      className={`py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                      className={`py-3 text-xs font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
                         newStudentData.sex === 'feminino' 
-                          ? 'bg-zinc-800 text-zinc-100 border-zinc-700' 
-                          : 'bg-transparent border-zinc-900 text-zinc-400 hover:text-zinc-300'
+                          ? 'bg-pink-50 text-pink-700 border-pink-200 shadow-sm' 
+                          : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700'
                       }`}
                     >
                       Feminino (Rosa)
@@ -114,7 +117,7 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
 
                 <button 
                   type="submit"
-                  className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs rounded-lg transition-colors mt-4 cursor-pointer"
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-xs rounded-xl transition-all mt-4 cursor-pointer shadow-sm active:scale-95"
                 >
                   Confirmar Cadastro
                 </button>
@@ -127,62 +130,65 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
       {/* EDIÇÃO DE ALUNO / EXCLUSÃO */}
       <AnimatePresence>
         {editingStudent && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade">
-            <div className="bg-zinc-950 border border-zinc-900 w-full max-w-sm rounded-xl p-5 space-y-4 shadow-2xl relative">
-              <div className="flex items-center justify-between border-b border-zinc-900 pb-2.5">
-                <span className="text-sm font-medium text-zinc-200">Editar cadastro</span>
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade">
+            <div className="bg-white border border-gray-100 w-full max-w-md rounded-2xl p-6 space-y-5 shadow-2xl relative">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={18} className="text-blue-600" />
+                  <span className="text-base font-bold text-gray-900">Editar Cadastro</span>
+                </div>
                 <button 
                   type="button"
                   onClick={() => setEditingStudent(null)} 
-                  className="text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors p-1"
+                  className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-1 rounded-lg hover:bg-gray-100"
                 >
-                  <X size={15} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <form onSubmit={onEditStudentSubmit} className="space-y-3.5">
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Nome completo</label>
+              <form onSubmit={onEditStudentSubmit} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Nome completo</label>
                   <input 
                     type="text"
                     required
                     value={editStudentData.name}
                     onChange={(e) => setEditStudentData({ ...editStudentData, name: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800"
+                    className="w-full bg-gray-50 border border-gray-255 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Login (Usuário)</label>
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Login (Usuário)</label>
                   <input 
                     type="text"
                     required
                     value={editStudentData.username}
                     onChange={(e) => setEditStudentData({ ...editStudentData, username: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800 font-mono"
+                    className="w-full bg-gray-50 border border-gray-255 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-mono font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1">Senha</label>
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Senha</label>
                   <input 
                     type="text"
                     value={editStudentData.password}
-                    onChange={(e) => setNewStudentData({ ...editStudentData, password: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-900 rounded-lg py-2 px-3 text-xs text-zinc-200 focus:outline-none focus:border-zinc-800 font-mono"
+                    onChange={(e) => setEditStudentData({ ...editStudentData, password: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-255 text-gray-950 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-mono font-semibold"
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] text-zinc-500 block mb-1.5">Gênero (Configuração de tema)</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Gênero</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setEditStudentData({ ...editStudentData, sex: 'masculino' })}
-                      className={`py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                      className={`py-3 text-xs font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
                         editStudentData.sex === 'masculino' 
-                          ? 'bg-zinc-800 text-zinc-100 border-zinc-700' 
-                          : 'bg-transparent border-zinc-900 text-zinc-500 hover:text-zinc-400'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                          : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700'
                       }`}
                     >
                       Masculino (Azul)
@@ -190,10 +196,10 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
                     <button
                       type="button"
                       onClick={() => setEditStudentData({ ...editStudentData, sex: 'feminino' })}
-                      className={`py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                      className={`py-3 text-xs font-black uppercase tracking-wider rounded-xl border transition-all cursor-pointer ${
                         editStudentData.sex === 'feminino' 
-                          ? 'bg-zinc-800 text-zinc-100 border-zinc-700' 
-                          : 'bg-transparent border-zinc-900 text-zinc-400 hover:text-zinc-305'
+                          ? 'bg-pink-50 text-pink-700 border-pink-200' 
+                          : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-700'
                       }`}
                     >
                       Feminino (Rosa)
@@ -201,18 +207,18 @@ export const StudentModals: React.FC<StudentModalsProps> = ({
                   </div>
                 </div>
 
-                <div className="flex gap-2.5 pt-2">
+                <div className="flex gap-3 pt-2">
                   <button 
                     type="button"
                     onClick={(e) => onDeleteStudent(editingStudent.username, e)}
-                    className="flex-1 py-2 bg-red-950/20 text-red-400 hover:bg-red-900/10 border border-red-900/40 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
+                    className="flex-1 py-3.5 bg-red-50 hover:bg-red-105 text-red-650 border border-red-200 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
                   >
                     Excluir Aluno
                   </button>
 
                   <button 
                     type="submit"
-                    className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg transition-all cursor-pointer"
+                    className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-xs rounded-xl transition-all cursor-pointer shadow-sm shadow-blue-200"
                   >
                     Salvar
                   </button>

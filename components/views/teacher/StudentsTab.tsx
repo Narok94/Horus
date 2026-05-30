@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Settings, Dumbbell } from 'lucide-react';
+import { Users, Settings, Dumbbell, UserCheck } from 'lucide-react';
 import { User } from '../../../types';
 
 interface StudentsTabProps {
@@ -14,19 +14,19 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
   onManageStudent,
 }) => {
   return (
-    <div className="flex-grow overflow-y-auto no-scrollbar pb-10 space-y-6 animate-fade">
+    <div className="flex-grow pb-10 space-y-6">
       {/* Title block */}
-      <div className="flex justify-between items-center py-2">
+      <div className="flex justify-between items-center pb-2 border-b border-gray-100">
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-zinc-100">Alunos cadastrados</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Gerencie e crie fichas de treinamento individuais ({students.length} alunos ativos)
+          <h2 className="text-2xl font-black tracking-tight text-gray-900">Alunos Cadastrados</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Gerencie e crie fichas de treinamento individuais ({students.length} alunos cadastrados)
           </p>
         </div>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {students.map((student) => {
           const isFemale = student.sex === 'feminino';
           const countOfWorkouts = student.totalWorkouts || 0;
@@ -34,49 +34,52 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
           return (
             <div 
               key={student.username}
-              className="bg-zinc-900/60 border border-zinc-900 rounded-xl p-5 flex flex-col justify-between space-y-5 hover:border-zinc-800 hover:bg-zinc-900/80 transition-all duration-200"
+              className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-250 cursor-pointer"
+              onClick={() => onManageStudent(student.username)}
             >
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {/* Status dot – quiet and single-colored without neon glow */}
-                    <span 
-                      className="w-2 h-2 rounded-full shrink-0" 
-                      style={{ 
-                        backgroundColor: isFemale ? '#ec4899' : '#3b82f6',
-                      }}
-                      title={isFemale ? 'Feminino - Tema Rosa' : 'Masculino - Tema Azul'}
-                    />
-                    <span className="text-sm font-medium text-zinc-100 truncate block">
-                      {student.name}
-                    </span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* Visual representation of Student gender */}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isFemale ? 'bg-pink-50 text-pink-500' : 'bg-blue-50 text-blue-500'}`}>
+                      <Users size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-base font-bold text-gray-900 truncate block">
+                        {student.name}
+                      </span>
+                      <span className="text-xs font-mono text-gray-400 block mt-0.5">
+                        @{student.username}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-mono text-zinc-500">
-                    @{student.username}
-                  </span>
                 </div>
                 
-                <div className="text-xs text-zinc-400 font-normal">
-                  <span className="text-zinc-500">Check-ins de treino:</span> &nbsp;
-                  <span className="font-medium text-zinc-300">{countOfWorkouts} {countOfWorkouts === 1 ? 'concluído' : 'concluídos'}</span>
+                <div className="text-sm text-gray-600 bg-gray-50 border border-gray-100 px-3.5 py-2.5 rounded-xl flex items-center justify-between">
+                  <span className="text-gray-400 font-bold text-xs uppercase tracking-wide">Frequência/Checkins:</span>
+                  <span className="font-extrabold text-gray-800 text-xs bg-white border border-gray-200 px-3 py-1 rounded-lg">
+                    {countOfWorkouts} {countOfWorkouts === 1 ? 'concluído' : 'concluídos'}
+                  </span>
                 </div>
               </div>
 
-              {/* Simplified non-bulky layout actions */}
-              <div className="flex items-center gap-2 pt-1">
+              {/* Action buttons styled with large touch boundaries */}
+              <div className="flex items-center gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   onClick={() => onOpenEditModal(student)}
-                  className="flex-grow py-2 px-3 bg-zinc-800/60 hover:bg-zinc-850 border border-zinc-800 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer text-center"
+                  className="w-14 h-11 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl flex items-center justify-center transition-all cursor-pointer border border-gray-200"
+                  title="Configurações do Aluno"
                 >
-                  Editar
+                  <Settings size={18} />
                 </button>
                 <button
                   type="button"
                   onClick={() => onManageStudent(student.username)}
-                  className="flex-grow py-2 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium transition-colors cursor-pointer text-center"
+                  className="flex-grow h-11 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                 >
-                  Ficha de Treino
+                  <Dumbbell size={14} />
+                  <span>Montar Ficha</span>
                 </button>
               </div>
             </div>
@@ -84,10 +87,14 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
         })}
 
         {students.length === 0 && (
-          <div className="col-span-full border border-zinc-800 border-dashed bg-zinc-900/20 py-16 text-center rounded-xl flex flex-col items-center justify-center">
-            <Users className="text-zinc-700 mb-3" size={28} />
-            <h3 className="text-zinc-300 font-medium text-sm">Nenhum aluno cadastrado no sistema</h3>
-            <p className="text-xs text-zinc-500 mt-1 max-w-xs text-center leading-relaxed">Clique no botão "+ Novo Aluno" no topo direito para cadastrar o primeiro.</p>
+          <div className="col-span-full border-2 border-slate-200 border-dashed bg-white py-16 text-center rounded-2xl flex flex-col items-center justify-center p-6 shadow-sm">
+            <div className="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mb-4">
+              <Users size={28} />
+            </div>
+            <h3 className="text-slate-800 font-bold text-lg">Nenhum aluno cadastrado no sistema</h3>
+            <p className="text-sm text-slate-500 mt-2 max-w-xs leading-relaxed">
+              Clique no botão "+ Novo Aluno" no topo direito para cadastrar o primeiro e começar a sua montagem de rotinas.
+            </p>
           </div>
         )}
       </div>

@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import confetti from 'canvas-confetti';
 import { User, WorkoutRoutine, AppTab, SetPerformance, WorkoutHistoryEntry, Badge } from './types';
-import { jessicaWorkouts, henriqueWorkouts, mariaWorkouts, flaviaWorkouts } from './data/workoutData';
+import { jessicaWorkouts, henriqueWorkouts, mariaWorkouts, flaviaWorkouts, nikeWorkouts } from './data/workoutData';
 import { auth, signOut } from './firebase';
 
 interface AppState {
@@ -52,11 +52,25 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set, get) => {
-  // Theme is strictly locked to premium dark HUD esthetic for Tatu Gym
-  const initialTheme = 'dark';
+  // Allow user custom theme, default is 'dark' for premium dark HUD, except for teste1
+  const initialTheme = (() => {
+    if (typeof localStorage !== 'undefined') {
+      const remembered = localStorage.getItem('tatugym_remembered');
+      if (remembered) {
+        try {
+          const userData = JSON.parse(remembered);
+          if (userData && userData.username.toLowerCase() === 'teste1') {
+            return 'light';
+          }
+        } catch (_) {}
+      }
+    }
+    return 'dark';
+  })();
   
   if (typeof document !== 'undefined') {
-    document.body.classList.remove('light');
+    document.body.classList.remove('light', 'dark');
+    document.body.classList.add(initialTheme);
   }
 
   return {
@@ -80,6 +94,7 @@ export const useStore = create<AppState>((set, get) => {
     const saved = localStorage.getItem('tatugym_all_workouts');
     let loadedWorkouts = {
       teste: henriqueWorkouts,
+      teste1: henriqueWorkouts,
       teste2: jessicaWorkouts,
       teste3: [],
       henrique: henriqueWorkouts,
@@ -98,6 +113,7 @@ export const useStore = create<AppState>((set, get) => {
     // Forçar o novo treino do Henrique para atualizar a versão salva em cache do navegador
     loadedWorkouts.henrique = henriqueWorkouts;
     loadedWorkouts.teste = henriqueWorkouts;
+    loadedWorkouts.teste1 = henriqueWorkouts;
     loadedWorkouts.teste2 = jessicaWorkouts;
     loadedWorkouts.teste3 = [];
     if (typeof localStorage !== 'undefined') {
@@ -110,10 +126,13 @@ export const useStore = create<AppState>((set, get) => {
   setUser: (user) => {
     set({ user });
     if (user) {
+      const isTeste1 = user.username.toLowerCase() === 'teste1';
+      const targetTheme = isTeste1 ? 'light' : 'dark';
       if (typeof document !== 'undefined') {
-        document.body.classList.remove('light');
+        document.body.classList.remove('light', 'dark');
+        document.body.classList.add(targetTheme);
       }
-      set({ theme: 'dark' });
+      set({ theme: targetTheme });
     }
   },
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
@@ -137,8 +156,15 @@ export const useStore = create<AppState>((set, get) => {
   setAddToast: (fn) => set({ addToast: fn }),
 
   toggleTheme: () => {
-    // Strictly locked to premium dark HUD
-    set({ theme: 'dark' });
+    const nextTheme = get().theme === 'light' ? 'dark' : 'light';
+    set({ theme: nextTheme });
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('tatugym_theme', nextTheme);
+    }
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('light', 'dark');
+      document.body.classList.add(nextTheme);
+    }
   },
 
   logout: async () => {

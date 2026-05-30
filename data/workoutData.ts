@@ -90,6 +90,48 @@ export const teste2Workouts: WorkoutRoutine[] = [
 
 export const jessicaWorkouts = teste2Workouts;
 
+export const nikeWorkouts: WorkoutRoutine[] = [
+  {
+    id: 'nike-a',
+    title: 'RUNNER STRENGTH — FORÇA ESPORTIVA',
+    description: 'Foco em sprint, potência e musculatura estabilizadora de corrida.',
+    color: 'blue',
+    exercises: [
+      { id: 'nikea-1', name: 'Agachamento Búlgaro Unilateral', muscleGroup: 'Quadríceps', sets: 4, reps: '8-10', rest: 60, image: getExerciseGifUrl('Agachamento Búlgaro Unilateral') },
+      { id: 'nikea-2', name: 'Stiff Unilateral com Halteres', muscleGroup: 'Posterior', sets: 3, reps: '10-12', rest: 60, image: getExerciseGifUrl('Stiff Unilateral com Halteres') },
+      { id: 'nikea-3', name: 'Subida no Banco Explosiva', muscleGroup: 'Pernas', sets: 3, reps: '12/12', rest: 45, image: getExerciseGifUrl('Subida no Banco Explosiva') },
+      { id: 'nikea-4', name: 'Elevação Pélvica Unilateral', muscleGroup: 'Glúteo', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Elevação Pélvica Unilateral') },
+      { id: 'nikea-5', name: 'Panturrilha em pé', muscleGroup: 'Panturrilha', sets: 4, reps: '15-20', rest: 45, image: getExerciseGifUrl('Panturrilha em pé') }
+    ]
+  },
+  {
+    id: 'nike-b',
+    title: 'ATHLETIC CORE — ESTABILIDADE & TRONCO',
+    description: 'Foco em postura ideal, controle respiratório e corrida eficiente.',
+    color: 'orange',
+    exercises: [
+      { id: 'nikeb-1', name: 'Prancha para o Core', muscleGroup: 'Core', sets: 3, reps: '60s', rest: 45, image: getExerciseGifUrl('Prancha') },
+      { id: 'nikeb-2', name: 'Bicicleta Abdominal', muscleGroup: 'Abdomen', sets: 3, reps: '20-25', rest: 30, image: getExerciseGifUrl('Bicicleta Abdominal') },
+      { id: 'nikeb-3', name: 'Dead Bug', muscleGroup: 'Abdomen', sets: 3, reps: '12/12', rest: 30, image: getExerciseGifUrl('Dead Bug') },
+      { id: 'nikeb-4', name: 'Flexão', muscleGroup: 'Peito', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Flexão') }
+    ],
+    cardio: { exercise: 'Corrida Intervalada Nike Run (Sprints)', duration: 25 }
+  },
+  {
+    id: 'nike-c',
+    title: 'POWER & MOBILITY — FLEXIBILIDADE ATIVA',
+    description: 'Foco em amplitude articular, prevenção de lesões e recuperação.',
+    color: 'emerald',
+    exercises: [
+      { id: 'nikec-1', name: 'Agachamento Sumô', muscleGroup: 'Glúteo', sets: 3, reps: '12', rest: 45, image: getExerciseGifUrl('Agachamento Sumô') },
+      { id: 'nikec-2', name: 'Mesa Flexora', muscleGroup: 'Posterior', sets: 4, reps: '10-12', rest: 60, image: getExerciseGifUrl('Mesa Flexora') },
+      { id: 'nikec-3', name: 'Kettlebell Swing', muscleGroup: 'Corpo Todo', sets: 4, reps: '15', rest: 60, image: getExerciseGifUrl('Kettlebell Swing') },
+      { id: 'nikec-4', name: 'Cadeira Extensora', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 60, image: getExerciseGifUrl('Cadeira Extensora') }
+    ],
+    cardio: { exercise: 'Corrida Progressiva (Zonas de Ritmo)', duration: 35 }
+  }
+];
+
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
     id: 'h-a',

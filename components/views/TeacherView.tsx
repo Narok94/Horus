@@ -72,15 +72,15 @@ export const TeacherView: React.FC = () => {
   // Security Gate for Docente profile 'teste3'
   if (!user || user.username.toLowerCase() !== 'teste3') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-400 p-6 text-center font-sans">
-        <div className="bg-zinc-900/60 border border-zinc-900 p-8 rounded-xl max-w-sm shrink-0">
-          <span className="text-zinc-500 font-medium text-xs block mb-1">Acesso restrito</span>
-          <p className="text-xs leading-relaxed text-zinc-400 mb-6">Esta interface administrativa é exclusiva para o Docente Credenciado (Prof. Teste3).</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-700 p-6 text-center font-sans">
+        <div className="bg-white border border-gray-200 p-8 rounded-2xl max-w-sm shrink-0 shadow-lg">
+          <span className="text-red-500 font-extrabold text-xs uppercase tracking-wider block mb-1">Acesso Restrito</span>
+          <p className="text-sm leading-relaxed text-gray-500 mb-6">Esta interface administrativa é exclusiva para o Docente Credenciado (Prof. Teste3).</p>
           <button 
             onClick={logout} 
-            className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-xs transition-colors cursor-pointer"
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-colors cursor-pointer"
           >
-            Sair da conta
+            Sair da Conta
           </button>
         </div>
       </div>
@@ -357,7 +357,6 @@ export const TeacherView: React.FC = () => {
     if (!routine) return;
 
     routine.exercises = (routine.exercises || []).map(ex => {
-      // Clean target load metas in profile weights block if matching specific IDs to prevent ghost entries
       if (ex.id === id && selectedStudentUsername) {
         const studentProfileKey = `tatugym_user_profile_${selectedStudentUsername.toLowerCase()}`;
         const cached = localStorage.getItem(studentProfileKey);
@@ -533,28 +532,28 @@ export const TeacherView: React.FC = () => {
   const selectedStudentProfile = students.find(s => s.username === selectedStudentUsername);
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-zinc-200 flex flex-col lg:flex-row font-sans lg:overflow-hidden pb-safe-bottom w-full">
+    <div className="min-h-screen bg-[#F5F7FA] text-gray-950 flex flex-col lg:flex-row font-sans lg:overflow-hidden pb-safe-bottom w-full">
       
-      {/* 1. DESKTOP PERMANENT GLOBAL SIDEBAR - Elegant and fine (Notion / Figma / Linear inspiration) */}
-      <aside className="hidden lg:flex flex-col w-[260px] h-screen bg-[#0F1014] border-r border-white/[0.015] p-6 shrink-0 justify-between select-none">
+      {/* 1. DESKTOP PERMANENT GLOBAL SIDEBAR - Elegant and fine (Notion / Figma / Stripe inspiration) */}
+      <aside className="hidden lg:flex flex-col w-[260px] h-screen bg-white border-r border-gray-200 p-6 shrink-0 justify-between select-none">
         <div className="space-y-8">
           
           {/* Brand header */}
-          <div className="flex items-center gap-3">
-            <span className="font-black text-xl tracking-wider text-white uppercase italic">
-              HORUS<span className="text-zinc-650 font-normal">/</span>FIT
+          <div className="flex items-center gap-3 py-1">
+            <span className="font-black text-xl tracking-wider text-blue-600 uppercase italic">
+              HORUS<span className="text-gray-300 font-normal">/</span>TRAINING
             </span>
           </div>
 
           {/* Quick modules menu list */}
-          <div className="flex flex-col gap-2">
-            <span className="text-[10px] text-zinc-500 font-extrabold uppercase tracking-widest pl-1 mb-1">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest pl-1.5 mb-2 block">
               Painel do Docente
             </span>
             {[
               { id: 'alunos', label: 'Meus alunos', icon: Users },
-              { id: 'construtor', label: 'Construtor', icon: Dumbbell },
-              { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
+              { id: 'construtor', label: 'Ficha de Treino', icon: Dumbbell },
+              { id: 'evolucao', label: 'Progresso/Evolução', icon: TrendingUp },
             ].map(item => {
               const isActive = activeTab === item.id;
               return (
@@ -568,13 +567,13 @@ export const TeacherView: React.FC = () => {
                     }
                     setActiveTab(item.id as any);
                   }}
-                  className={`flex items-center gap-3.5 w-full py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 cursor-pointer border ${
+                  className={`flex items-center gap-3.5 w-full py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer border ${
                     isActive 
-                      ? 'bg-[#171A20] border-white/[0.04] text-white font-extrabold shadow-sm' 
-                      : 'bg-transparent border-transparent text-zinc-500 hover:text-zinc-200 hover:bg-[#171A20]/25'
+                      ? 'bg-blue-600 border-transparent text-white shadow-md shadow-blue-105' 
+                      : 'bg-transparent border-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <item.icon size={14} className={isActive ? 'text-white' : 'text-zinc-500'} />
+                  <item.icon size={15} />
                   <span>{item.label}</span>
                 </button>
               );
@@ -583,62 +582,62 @@ export const TeacherView: React.FC = () => {
         </div>
 
         {/* User profile action section */}
-        <div className="space-y-4 pt-6 border-t border-white/[0.015]">
-          <div className="flex flex-col rounded-xl bg-[#111318] border border-white/[0.015] p-3.5 font-sans">
-            <span className="text-sm font-extrabold text-zinc-200">Prof. Teste3</span>
-            <span className="text-[9px] font-mono font-black uppercase text-zinc-500 mt-1 tracking-wider">Docente Credenciado</span>
+        <div className="space-y-3 pt-5 border-t border-gray-150">
+          <div className="flex flex-col rounded-xl bg-gray-50 border border-gray-200 p-4">
+            <span className="text-sm font-black text-gray-950">Prof. Teste3</span>
+            <span className="text-[10px] font-bold uppercase text-gray-400 mt-1 tracking-wider">Docente Credenciado</span>
           </div>
 
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-1.5 py-3.5 w-full bg-zinc-100 hover:bg-white text-[#09090B] text-xs font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer shadow-sm"
+            className="flex items-center justify-center gap-2 py-3.5 w-full bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer border border-blue-100"
           >
-            <UserPlus size={13} />
+            <UserPlus size={14} />
             <span>Novo Aluno</span>
           </button>
 
           <button
             type="button"
             onClick={logout}
-            className="w-full py-3 bg-[#111318]/50 hover:bg-[#171A20] text-zinc-400 hover:text-zinc-200 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-white/[0.01]"
+            className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-gray-200"
           >
-            <LogOut size={12} />
-            <span>Desconectar</span>
+            <LogOut size={13} />
+            <span>Sair do sistema</span>
           </button>
         </div>
       </aside>
 
       {/* 2. MOBILE TOP NAV (Visible only on small viewports) */}
-      <div className="flex lg:hidden flex-col w-full shrink-0 select-none">
-        <header className="flex flex-col justify-between py-4 px-4 border-b border-white/[0.015] gap-4 shrink-0 bg-[#0F1014]">
+      <div className="flex lg:hidden flex-col w-full shrink-0 select-none bg-white border-b border-gray-200">
+        <header className="flex flex-col justify-between py-4 px-4 gap-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg text-white tracking-tight uppercase">HORUS <span className="text-zinc-400 font-black">TRAINING</span></span>
+              <span className="font-black text-lg text-blue-600 tracking-tight uppercase italic">HORUS <span className="text-gray-900 font-extrabold font-sans">TRAINING</span></span>
             </div>
             
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className="py-1.5 px-3 bg-zinc-100 hover:bg-white text-[#09090B] text-[11px] font-black uppercase rounded-lg transition-colors cursor-pointer shadow-sm"
+                className="py-2.5 px-4 bg-blue-600 text-white text-[11px] font-black uppercase rounded-xl transition-all cursor-pointer shadow-sm shadow-blue-100"
               >
                 + Aluno
               </button>
               <button
                 type="button"
                 onClick={logout}
-                className="text-zinc-400 hover:text-zinc-200 bg-[#111318] py-1.5 px-2 rounded-lg text-xs cursor-pointer border border-white/[0.01]"
+                className="text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 p-2.5 rounded-xl text-xs cursor-pointer border border-gray-200"
               >
-                <LogOut size={12} />
+                <LogOut size={14} />
               </button>
             </div>
           </div>
 
           {/* Quick Switch segment picker */}
-          <div className="flex items-center gap-0.5 bg-[#111318] p-1 rounded-xl border border-white/[0.015]">
+          <div className="flex items-center gap-0.5 bg-gray-100 p-1 rounded-xl">
             {[
-              { id: 'alunos', label: 'Alunado', icon: Users },
+              { id: 'alunos', label: 'Alunos', icon: Users },
               { id: 'construtor', label: 'Ficha', icon: Dumbbell },
               { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
             ].map(tab => (
@@ -652,10 +651,10 @@ export const TeacherView: React.FC = () => {
                   }
                   setActiveTab(tab.id as any);
                 }}
-                className={`flex items-center justify-center gap-1.5 flex-1 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   activeTab === tab.id
-                    ? 'bg-[#171A20] text-white font-extrabold shadow'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'bg-white text-gray-905 shadow-sm font-black'
+                    : 'text-gray-500 hover:text-gray-800'
                 }`}
               >
                 <tab.icon size={12} />
@@ -667,13 +666,13 @@ export const TeacherView: React.FC = () => {
       </div>
 
       {/* 3. RIGHT MASTER VIEWPORT CONTAINER - Spans 100% of the layout frame */}
-      <div className="flex-1 flex flex-col min-h-0 lg:h-screen lg:overflow-hidden bg-transparent">
+      <div className="flex-grow flex flex-col min-h-0 lg:h-screen lg:overflow-hidden bg-transparent">
         
         <main className="flex-grow flex flex-col min-h-0 lg:overflow-hidden h-auto lg:h-full">
           
-          {/* TAB 1: MEUS ALUNOS (Students directory list view) */}
+          {/* TAB 1: MEUS ALUNOS */}
           {activeTab === 'alunos' && (
-            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 md:p-8 xl:p-10">
+            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 sm:p-6 md:p-8">
               <StudentsTab 
                 students={students}
                 onOpenEditModal={handleOpenEditModal}
@@ -681,59 +680,61 @@ export const TeacherView: React.FC = () => {
               />
             </div>
           )}
- 
-          {/* TAB 2: CONSTRUTOR DE FICHA (Real Desktop Workspace App Layout) */}
+  
+          {/* TAB 2: CONSTRUTOR DE FICHA */}
           {activeTab === 'construtor' && (
             <div className="flex flex-col min-h-0 flex-grow lg:overflow-hidden lg:h-full h-auto">
               
               {!selectedStudentUsername ? (
-                <div className="flex-grow flex flex-col items-center justify-center p-8 md:p-16 text-center h-full">
-                  <div className="border border-zinc-900 border-dashed rounded-2xl p-10 max-w-md w-full bg-zinc-900/10 flex flex-col items-center">
-                    <Dumbbell className="text-zinc-650 mb-4 animate-pulse" size={36} />
-                    <p className="text-zinc-200 font-bold text-sm tracking-tight">Nenhum Aluno Ativo Selecionado</p>
-                    <p className="text-xs text-zinc-500 mt-2 leading-relaxed">Selecione um aluno da sua diretoria para começar a desenhar planilhas, ajustar cargas e criar rotinas de treinamento.</p>
+                <div className="flex-grow flex flex-col items-center justify-center p-6 md:p-12 text-center h-full">
+                  <div className="border border-gray-200 bg-white rounded-2xl p-8 max-w-md w-full flex flex-col items-center shadow-sm">
+                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                      <Dumbbell className="animate-pulse" size={28} />
+                    </div>
+                    <p className="text-gray-900 font-bold text-lg">Nenhum aluno ativo para montagem</p>
+                    <p className="text-sm text-gray-500 mt-2 leading-relaxed">Selecione um aluno cadastrado nas abas para desenhar as fichas de forma instantânea e organizar os exercícios.</p>
                     <button
                       onClick={() => setActiveTab('alunos')}
-                      className="mt-6 py-3 px-8 bg-zinc-900 hover:bg-zinc-850 text-zinc-200 border border-zinc-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                      className="mt-6 py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer shadow-sm shadow-blue-100"
                     >
-                      Ver Meus Alunos
+                      Ver Alunos Cadastrados
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col flex-grow min-h-0 lg:h-full lg:overflow-hidden h-auto">
                   
-                  {/* DEDICATED SUB-HEADER / ACTIONS STRIP - Spans fluidly above splits */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 px-6 md:px-8 border-b border-white/[0.015] shrink-0 bg-[#0F1014] select-none">
+                  {/* DEDICATED SUB-HEADER / ACTIONS STRIP - Notion / Stripe inspired */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 px-6 md:px-8 border-b border-gray-200 shrink-0 bg-white select-none">
                     
                     {/* Active target profile badge block */}
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-2 bg-[#111318] border border-white/[0.015] px-3.5 py-1.5 rounded-xl select-none">
-                        <span className="text-[10px] uppercase font-black text-zinc-500 tracking-wider font-mono">Montando para</span>
-                        <span className="text-sm text-zinc-100 font-black tracking-tight font-sans">
+                      <div className="flex items-center gap-2 bg-gray-50 border border-gray-250 px-3.5 py-1.5 rounded-xl select-none">
+                        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Aluno Ativo:</span>
+                        <span className="text-sm text-gray-950 font-black tracking-tight font-sans">
                           {selectedStudentProfile?.name || selectedStudentUsername}
                         </span>
                       </div>
  
                       {/* Interactive workout frequency sheet layout dropdown */}
                       {isDivisionSet ? (
-                        <div className="flex items-center gap-2.5 text-xs py-1.5 px-3.5 rounded-xl bg-[#111318] border border-white/[0.015] shadow-sm select-none">
-                          <span className="text-zinc-500 font-bold">Frequência:</span>
-                          <span className="text-white font-mono font-black tracking-widest uppercase">
+                        <div className="flex items-center gap-2 text-xs py-1.5 px-3 rounded-xl bg-gray-50 border border-gray-200 select-none">
+                          <span className="text-gray-400 font-bold text-[11px]">Esquema de Divisão:</span>
+                          <span className="text-blue-600 font-mono font-black tracking-widest uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-105">
                             {sheetFrequency.split('').join('/')}
                           </span>
                           <button
                             type="button"
                             onClick={() => setIsDivisionSet(false)}
-                            className="text-zinc-400 hover:text-white underline cursor-pointer hover:no-underline text-xs font-bold transition-colors ml-2"
+                            className="text-blue-600 hover:text-blue-700 underline cursor-pointer hover:no-underline text-xs font-black tracking-wide ml-2"
                           >
                             Alterar
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-3 bg-[#111318] border border-white/[0.015] p-1 px-3.5 rounded-xl select-none">
-                          <span className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Fichas:</span>
-                          <div className="flex gap-2 select-none">
+                        <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 p-1 px-3.5 rounded-xl select-none">
+                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Escolha:</span>
+                          <div className="flex gap-1.5 select-none">
                             {(['AB', 'ABC', 'ABCD', 'ABCDE'] as const).map((freq) => {
                               const isCurrentFreq = sheetFrequency === freq;
                               return (
@@ -747,10 +748,10 @@ export const TeacherView: React.FC = () => {
                                       setActiveRoutineIdx(0);
                                     }
                                   }}
-                                  className={`px-3 py-1 text-xs font-bold font-mono rounded-lg transition-colors cursor-pointer ${
+                                  className={`px-2.5 py-1 text-xs font-bold font-mono rounded-lg transition-colors cursor-pointer ${
                                     isCurrentFreq
-                                      ? 'bg-[#171A20] text-white border border-white/5 shadow'
-                                      : 'bg-transparent text-zinc-500 hover:text-zinc-330'
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-transparent text-gray-400 hover:text-gray-700'
                                   }`}
                                 >
                                   {freq}
@@ -762,11 +763,11 @@ export const TeacherView: React.FC = () => {
                       )}
                     </div>
  
-                    {/* Auto-saved checklist green flash metric and go back button */}
-                    <div className="flex items-center gap-5">
-                      <div className="flex items-center gap-2 text-zinc-500 select-none">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-xs font-bold font-sans text-zinc-400 tracking-tight">Sincronizado na nuvem</span>
+                    {/* Auto-saved checklist and go back-actions */}
+                    <div className="flex items-center justify-between sm:justify-start gap-4">
+                      <div className="flex items-center gap-2 text-green-600 select-none bg-green-50 px-3 py-1.5 rounded-lg border border-green-105">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] uppercase font-black tracking-wide font-sans">Salvo na Nuvem</span>
                       </div>
  
                       <button
@@ -775,19 +776,19 @@ export const TeacherView: React.FC = () => {
                           setSelectedStudentUsername(null);
                           setActiveTab('alunos');
                         }}
-                        className="py-2.5 px-4 bg-[#111318] hover:bg-[#171A20] text-xs text-zinc-400 hover:text-zinc-100 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-white/[0.015]"
+                        className="py-2 px-3.5 bg-gray-100 hover:bg-gray-200 text-xs text-gray-700 hover:text-gray-950 font-bold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-gray-200"
+                        style={{ minHeight: '40px' }}
                       >
-                        <ChevronLeft size={14} />
-                        <span>Voltar</span>
+                        <span>Voltar Alunos</span>
                       </button>
                     </div>
                   </div>
  
-                  {/* FULL-CANVAS SIDE-BY-SIDE INTEGRATION (Zero external borders constraint) */}
+                  {/* FULL-CANVAS RESPONSIVE SPLITS (Library left on big screen, integrated fully on mobile) */}
                   <div className="flex-grow flex flex-col lg:flex-row gap-0 lg:overflow-hidden min-h-0 w-full lg:h-full h-auto">
                     
-                    {/* LEFT COL: EMBEDDED DOCKED EXERCISE LIBRARY PANEL - Exactly 420px */}
-                    <aside className="w-full lg:w-[420px] lg:h-full shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.015] bg-[#0F1014] h-auto lg:overflow-hidden">
+                    {/* LEFT COL: EMBEDDED DOCKED EXERCISE LIBRARY PANEL - Visible only on Desktop to prevent cluttering mobile */}
+                    <aside className="hidden lg:flex w-full lg:w-[350px] xl:w-[400px] lg:h-full shrink-0 flex-col border-b lg:border-b-0 lg:border-r border-gray-200 bg-white h-auto lg:overflow-hidden">
                       <ExerciseLibrary 
                         filteredSuggestions={filteredSuggestions}
                         searchExerciseQuery={searchExerciseQuery}
@@ -800,8 +801,8 @@ export const TeacherView: React.FC = () => {
                       />
                     </aside>
  
-                    {/* RIGHT COL: MAIN DOMINANT WORKSPACE (Spans 100% of remaining screen space) */}
-                    <section className="flex-grow lg:h-full lg:overflow-hidden flex flex-col bg-[#111318] min-w-0 h-auto">
+                    {/* RIGHT COL: MAIN DOMINANT WORKSPACE */}
+                    <section className="flex-grow lg:h-full lg:overflow-hidden flex flex-col bg-[#F5F7FA] min-w-0 h-auto">
                       <WorkoutWorkspace 
                         localRoutines={localRoutines}
                         activeRoutineIdx={activeRoutineIdx}
@@ -825,6 +826,20 @@ export const TeacherView: React.FC = () => {
                         onCloneFromOtherStudent={handleCloneFromOtherStudent}
                         onClearWorkoutRoutine={handleClearWorkoutRoutine}
                         onInjectBlock={handleInjectBlock}
+                        onReorderExercises={(reorderedExercises) => {
+                          const updated = [...localRoutines];
+                          if (updated[activeRoutineIdx]) {
+                            updated[activeRoutineIdx].exercises = reorderedExercises;
+                            setLocalRoutines(updated);
+                          }
+                        }}
+                        // Mobilizer integrated parameters for responsive quick additions
+                        filteredSuggestions={filteredSuggestions}
+                        searchExerciseQuery={searchExerciseQuery}
+                        setSearchExerciseQuery={setSearchExerciseQuery}
+                        selectedMuscleFilter={selectedMuscleFilter}
+                        setSelectedMuscleFilter={setSelectedMuscleFilter}
+                        onAddExercise={handleAddNewExercise}
                       />
                     </section>
                   </div>
@@ -834,9 +849,9 @@ export const TeacherView: React.FC = () => {
             </div>
           )}
  
-          {/* TAB 3: HISTÓRICO DE PROGRESSÃO */}
+          {/* TAB 3: PROGRESÃO */}
           {activeTab === 'evolucao' && (
-            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 md:p-8 xl:p-10">
+            <div className="flex-grow flex flex-col min-h-0 h-full overflow-y-auto p-4 sm:p-6 md:p-8">
               <EvolutionTab 
                 selectedStudentUsername={selectedStudentUsername}
                 selectedStudentProfile={selectedStudentProfile}

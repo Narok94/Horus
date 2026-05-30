@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Check, X, Sparkles, Command, Dumbbell } from 'lucide-react';
+import { Search, Check, X, Sparkles, Command, Dumbbell, Plus } from 'lucide-react';
 import { BaseExercise, exerciseDatabase } from '../../../data/exerciseDatabase';
 
 interface ExerciseLibraryProps {
@@ -71,7 +71,6 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
   const [activeSubTab, setActiveSubTab] = useState<'movements' | 'templates'>('movements');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Global hotkey 'A' focuses search input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeEl = document.activeElement;
@@ -94,17 +93,15 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Enter triggers rapid add of first filtered recommendation
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (activeSubTab === 'movements' && filteredSuggestions.length > 0) {
         onAddExercise(filteredSuggestions[0]);
-        setSearchExerciseQuery(''); // clean search text for rapid workflow
+        setSearchExerciseQuery('');
       }
     }
   };
 
-  // Convert template names list into actual database objects list
   const handleSelectTemplate = (exercisesNames: string[]) => {
     if (!onInjectBlock) return;
     const resolvedExercises = exercisesNames.map(name => {
@@ -120,21 +117,20 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
   };
 
   return (
-    <div className="flex flex-col min-h-0 bg-transparent border-0 rounded-none p-6 md:p-8 lg:overflow-hidden lg:h-full h-auto w-full">
+    <div className="flex flex-col min-h-0 bg-white p-6 h-full w-full border-r border-gray-100">
       
       {/* Search Header and minimal tab switch */}
-      <div className="flex flex-col space-y-5 pb-6 border-b border-white/[0.015] shrink-0">
+      <div className="flex flex-col space-y-4 pb-4 border-b border-gray-100 shrink-0">
         
-        {/* Silent segment pickers for Movements or Core Block Templates */}
         <div className="flex items-center justify-between">
-          <div className="flex bg-[#111318] p-1 rounded-xl border border-white/[0.015]">
+          <div className="flex bg-gray-100 p-1 rounded-xl">
             <button
               type="button"
               onClick={() => setActiveSubTab('movements')}
-              className={`py-2.5 px-5 rounded-xl text-xs sm:text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+              className={`py-2 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeSubTab === 'movements'
-                  ? 'bg-[#171A20] text-zinc-100 font-extrabold shadow-sm border border-white/5'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               Biblioteca
@@ -142,46 +138,42 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
             <button
               type="button"
               onClick={() => setActiveSubTab('templates')}
-              className={`py-2.5 px-5 rounded-xl text-xs sm:text-sm font-bold tracking-tight transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+              className={`py-2 px-4 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeSubTab === 'templates'
-                  ? 'bg-[#171A20] text-zinc-100 font-extrabold shadow-sm border border-white/5'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'bg-white text-gray-900 shadow-sm font-extrabold'
+                  : 'text-gray-500 hover:text-gray-800'
               }`}
             >
-              <Sparkles size={12} className="text-zinc-400" />
+              <Sparkles size={11} className="text-blue-500" />
               <span>Blocos Prontos</span>
             </button>
           </div>
           
-          <span className="text-xs text-zinc-650 font-mono flex items-center gap-1.5 h-4 select-none mr-1">
-            <Command size={12} />
-            <span>Pressione 'A'</span>
+          <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1 select-none">
+            <Command size={10} />
+            <span>Atalho 'A'</span>
           </span>
         </div>
 
         {activeSubTab === 'movements' && (
           <>
-            {/* Search command slot - Premium search input with spacious padding */}
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
-                <Search size={18} />
-               </div>
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <Search size={16} />
+              </div>
               <input 
                 ref={inputRef}
                 type="text"
-                placeholder="Buscar exercício... [Pressione Enter para adicionar]"
+                placeholder="Buscar exercício... [Enter para add]"
                 value={searchExerciseQuery}
                 onChange={(e) => setSearchExerciseQuery(e.target.value)}
                 onKeyDown={handleInputKeyDown}
-                className="w-full bg-[#111318] border border-white/[0.015] text-sm sm:text-[15px] py-4 pl-11 pr-20 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-white/10 transition-all font-sans font-semibold tracking-tight shadow-inner"
+                className="w-full bg-gray-50 border border-gray-200 text-sm py-3 pl-11 pr-4 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold"
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-0.5 select-none text-[10px] font-mono font-bold text-zinc-500 bg-[#0F1014] border border-white/5 px-2 py-1 rounded-md">
-                <span>Enter</span>
-              </div>
             </div>
 
-            {/* Quiet categories list */}
-            <div className="flex flex-wrap gap-2 pt-1 overflow-x-auto no-scrollbar select-none">
+            {/* Muscle Group horizontal select container */}
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1 select-none">
               {['Todos', 'Peito', 'Costas', 'Pernas', 'Ombros', 'Braços'].map(muscle => {
                 const isSelected = selectedMuscleFilter === muscle;
                 return (
@@ -189,10 +181,10 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
                     key={muscle}
                     type="button"
                     onClick={() => setSelectedMuscleFilter(muscle)}
-                    className={`px-4.5 py-2.5 text-xs font-bold rounded-xl transition-all duration-155 cursor-pointer ${
+                    className={`px-3.5 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer shrink-0 ${
                       isSelected 
-                        ? 'bg-[#171A20] text-zinc-100 border border-white/5 shadow' 
-                        : 'bg-[#111318]/40 text-zinc-500 hover:text-zinc-200 border border-white/[0.005] hover:bg-[#111318]/90'
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
                     }`}
                   >
                     {muscle}
@@ -205,9 +197,9 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
       </div>
 
       {/* List Area */}
-      <div className="flex-grow lg:overflow-y-auto lg:overscroll-contain lg:pr-1 lg:no-scrollbar mt-4 overflow-visible h-auto lg:h-full">
+      <div className="flex-grow overflow-y-auto no-scrollbar mt-4 h-full">
         {activeSubTab === 'movements' ? (
-          <div className="divide-y divide-white/[0.015] space-y-1.5 pb-2">
+          <div className="space-y-1 pb-4">
             {filteredSuggestions.map((baseEx, bIdx) => {
               const isRecentlyAdded = recentAddedId === baseEx.name;
 
@@ -215,26 +207,26 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
                 <div
                   key={bIdx}
                   onClick={() => onAddExercise(baseEx)}
-                  className="flex items-center justify-between py-5 px-4 hover:bg-[#171A20]/25 border border-transparent hover:border-white/[0.015] transition-all duration-150 group rounded-xl cursor-pointer select-none"
+                  className="flex items-center justify-between py-3.5 px-3 hover:bg-gray-50 border border-transparent rounded-xl transition-all group cursor-pointer"
                 >
-                  <div className="min-w-0 pr-4">
-                    <span className="text-[15px] font-bold text-zinc-100 block truncate group-hover:text-white transition-colors tracking-tight">
+                  <div className="min-w-0 pr-3">
+                    <span className="text-sm font-bold text-gray-900 block truncate group-hover:text-blue-600 transition-colors">
                       {baseEx.name}
                     </span>
-                    <span className="text-xs text-zinc-500 font-bold uppercase tracking-wider font-sans mt-1.5 block">
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mt-1">
                       {baseEx.muscleGroup}
                     </span>
                   </div>
                   
                   <div className="shrink-0">
                     {isRecentlyAdded ? (
-                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 rounded-xl border border-white/5">
-                        <Check size={12} className="text-emerald-400" />
-                        <span>Adicionado</span>
+                      <span className="text-xs text-emerald-600 font-bold flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">
+                        <Check size={12} />
+                        <span>Add</span>
                       </span>
                     ) : (
-                      <span className="opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-zinc-300 font-bold transition-all duration-150 bg-[#171A20] px-3.5 py-2 rounded-xl border border-white/5 hover:bg-zinc-100 hover:text-[#09090B] shadow-sm">
-                        + Incluir
+                      <span className="opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-blue-600 font-bold bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white hover:border-transparent transition-all">
+                        + Add
                       </span>
                     )}
                   </div>
@@ -243,39 +235,38 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
             })}
 
             {filteredSuggestions.length === 0 && (
-              <p className="text-zinc-650 text-sm text-center py-20 font-sans">Nenhum exercício encontrado</p>
+              <p className="text-gray-400 text-xs text-center py-12">Nenhum exercício encontrado</p>
             )}
           </div>
         ) : (
-          /* PRESETS TEMPLATE PANEL with extra luxury and larger lines */
-          <div className="space-y-4 pt-2 select-none">
-            <p className="text-xs text-zinc-500 font-bold tracking-widest uppercase px-1">
-              Inserir blocos estruturados em 1 clique
+          <div className="space-y-4 pt-1 select-none pb-4">
+            <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase px-1">
+              Inserir blocos estruturados em 1 clique:
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {blockTemplates.map((block) => (
                 <div 
                   key={block.id}
-                  className="border border-white/[0.015] bg-[#111318] rounded-2xl p-6 hover:border-white/[0.035] hover:bg-[#111318]/70 transition-all flex flex-col justify-between gap-5 group"
+                  className="border border-gray-100 bg-gray-50 rounded-2xl p-4 hover:border-blue-200 hover:bg-white transition-all flex flex-col justify-between gap-4 group shadow-sm"
                 >
                   <div>
-                    <h4 className="text-base font-bold text-zinc-200 tracking-tight">
+                    <h4 className="text-sm font-bold text-gray-800 tracking-tight block">
                       {block.name}
                     </h4>
-                    <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
+                    <p className="text-xs text-gray-400 mt-1 lines-clamp-2 leading-relaxed">
                       {block.desc}
                     </p>
                     
-                    <div className="flex flex-wrap gap-2 mt-4">
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {block.exercises.slice(0, 3).map((exName, idx) => (
-                        <span key={idx} className="bg-[#0F1014] border border-white/5 text-zinc-400 text-[11px] px-3 py-1 rounded-lg font-bold">
-                          {exName.split(' ')[0]} {/* simplified label snippet */}
+                        <span key={idx} className="bg-white border border-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded-lg font-semibold">
+                          {exName.split(' ')[0]}
                         </span>
                       ))}
                       {block.exercises.length > 3 && (
-                        <span className="text-xs text-zinc-600 self-center font-extrabold pl-1 select-none">
-                          +{block.exercises.length - 3} mais
+                        <span className="text-[10px] text-gray-400 self-center font-bold pl-1">
+                          +{block.exercises.length - 3}
                         </span>
                       )}
                     </div>
@@ -284,7 +275,7 @@ export const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
                   <button
                     type="button"
                     onClick={() => handleSelectTemplate(block.exercises)}
-                    className="w-full text-center py-3.5 bg-[#171A20] hover:bg-zinc-100 hover:text-[#09090B] text-zinc-200 text-xs font-black tracking-widest uppercase rounded-xl border border-white/5 transition-all duration-150 cursor-pointer"
+                    className="w-full text-center py-2.5 bg-white border border-gray-200 hover:bg-blue-600 hover:text-white hover:border-transparent text-gray-700 text-xs font-bold rounded-xl transition-all cursor-pointer"
                   >
                     Carregar Bloco
                   </button>
