@@ -415,75 +415,109 @@ const AppContent: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col justify-between py-6 px-5 font-sans select-none relative bg-gradient-to-b from-[#112EA7] via-[#0D2483] to-[#08185C]">
+      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col justify-between py-5 px-5 font-sans select-none relative bg-gradient-to-b from-[#112EA7] to-[#0A1C5A]">
         
-        {/* PREMIUM HIGH-FIDELITY BACKGROUND AND TECH GRAPHICS */}
+        {/* iOS TOP STATUS BAR DECORATOR FOR AUTHENTIC APP FEEL */}
+        <div className="w-full absolute top-0 left-0 right-0 z-30 px-6 pt-3 pb-1 flex justify-between items-center text-white/95 text-[11px] font-semibold select-none pointer-events-none">
+          <span>14:31</span>
+          <div className="flex items-center gap-1.5">
+            {/* Cell network signal bars */}
+            <div className="flex items-end gap-0.5 h-2.5">
+              <div className="w-0.5 h-1 bg-white/95 rounded-full"></div>
+              <div className="w-0.5 h-1.5 bg-white/95 rounded-full"></div>
+              <div className="w-0.5 h-2 bg-white/95 rounded-full"></div>
+              <div className="w-0.5 h-2.5 bg-white/95 rounded-full"></div>
+            </div>
+            {/* WiFi Icon */}
+            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+              <path d="M12 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6.5-6.5a1 1 0 0 1-1.42 0 7.4 7.4 0 0 0-10.16 0 1 1 0 1 1-1.42-1.42 9.4 9.4 0 0 1 13 0 1 1 0 0 1 0 1.42zm4-4a1 1 0 0 1-1.42 0 13.06 13.06 0 0 0-18.16 0A1 1 0 0 1 1.5 9.08a15.06 15.06 0 0 1 21 0 1 1 0 0 1 0 1.42z" />
+            </svg>
+            {/* Battery shape */}
+            <div className="relative w-5 h-2.5 border border-white/80 rounded-sm flex items-center p-[1px]">
+              <div className="h-full w-full bg-white rounded-[1px]"></div>
+              <div className="absolute -right-1 w-0.5 h-1 bg-white/80 rounded-r-[1px]"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* BACKGROUND DESIGN ELEMENTS (Sophisticated subtle glow with no repeated hex patterns) */}
         <div className="absolute inset-0 pointer-events-none z-0">
-          {/* Subtle Glowing Spotlights */}
-          <div className="absolute top-[-10%] right-[-10%] w-[350px] h-[350px] rounded-full bg-blue-500/15 blur-[100px]" />
-          <div className="absolute bottom-[30%] left-[-15%] w-[400px] h-[400px] rounded-full bg-blue-600/10 blur-[120px]" />
+          {/* Main radial glow directly behind the logo for highlight */}
+          <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-80 h-80 bg-[#1D4ED8]/25 blur-[100px] rounded-full pointer-events-none" />
           
-          <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+          {/* Corner depth spots */}
+          <div className="absolute top-[-10%] right-[-10%] w-[320px] h-[320px] rounded-full bg-blue-500/10 blur-[120px]" />
+          <div className="absolute bottom-[30%] left-[-15%] w-[380px] h-[380px] rounded-full bg-blue-600/10 blur-[130px]" />
+          
+
+        </div>
+
+        {/* BLURRED DUMBBELL IN LOWER-RIGHT UPPER HALF OF BACKGROUND */}
+        <div className="absolute top-[28%] right-[-12%] sm:right-[2%] w-52 h-52 z-0 opacity-20 filter blur-[4px] pointer-events-none select-none">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full rotate-[12deg] transform">
             <defs>
-              <pattern id="hexagons-tech" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(0.8)">
-                <path d="M28 0 L56 16.2 M56 16.2 L56 48.5 M56 48.5 L28 64.7 M28 64.7 L0 48.5 M0 48.5 L0 16.2 M0 16.2 L28 0" fill="none" stroke="#FFFFFF" strokeWidth="1" />
-                <path d="M28 97 L56 80.8 M56 80.8 L56 48.5 M0 48.5 L0 80.8 M0 80.8 L28 97" fill="none" stroke="#FFFFFF" strokeWidth="1" />
-              </pattern>
+              <linearGradient id="dumbbell-metallic" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="50%" stopColor="#94A3B8" />
+                <stop offset="100%" stopColor="#1E293B" />
+              </linearGradient>
+              <linearGradient id="dumbbell-iron" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#2563EB" />
+                <stop offset="100%" stopColor="#0F172A" />
+              </linearGradient>
             </defs>
-            {/* Hexagonal overlay */}
-            <rect width="100%" height="100%" fill="url(#hexagons-tech)" />
-            
-            {/* Tech Diagonal Lines */}
-            <line x1="10%" y1="0" x2="90%" y2="100%" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
-            <line x1="90%" y1="0" x2="10%" y2="100%" stroke="rgba(255,255,255,0.05)" strokeWidth="0.8" />
-            
-            {/* Elegant Tech Circles */}
-            <circle cx="85%" cy="30%" r="4" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-            <circle cx="15%" cy="70%" r="6" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+            {/* Dumbbell central bar */}
+            <rect x="30" y="92" width="140" height="16" rx="8" fill="url(#dumbbell-metallic)" />
+            {/* Left thick iron weight block */}
+            <rect x="40" y="45" width="24" height="110" rx="10" fill="url(#dumbbell-iron)" />
+            <rect x="25" y="60" width="12" height="80" rx="6" fill="url(#dumbbell-iron)" />
+            {/* Right thick iron weight block */}
+            <rect x="136" y="45" width="24" height="110" rx="10" fill="url(#dumbbell-iron)" />
+            <rect x="163" y="60" width="12" height="80" rx="6" fill="url(#dumbbell-iron)" />
           </svg>
         </div>
 
-        <div className="w-full max-w-sm mx-auto z-10 flex flex-col justify-center flex-grow">
-          {/* ÁREA SUPERIOR: Centered Elegant Brand Group */}
-          <div className="flex flex-col items-center text-center space-y-6 mb-7">
+        <div className="w-full max-w-sm mx-auto z-10 flex flex-col justify-center flex-grow pt-8">
+          {/* PORTION 1: Top Brand Identity & Logo Group (40% Larger) */}
+          <div className="flex flex-col items-center text-center space-y-4 mb-6 select-none">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              transition={{ duration: 0.65, ease: 'easeOut' }}
               className="relative"
             >
               <img 
-                src="assets/logo_horus.png" 
-                alt="Horus Training" 
-                className="w-48 sm:w-[200px] h-auto object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+                src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png" 
+                alt="Horus Training Logo" 
+                className="w-[250px] sm:w-[280px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.3)]"
                 onError={(e) => {
-                  e.currentTarget.src = "https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png";
+                  e.currentTarget.src = "assets/logo_horus.png";
                 }}
                 referrerPolicy="no-referrer"
               />
             </motion.div>
             
-            {/* Slogan com espaçamento generoso */}
-            <div className="space-y-1 select-none">
-              <p className="text-white text-[12px] sm:text-sm font-bold uppercase tracking-[0.25em] leading-none font-sans">
+            {/* Elegant Institutional Phrase */}
+            <div className="space-y-0.5 tracking-wider">
+              <p className="text-white/90 text-xs sm:text-[13px] font-bold uppercase tracking-[0.24em] leading-tight">
                 DISCIPLINA HOJE,
               </p>
-              <p className="text-[#38BDF8] text-[12px] sm:text-sm font-black uppercase tracking-[0.25em] leading-none font-sans mt-1">
-                RESULTADO SEMPRE.
+              <p className="text-xs sm:text-[13px] font-black uppercase tracking-[0.24em] leading-tight">
+                <span className="text-[#38BDF8] font-extrabold">RESULTADO</span> <span className="text-white/90 font-bold">SEMPRE.</span>
               </p>
             </div>
           </div>
 
-          {/* CARD DE LOGIN: Card Branco Flutuante premium */}
+          {/* PORTION 2: Floating White Elite Login Card (rounded-[32px]) */}
           <motion.div 
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full bg-white rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_rgba(15,46,138,0.22)] relative border border-gray-100 flex flex-col"
+            className="w-full bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_24px_55px_rgba(10,28,90,0.25)] relative border border-white/90 flex flex-col"
           >
-            {/* CABEÇALHO DO CARD */}
+            {/* Header Section */}
             <div className="text-center mb-6">
-              <h3 className="text-[21px] sm:text-[23px] font-black text-[#0F2E8A] tracking-tight leading-none mb-1">
+              <h3 className="text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1.5">
                 Bem-vindo de volta!
               </h3>
               <p className="text-xs text-zinc-400 font-bold tracking-tight">
@@ -491,51 +525,51 @@ const AppContent: React.FC = () => {
               </p>
             </div>
 
-            {/* FORMULÁRIO */}
+            {/* Form Fields */}
             <form onSubmit={handleLogin} className="space-y-5">
-              <div className="space-y-6">
+              <div className="space-y-5">
                 
-                {/* CAMPO USUÁRIO / E-MAIL - Overlay Badge floating on border */}
-                <div className="relative text-left">
-                  {/* Floating label badge covering the border */}
-                  <div className="absolute -top-2 left-5 px-1.5 bg-white flex items-center gap-1.5 z-10 select-none">
+                {/* EMAIL FIELD (Overlay Border Badge) */}
+                <div className="relative text-left w-full">
+                  {/* Absolute label floating directly on the top border line */}
+                  <div className="absolute -top-[10px] left-5 px-2 bg-white flex items-center gap-1.5 z-10 select-none">
                     <Mail size={13} className="text-[#1D4ED8]" />
-                    <span className="text-[10px] sm:text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">E-mail</span>
+                    <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">E-mail</span>
                   </div>
                   
-                  <div className="flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl transition-all duration-300 h-14 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[60px] transition-all duration-300">
                     <input 
                       type="text" 
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full h-full bg-transparent text-gray-800 font-bold outline-none text-sm tracking-wide placeholder:text-gray-300 placeholder:font-medium px-5"
+                      className="w-full h-full bg-transparent px-5 text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
                       placeholder="Digite seu e-mail"
                       required
                     />
                   </div>
                 </div>
                 
-                {/* CAMPO SENHA - Overlay Badge floating on border */}
-                <div className="relative text-left">
-                  {/* Floating label badge covering the border */}
-                  <div className="absolute -top-2 left-5 px-1.5 bg-white flex items-center gap-1.5 z-10 select-none">
+                {/* PASSWORD FIELD (Overlay Border Badge with View Toggle) */}
+                <div className="relative text-left w-full">
+                  {/* Absolute label floating directly on the top border line */}
+                  <div className="absolute -top-[10px] left-5 px-2 bg-white flex items-center gap-1.5 z-10 select-none">
                     <Lock size={13} className="text-[#1D4ED8]" />
-                    <span className="text-[10px] sm:text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">Senha</span>
+                    <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">Senha</span>
                   </div>
                   
-                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl transition-all duration-300 h-14 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
+                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[60px] pl-5 pr-12 transition-all duration-300">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-full bg-transparent text-gray-800 font-bold outline-none text-sm tracking-wide placeholder:text-gray-300 placeholder:font-medium pl-5 pr-12"
+                      className="w-full h-full bg-transparent text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
                       placeholder="Digite sua senha"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none transition-colors"
+                      className="absolute right-4.5 text-zinc-400 hover:text-zinc-650 focus:outline-none transition-colors cursor-pointer"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -543,19 +577,19 @@ const AppContent: React.FC = () => {
                 </div>
               </div>
 
-              {/* OPÇÕES */}
-              <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                {/* Custom Checkbox exactly matching attachment */}
-                <label className="flex items-center gap-2 cursor-pointer group select-none">
+              {/* Form Options Row */}
+              <div className="flex items-center justify-between text-xs pt-1">
+                {/* Lembrar meu acesso */}
+                <label className="flex items-center gap-2.5 cursor-pointer group select-none">
                   <div 
                     onClick={() => {
                       handleVibrate();
                       setRememberMe(!rememberMe);
                     }}
-                    className={`w-4.5 h-4.5 rounded-md flex items-center justify-center border transition-all duration-200 ${
+                    className={`w-[20px] h-[20px] rounded-md flex items-center justify-center border transition-all duration-200 ${
                       rememberMe 
-                        ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_4px_rgba(29,78,216,0.2)]' 
-                        : 'bg-white border-gray-350 group-hover:border-gray-450'
+                        ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]' 
+                        : 'bg-white border-gray-300 group-hover:border-gray-500'
                     }`}
                   >
                     {rememberMe && (
@@ -564,7 +598,7 @@ const AppContent: React.FC = () => {
                       </svg>
                     )}
                   </div>
-                  <span className="text-gray-400 font-bold group-hover:text-gray-550 transition-colors pt-0.5">
+                  <span className="text-zinc-400 font-bold group-hover:text-zinc-550 transition-colors pt-0.5">
                     Lembrar meu acesso
                   </span>
                 </label>
@@ -572,18 +606,18 @@ const AppContent: React.FC = () => {
                 <button 
                   type="button" 
                   onClick={handleForgotPassword}
-                  className="text-[#1D4ED8] hover:text-[#0F2E8A] transition-colors bg-transparent border-0 font-bold text-right"
+                  className="text-[#1D4ED8] hover:text-[#0A1C5A] font-bold transition-colors bg-transparent border-0 cursor-pointer text-right"
                 >
                   Esqueci minha senha
                 </button>
               </div>
 
-              {/* BOTÃO PRINCIPAL COM GRADIENTE AZUL SELECIONADO E ÍCONE PLAY DE ACORDO COM ANEXO */}
+              {/* ENTRAR BUTTON (Exact gradient and icon placement) */}
               <motion.button 
-                whileHover={{ scale: 1.01 }}
+                whileHover={{ scale: 1.01, boxShadow: '0 6px 20px rgba(29, 78, 216, 0.25)' }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#1D4ED8] to-[#122C60] hover:brightness-110 text-white font-black text-xs uppercase tracking-[0.25em] h-14 rounded-2xl shadow-lg shadow-blue-700/25 transition-all flex justify-center items-center gap-2 cursor-pointer border-0 mt-6"
+                className="w-full bg-gradient-to-r from-[#1D4ED8] to-[#112EA7] text-white font-black text-xs uppercase tracking-[0.25em] h-[60px] rounded-2xl transition-all flex justify-center items-center gap-2.5 cursor-pointer border-0 mt-6 shadow-[0_4px_15px_rgba(29,78,216,0.2)]"
               >
                 <Play size={10} className="fill-white text-white ml-0.5" /> ENTRAR
               </motion.button>
