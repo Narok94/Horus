@@ -54,9 +54,9 @@ export const WorkoutView: React.FC = () => {
   } = useStore();
 
   const isFemale = user?.username.toLowerCase() === 'teste2' || user?.username.toLowerCase().includes('jessica') || user?.sex === 'feminino';
-  const isTeste1 = user?.username.toLowerCase() === 'teste1';
+  const isTeste1 = true;
   const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
-  const accentColor = isTeste1 ? '#1E40AF' : (isFemale ? '#FF007F' : '#00F0FF');
+  const accentColor = '#1E40AF';
 
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);

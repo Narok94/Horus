@@ -9,8 +9,8 @@ export const WorkoutsListView: React.FC = () => {
 
   if (!user) return null;
 
-  const isTeste1 = user.username.toLowerCase() === 'teste1';
-  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || [];
+  const isTeste1 = true;
+  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || [];
 
   const handleVibrate = (ms = 10) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {

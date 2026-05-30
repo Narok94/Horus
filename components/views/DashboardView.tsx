@@ -97,9 +97,9 @@ export const DashboardView: React.FC = () => {
   if (!user) return null;
 
   const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
-  const isTeste1 = user.username.toLowerCase() === 'teste1';
+  const isTeste1 = true;
   const isTeacher = user.username.toLowerCase() === 'teste3' || user.username.toLowerCase().includes('flavia');
-  const accentColor = isTeste1 ? '#1E40AF' : (isFemale ? '#FF007F' : '#00F0FF');
+  const accentColor = '#1E40AF';
 
   const handleVibrate = (duration = 10) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -151,7 +151,7 @@ export const DashboardView: React.FC = () => {
   const currentWeekWorkoutsCount = weekDates.filter(date => user.checkIns?.includes(date)).length;
   const currentDayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
-  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || [];
+  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || [];
   const nextWorkout = workouts[0] || null;
 
   const startActiveWorkout = () => {

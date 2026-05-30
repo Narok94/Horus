@@ -90,7 +90,7 @@ export const TeacherView: React.FC = () => {
   // Load students data directory from local registry
   useEffect(() => {
     const list: User[] = [];
-    const defaults = ['teste', 'teste2'];
+    const defaults = ['teste1'];
     
     defaults.forEach(uname => {
       const saved = localStorage.getItem(`tatugym_user_profile_${uname}`);
@@ -103,11 +103,11 @@ export const TeacherView: React.FC = () => {
       } else {
         list.push({
           username: uname,
-          name: uname === 'teste' ? 'Teste Masculino' : 'Teste Feminino',
+          name: 'Henrique',
           role: 'student',
-          sex: uname === 'teste2' ? 'feminino' : 'masculino',
-          streak: 0,
-          totalWorkouts: 0,
+          sex: 'masculino',
+          streak: 12,
+          totalWorkouts: 12,
           checkIns: [],
           history: [],
           isProfileComplete: true
@@ -119,7 +119,7 @@ export const TeacherView: React.FC = () => {
       const key = localStorage.key(i);
       if (key && key.startsWith('tatugym_user_profile_')) {
         const username = key.replace('tatugym_user_profile_', '');
-        if (username !== 'teste' && username !== 'teste2' && username !== 'teste3') {
+        if (username !== 'teste1' && username !== 'teste3') {
           try {
             const profileData = JSON.parse(localStorage.getItem(key) || '');
             if (profileData && profileData.role === 'student' && !list.some(s => s.username === username)) {
@@ -139,7 +139,7 @@ export const TeacherView: React.FC = () => {
   useEffect(() => {
     if (selectedStudentUsername) {
       const lower = selectedStudentUsername.toLowerCase();
-      const existing = allWorkouts[lower] || [];
+      const existing = allWorkouts[lower] || allWorkouts['teste1'] || [];
       
       // Auto deduce sheet division setting
       if (existing.length <= 2) {

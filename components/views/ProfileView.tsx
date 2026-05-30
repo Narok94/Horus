@@ -99,8 +99,8 @@ export const ProfileView: React.FC = () => {
   };
 
   const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
-  const isTeste1 = user.username.toLowerCase() === 'teste1';
-  const accentColor = isFemale ? '#FF007F' : '#00F0FF';
+  const isTeste1 = true;
+  const accentColor = '#1E40AF';
 
   const totalWorkoutsCount = user.totalWorkouts || 0;
   const checkInsCount = user.checkIns?.length || 0;

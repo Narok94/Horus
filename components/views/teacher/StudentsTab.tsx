@@ -41,7 +41,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3 min-w-0">
                     {/* Visual representation of Student gender */}
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isFemale ? 'bg-pink-50 text-pink-500' : 'bg-blue-50 text-blue-500'}`}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-blue-50 text-blue-500">
                       <Users size={18} />
                     </div>
                     <div className="min-w-0">

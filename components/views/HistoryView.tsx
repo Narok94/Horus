@@ -21,7 +21,7 @@ export const HistoryView: React.FC = () => {
     }
   };
 
-  const isTeste1 = user?.username.toLowerCase() === 'teste1';
+  const isTeste1 = true;
 
   return (
     <div className={`h-full max-h-full overflow-hidden flex flex-col justify-between pb-1 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>

@@ -126,8 +126,8 @@ export const useStore = create<AppState>((set, get) => {
   setUser: (user) => {
     set({ user });
     if (user) {
-      const isTeste1 = user.username.toLowerCase() === 'teste1';
-      const targetTheme = isTeste1 ? 'light' : 'dark';
+      const isTeacher = user.role === 'teacher' || user.username.toLowerCase() === 'teste3';
+      const targetTheme = isTeacher ? 'dark' : 'light';
       if (typeof document !== 'undefined') {
         document.body.classList.remove('light', 'dark');
         document.body.classList.add(targetTheme);

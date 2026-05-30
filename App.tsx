@@ -146,9 +146,10 @@ const AppContent: React.FC = () => {
         const remembered = localStorage.getItem('tatugym_remembered');
         if (remembered) {
           const userData = JSON.parse(remembered);
-          const allowedUsers = ['teste', 'teste1', 'teste2', 'teste3'];
-          if (allowedUsers.includes(userData.username.toLowerCase())) {
-            const profile = localStorage.getItem(`tatugym_user_profile_${userData.username.toLowerCase()}`);
+          const uName = userData.username.toLowerCase();
+          const hasProfile = localStorage.getItem(`tatugym_user_profile_${uName}`) !== null;
+          if (['teste1', 'teste3'].includes(uName) || hasProfile) {
+            const profile = localStorage.getItem(`tatugym_user_profile_${uName}`);
             const finalUser = profile ? JSON.parse(profile) : userData;
             setUser(finalUser);
             setIsLoggedIn(true);
@@ -215,40 +216,10 @@ const AppContent: React.FC = () => {
           isProfileComplete: true,
           role: 'student'
         };
-      } else if (lowerUser === 'teste') {
-        userData = {
-          username: 'teste',
-          name: 'Teste Masculino',
-          age: 25,
-          goal: 'Hipertrofia & Força',
-          totalWorkouts: 0,
-          history: [],
-          weights: {},
-          checkIns: [],
-          streak: 0,
-          badges: [],
-          isProfileComplete: true,
-          role: 'student'
-        };
-      } else if (lowerUser === 'teste2') {
-        userData = {
-          username: 'teste2',
-          name: 'Teste Feminino',
-          age: 23,
-          goal: 'Tônus muscular & Cardio',
-          totalWorkouts: 0,
-          history: [],
-          weights: {},
-          checkIns: [],
-          streak: 0,
-          badges: [],
-          isProfileComplete: true,
-          role: 'student'
-        };
       } else {
         userData = {
           username: 'teste3',
-          name: 'Professor Teste',
+          name: 'Professor',
           age: 35,
           goal: 'Orientar alunos',
           totalWorkouts: 0,
@@ -291,8 +262,9 @@ const AppContent: React.FC = () => {
     handleVibrate();
     const lowerUser = username.trim().toLowerCase();
     
+    const hasProfile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`) !== null;
     const isValidUser = 
-      ['teste', 'teste1', 'teste2', 'teste3'].includes(lowerUser) && password === '12345';
+      (['teste1', 'teste3'].includes(lowerUser) || hasProfile) && password === '12345';
 
     if (isValidUser) {
       let userData: User | null = null;
@@ -334,40 +306,10 @@ const AppContent: React.FC = () => {
             isProfileComplete: true,
             role: 'student'
           };
-        } else if (lowerUser === 'teste') {
-          userData = {
-            username: 'teste',
-            name: 'Teste Masculino',
-            age: 25,
-            goal: 'Hipertrofia & Força',
-            totalWorkouts: 0,
-            history: [],
-            weights: {},
-            checkIns: [],
-            streak: 0,
-            badges: [],
-            isProfileComplete: true,
-            role: 'student'
-          };
-        } else if (lowerUser === 'teste2') {
-          userData = {
-            username: 'teste2',
-            name: 'Teste Feminino',
-            age: 23,
-            goal: 'Tônus muscular & Cardio',
-            totalWorkouts: 0,
-            history: [],
-            weights: {},
-            checkIns: [],
-            streak: 0,
-            badges: [],
-            isProfileComplete: true,
-            role: 'student'
-          };
         } else {
           userData = {
             username: 'teste3',
-            name: 'Professor Teste',
+            name: 'Professor',
             age: 35,
             goal: 'Orientar alunos',
             totalWorkouts: 0,
@@ -415,7 +357,7 @@ const AppContent: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col justify-between py-5 px-5 font-sans select-none relative bg-gradient-to-b from-[#112EA7] to-[#0A1C5A]">
+      <div className="h-[100dvh] max-h-[100dvh] overflow-y-auto flex flex-col justify-center items-center py-4 px-5 font-sans select-none relative bg-gradient-to-b from-[#112EA7] to-[#0A1C5A]">
         
         {/* iOS TOP STATUS BAR DECORATOR FOR AUTHENTIC APP FEEL */}
         <div className="w-full absolute top-0 left-0 right-0 z-30 px-6 pt-3 pb-1 flex justify-between items-center text-white/95 text-[11px] font-semibold select-none pointer-events-none">
@@ -448,8 +390,6 @@ const AppContent: React.FC = () => {
           {/* Corner depth spots */}
           <div className="absolute top-[-10%] right-[-10%] w-[320px] h-[320px] rounded-full bg-blue-500/10 blur-[120px]" />
           <div className="absolute bottom-[30%] left-[-15%] w-[380px] h-[380px] rounded-full bg-blue-600/10 blur-[130px]" />
-          
-
         </div>
 
         {/* BLURRED DUMBBELL IN LOWER-RIGHT UPPER HALF OF BACKGROUND */}
@@ -477,9 +417,9 @@ const AppContent: React.FC = () => {
           </svg>
         </div>
 
-        <div className="w-full max-w-sm mx-auto z-10 flex flex-col justify-center flex-grow pt-8">
-          {/* PORTION 1: Top Brand Identity & Logo Group (40% Larger) */}
-          <div className="flex flex-col items-center text-center space-y-4 mb-6 select-none">
+        <div className="w-full max-w-sm mx-auto z-10 flex flex-col justify-center pt-6 pb-2">
+          {/* PORTION 1: Top Brand Identity & Logo Group (Vertically Optimized) */}
+          <div className="flex flex-col items-center text-center space-y-3 mb-4 select-none">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -489,7 +429,7 @@ const AppContent: React.FC = () => {
               <img 
                 src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png" 
                 alt="Horus Training Logo" 
-                className="w-[250px] sm:w-[280px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.3)]"
+                className="w-[200px] sm:w-[230px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.3)]"
                 onError={(e) => {
                   e.currentTarget.src = "assets/logo_horus.png";
                 }}
@@ -499,10 +439,10 @@ const AppContent: React.FC = () => {
             
             {/* Elegant Institutional Phrase */}
             <div className="space-y-0.5 tracking-wider">
-              <p className="text-white/90 text-xs sm:text-[13px] font-bold uppercase tracking-[0.24em] leading-tight">
+              <p className="text-white/90 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.24em] leading-tight">
                 DISCIPLINA HOJE,
               </p>
-              <p className="text-xs sm:text-[13px] font-black uppercase tracking-[0.24em] leading-tight">
+              <p className="text-[11px] sm:text-[12px] font-black uppercase tracking-[0.24em] leading-tight">
                 <span className="text-[#38BDF8] font-extrabold">RESULTADO</span> <span className="text-white/90 font-bold">SEMPRE.</span>
               </p>
             </div>
@@ -510,14 +450,14 @@ const AppContent: React.FC = () => {
 
           {/* PORTION 2: Floating White Elite Login Card (rounded-[32px]) */}
           <motion.div 
-            initial={{ opacity: 0, y: 35 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_24px_55px_rgba(10,28,90,0.25)] relative border border-white/90 flex flex-col"
+            className="w-full bg-white rounded-[32px] p-6 sm:p-8 shadow-[0_24px_55px_rgba(10,28,90,0.25)] relative border border-white/90 flex flex-col"
           >
             {/* Header Section */}
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1.5">
+            <div className="text-center mb-5">
+              <h3 className="text-xl sm:text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1">
                 Bem-vindo de volta!
               </h3>
               <p className="text-xs text-zinc-400 font-bold tracking-tight">
@@ -526,8 +466,8 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Form Fields */}
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-4">
                 
                 {/* EMAIL FIELD (Overlay Border Badge) */}
                 <div className="relative text-left w-full">
@@ -537,7 +477,7 @@ const AppContent: React.FC = () => {
                     <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">E-mail</span>
                   </div>
                   
-                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[60px] transition-all duration-300">
+                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[56px] transition-all duration-300">
                     <input 
                       type="text" 
                       value={username}
@@ -557,7 +497,7 @@ const AppContent: React.FC = () => {
                     <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">Senha</span>
                   </div>
                   
-                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[60px] pl-5 pr-12 transition-all duration-300">
+                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[56px] pl-5 pr-12 transition-all duration-300">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       value={password}
@@ -569,7 +509,7 @@ const AppContent: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4.5 text-zinc-400 hover:text-zinc-650 focus:outline-none transition-colors cursor-pointer"
+                      className="absolute right-4.5 text-zinc-400 hover:text-zinc-650 focus:outline-none transition-colors cursor-pointer text-center bg-transparent border-0"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -578,22 +518,22 @@ const AppContent: React.FC = () => {
               </div>
 
               {/* Form Options Row */}
-              <div className="flex items-center justify-between text-xs pt-1">
+              <div className="flex items-center justify-between text-[11px] pt-1">
                 {/* Lembrar meu acesso */}
-                <label className="flex items-center gap-2.5 cursor-pointer group select-none">
+                <label className="flex items-center gap-2 cursor-pointer group select-none">
                   <div 
                     onClick={() => {
                       handleVibrate();
                       setRememberMe(!rememberMe);
                     }}
-                    className={`w-[20px] h-[20px] rounded-md flex items-center justify-center border transition-all duration-200 ${
+                    className={`w-[18px] h-[18px] rounded-md flex items-center justify-center border transition-all duration-200 ${
                       rememberMe 
                         ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]' 
                         : 'bg-white border-gray-300 group-hover:border-gray-500'
                     }`}
                   >
                     {rememberMe && (
-                      <svg className="w-3.5 h-3.5 text-white stroke-[3.5px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3 h-3 text-white stroke-[3.5px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
@@ -606,7 +546,7 @@ const AppContent: React.FC = () => {
                 <button 
                   type="button" 
                   onClick={handleForgotPassword}
-                  className="text-[#1D4ED8] hover:text-[#0A1C5A] font-bold transition-colors bg-transparent border-0 cursor-pointer text-right"
+                  className="text-[#1D4ED8] hover:text-[#0A1C5A] font-bold transition-colors bg-transparent border-0 cursor-pointer text-right p-0"
                 >
                   Esqueci minha senha
                 </button>
@@ -617,7 +557,7 @@ const AppContent: React.FC = () => {
                 whileHover={{ scale: 1.01, boxShadow: '0 6px 20px rgba(29, 78, 216, 0.25)' }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#1D4ED8] to-[#112EA7] text-white font-black text-xs uppercase tracking-[0.25em] h-[60px] rounded-2xl transition-all flex justify-center items-center gap-2.5 cursor-pointer border-0 mt-6 shadow-[0_4px_15px_rgba(29,78,216,0.2)]"
+                className="w-full bg-gradient-to-r from-[#1D4ED8] to-[#112EA7] text-white font-black text-xs uppercase tracking-[0.25em] h-[54px] rounded-2xl transition-all flex justify-center items-center gap-2.5 cursor-pointer border-0 mt-4 shadow-[0_4px_15px_rgba(29,78,216,0.2)]"
               >
                 <Play size={10} className="fill-white text-white ml-0.5" /> ENTRAR
               </motion.button>
@@ -626,23 +566,21 @@ const AppContent: React.FC = () => {
         </div>
 
         {/* QUICK LOGIN & ACCESSIBILITY HOOK */}
-        <div className="w-full max-w-sm mx-auto mt-4 text-center z-10 space-y-1.5 shrink-0 py-2 pb-safe">
+        <div className="w-full max-w-sm mx-auto mt-3 text-center z-10 space-y-1.5 shrink-0 py-1">
           <span className="text-white/40 text-[9px] uppercase tracking-widest block font-bold leading-none">
             Acesso Rápido de Teste
           </span>
           <div className="flex gap-1.5 justify-center flex-wrap">
             {[
               { id: 'teste1', label: 'Henrique (T1)' },
-              { id: 'teste', label: 'Masc (T)' },
-              { id: 'teste2', label: 'Fem (T2)' },
-              { id: 'teste3', label: 'Docente (T3)' }
+              { id: 'teste3', label: 'Professor' }
             ].map(item => (
               <button
                 key={item.id}
                 type="button"
                 id={`quick-login-${item.id}`}
                 onClick={() => handleQuickLogin(item.id)}
-                className="px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-wider text-white/75 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/25 rounded-full backdrop-blur-sm transition-all active:scale-95 cursor-pointer leading-none"
+                className="px-3.5 py-2 text-[9px] font-bold uppercase tracking-wider text-white/75 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/25 rounded-full backdrop-blur-sm transition-all active:scale-95 cursor-pointer leading-none"
               >
                 {item.label}
               </button>
@@ -689,7 +627,7 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const isLightUser = isLoggedIn && user?.username.toLowerCase() === 'teste1';
+  const isLightUser = isLoggedIn && (user?.username.toLowerCase() === 'teste1' || user?.role !== 'teacher');
   const strokeColor = isLightUser ? "rgba(0, 0, 0, 0.015)" : "rgba(255, 255, 255, 0.02)";
   const circleFill = isLightUser ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.06)";
   const circleFillStrong = isLightUser ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
