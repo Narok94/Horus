@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import confetti from 'canvas-confetti';
 import { User, WorkoutRoutine, AppTab, SetPerformance, WorkoutHistoryEntry, Badge } from './types';
-import { jessicaWorkouts, henriqueWorkouts, mariaWorkouts, flaviaWorkouts, nikeWorkouts } from './data/workoutData';
+import { jessicaWorkouts, henriqueWorkouts } from './data/workoutData';
 import { auth, signOut } from './firebase';
 
 interface AppState {
@@ -92,15 +92,10 @@ export const useStore = create<AppState>((set, get) => {
   theme: initialTheme,
   allWorkouts: (() => {
     const saved = localStorage.getItem('tatugym_all_workouts');
-    let loadedWorkouts = {
-      teste: henriqueWorkouts,
+    let loadedWorkouts: Record<string, WorkoutRoutine[]> = {
       teste1: henriqueWorkouts,
-      teste2: jessicaWorkouts,
       teste3: [],
-      henrique: henriqueWorkouts,
-      jessica: jessicaWorkouts,
-      maria: mariaWorkouts,
-      flavia: flaviaWorkouts
+      jessica: jessicaWorkouts
     };
     if (saved) {
       try {
@@ -110,11 +105,9 @@ export const useStore = create<AppState>((set, get) => {
         console.error('Error loading workouts:', e);
       }
     }
-    // Forçar o novo treino do Henrique para atualizar a versão salva em cache do navegador
-    loadedWorkouts.henrique = henriqueWorkouts;
-    loadedWorkouts.teste = henriqueWorkouts;
+    // Forçar os treinos corretos para atualizar a versão salva em cache do navegador
     loadedWorkouts.teste1 = henriqueWorkouts;
-    loadedWorkouts.teste2 = jessicaWorkouts;
+    loadedWorkouts.jessica = jessicaWorkouts;
     loadedWorkouts.teste3 = [];
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('tatugym_all_workouts', JSON.stringify(loadedWorkouts));

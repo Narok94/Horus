@@ -53,7 +53,6 @@ export const WorkoutView: React.FC = () => {
     workoutStartTime
   } = useStore();
 
-  const isFemale = user?.username.toLowerCase() === 'teste2' || user?.username.toLowerCase().includes('jessica') || user?.sex === 'feminino';
   const isTeste1 = true;
   const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
   const accentColor = '#1E40AF';

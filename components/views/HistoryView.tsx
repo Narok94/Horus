@@ -56,8 +56,7 @@ export const HistoryView: React.FC = () => {
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar py-2 space-y-3 mt-2">
           {user?.history.map((entry) => {
-            const isFemale = user?.username.toLowerCase() === 'teste2' || user?.username.toLowerCase().includes('jessica') || user?.sex === 'feminino';
-            const accentColor = isFemale ? '#FF007F' : '#00F0FF';
+            const accentColor = '#1E40AF';
             return (
               <div 
                 key={entry.id} 

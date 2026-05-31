@@ -17,8 +17,8 @@ import {
   Dumbbell
 } from 'lucide-react';
 
-const AnilhaIcon: React.FC<{ active: boolean; current: boolean; isFemale: boolean; accentColor?: string; isLight?: boolean }> = ({ active, current, isFemale, accentColor: propAccentColor, isLight }) => {
-  const accentColor = propAccentColor || (isFemale ? '#FF007F' : '#00F0FF');
+const AnilhaIcon: React.FC<{ active: boolean; current: boolean; accentColor?: string; isLight?: boolean }> = ({ active, current, accentColor: propAccentColor, isLight }) => {
+  const accentColor = propAccentColor || '#1E40AF';
   const strokeColor = active ? accentColor : (current ? accentColor : (isLight ? '#CBD5E1' : '#27272A'));
   const innerFill = active ? strokeColor : (isLight ? '#F1F5F9' : '#09090B');
   
@@ -96,7 +96,6 @@ export const DashboardView: React.FC = () => {
 
   if (!user) return null;
 
-  const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
   const isTeste1 = true;
   const isTeacher = user.username.toLowerCase() === 'teste3' || user.username.toLowerCase().includes('flavia');
   const accentColor = '#1E40AF';
@@ -623,7 +622,7 @@ export const DashboardView: React.FC = () => {
                   }`}>
                     {dia}
                   </span>
-                  <AnilhaIcon active={treinou} current={isCurrent} isFemale={isFemale} accentColor={accentColor} isLight={isTeste1} />
+                  <AnilhaIcon active={treinou} current={isCurrent} accentColor={accentColor} isLight={isTeste1} />
                 </div>
               );
             })}

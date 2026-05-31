@@ -148,7 +148,7 @@ const AppContent: React.FC = () => {
           const userData = JSON.parse(remembered);
           const uName = userData.username.toLowerCase();
           const hasProfile = localStorage.getItem(`tatugym_user_profile_${uName}`) !== null;
-          if (['teste1', 'teste3'].includes(uName) || hasProfile) {
+          if (['teste1', 'teste3', 'jessica'].includes(uName) || hasProfile) {
             const profile = localStorage.getItem(`tatugym_user_profile_${uName}`);
             const finalUser = profile ? JSON.parse(profile) : userData;
             setUser(finalUser);
@@ -216,6 +216,22 @@ const AppContent: React.FC = () => {
           isProfileComplete: true,
           role: 'student'
         };
+      } else if (lowerUser === 'jessica') {
+        userData = {
+          username: 'jessica',
+          name: 'Jessica',
+          age: 24,
+          goal: 'Glúteo & Posterior Premium',
+          totalWorkouts: 4,
+          history: [],
+          weights: {},
+          checkIns: [],
+          streak: 4,
+          badges: [],
+          isProfileComplete: true,
+          role: 'student',
+          password: '9860'
+        };
       } else {
         userData = {
           username: 'teste3',
@@ -263,8 +279,24 @@ const AppContent: React.FC = () => {
     const lowerUser = username.trim().toLowerCase();
     
     const hasProfile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`) !== null;
+    
+    let expectedPassword = '12345';
+    if (lowerUser === 'jessica') {
+      expectedPassword = '9860';
+    } else if (hasProfile) {
+      try {
+        const profileStr = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
+        if (profileStr) {
+          const profileData = JSON.parse(profileStr);
+          if (profileData && profileData.password) {
+            expectedPassword = profileData.password;
+          }
+        }
+      } catch (err) {}
+    }
+    
     const isValidUser = 
-      (['teste1', 'teste3'].includes(lowerUser) || hasProfile) && password === '12345';
+      (['teste1', 'teste3', 'jessica'].includes(lowerUser) || hasProfile) && password === expectedPassword;
 
     if (isValidUser) {
       let userData: User | null = null;
@@ -305,6 +337,22 @@ const AppContent: React.FC = () => {
             badges: [],
             isProfileComplete: true,
             role: 'student'
+          };
+        } else if (lowerUser === 'jessica') {
+          userData = {
+            username: 'jessica',
+            name: 'Jessica',
+            age: 24,
+            goal: 'Glúteo & Posterior Premium',
+            totalWorkouts: 4,
+            history: [],
+            weights: {},
+            checkIns: [],
+            streak: 4,
+            badges: [],
+            isProfileComplete: true,
+            role: 'student',
+            password: '9860'
           };
         } else {
           userData = {
@@ -357,7 +405,7 @@ const AppContent: React.FC = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-y-auto flex flex-col justify-center items-center py-4 px-5 font-sans select-none relative bg-gradient-to-b from-[#112EA7] to-[#0A1C5A]">
+      <div className="h-[100dvh] max-h-[100dvh] overflow-y-auto w-full flex flex-col font-sans select-none relative bg-[#020412]">
         
         {/* iOS TOP STATUS BAR DECORATOR FOR AUTHENTIC APP FEEL */}
         <div className="w-full absolute top-0 left-0 right-0 z-30 px-6 pt-3 pb-1 flex justify-between items-center text-white/95 text-[11px] font-semibold select-none pointer-events-none">
@@ -382,212 +430,190 @@ const AppContent: React.FC = () => {
           </div>
         </div>
 
-        {/* BACKGROUND DESIGN ELEMENTS (Sophisticated subtle glow with no repeated hex patterns) */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          {/* Main radial glow directly behind the logo for highlight */}
-          <div className="absolute top-[18%] left-1/2 -translate-x-1/2 w-80 h-80 bg-[#1D4ED8]/25 blur-[100px] rounded-full pointer-events-none" />
-          
-          {/* Corner depth spots */}
-          <div className="absolute top-[-10%] right-[-10%] w-[320px] h-[320px] rounded-full bg-blue-500/10 blur-[120px]" />
-          <div className="absolute bottom-[30%] left-[-15%] w-[380px] h-[380px] rounded-full bg-blue-600/10 blur-[130px]" />
+        {/* TOP HALF: Background Image with Overlay */}
+        <div className="absolute top-0 left-0 w-full h-[55%] sm:h-[60%] z-0">
+          <img 
+            src="login.png" 
+            alt="Background"
+            onError={(e) => {
+              e.currentTarget.src = "https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/login.png";
+            }}
+            className="w-full h-full object-cover object-top opacity-80" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#020412]/60 via-[#112EA7]/40 to-[#020412]"></div>
+          {/* Deep blue overlay for added contrast */}
+          <div className="absolute inset-0 bg-[#0A1C5A]/40 mix-blend-multiply"></div>
         </div>
 
-        {/* BLURRED DUMBBELL IN LOWER-RIGHT UPPER HALF OF BACKGROUND */}
-        <div className="absolute top-[28%] right-[-12%] sm:right-[2%] w-52 h-52 z-0 opacity-20 filter blur-[4px] pointer-events-none select-none">
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full rotate-[12deg] transform">
-            <defs>
-              <linearGradient id="dumbbell-metallic" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FFFFFF" />
-                <stop offset="50%" stopColor="#94A3B8" />
-                <stop offset="100%" stopColor="#1E293B" />
-              </linearGradient>
-              <linearGradient id="dumbbell-iron" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#2563EB" />
-                <stop offset="100%" stopColor="#0F172A" />
-              </linearGradient>
-            </defs>
-            {/* Dumbbell central bar */}
-            <rect x="30" y="92" width="140" height="16" rx="8" fill="url(#dumbbell-metallic)" />
-            {/* Left thick iron weight block */}
-            <rect x="40" y="45" width="24" height="110" rx="10" fill="url(#dumbbell-iron)" />
-            <rect x="25" y="60" width="12" height="80" rx="6" fill="url(#dumbbell-iron)" />
-            {/* Right thick iron weight block */}
-            <rect x="136" y="45" width="24" height="110" rx="10" fill="url(#dumbbell-iron)" />
-            <rect x="163" y="60" width="12" height="80" rx="6" fill="url(#dumbbell-iron)" />
-          </svg>
-        </div>
-
-        <div className="w-full max-w-sm mx-auto z-10 flex flex-col justify-center pt-6 pb-2">
-          {/* PORTION 1: Top Brand Identity & Logo Group (Vertically Optimized) */}
-          <div className="flex flex-col items-center text-center space-y-3 mb-4 select-none">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.65, ease: 'easeOut' }}
-              className="relative"
-            >
-              <img 
-                src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png" 
-                alt="Horus Training Logo" 
-                className="w-[200px] sm:w-[230px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.3)]"
-                onError={(e) => {
-                  e.currentTarget.src = "assets/logo_horus.png";
-                }}
-                referrerPolicy="no-referrer"
-              />
-            </motion.div>
+        {/* TOP SECTION (Logo & Slogan) */}
+        <div className="relative z-10 w-full flex-1 flex flex-col justify-center items-center pt-8 pb-4 min-h-[45vh]">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.65, ease: 'easeOut' }}
+            className="relative flex flex-col items-center"
+          >
+            <img 
+              src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png" 
+              alt="Horus Training Logo" 
+              className="w-[180px] sm:w-[200px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.5)] mb-4"
+              onError={(e) => {
+                e.currentTarget.src = "assets/logo_horus.png";
+              }}
+              referrerPolicy="no-referrer"
+            />
             
-            {/* Elegant Institutional Phrase */}
-            <div className="space-y-0.5 tracking-wider">
-              <p className="text-white/90 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.24em] leading-tight">
+            <div className="space-y-0.5 tracking-wider text-center">
+              <p className="text-white text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.24em] leading-tight">
                 DISCIPLINA HOJE,
               </p>
-              <p className="text-[11px] sm:text-[12px] font-black uppercase tracking-[0.24em] leading-tight">
-                <span className="text-[#38BDF8] font-extrabold">RESULTADO</span> <span className="text-white/90 font-bold">SEMPRE.</span>
+              <p className="text-[#38BDF8] text-[11px] sm:text-[12px] font-black uppercase tracking-[0.24em] leading-tight">
+                RESULTADO SEMPRE.
               </p>
             </div>
-          </div>
-
-          {/* PORTION 2: Floating White Elite Login Card (rounded-[32px]) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full bg-white rounded-[32px] p-6 sm:p-8 shadow-[0_24px_55px_rgba(10,28,90,0.25)] relative border border-white/90 flex flex-col"
-          >
-            {/* Header Section */}
-            <div className="text-center mb-5">
-              <h3 className="text-xl sm:text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1">
-                Bem-vindo de volta!
-              </h3>
-              <p className="text-xs text-zinc-400 font-bold tracking-tight">
-                Acesse sua conta para continuar.
-              </p>
-            </div>
-
-            {/* Form Fields */}
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-4">
-                
-                {/* EMAIL FIELD (Overlay Border Badge) */}
-                <div className="relative text-left w-full">
-                  {/* Absolute label floating directly on the top border line */}
-                  <div className="absolute -top-[10px] left-5 px-2 bg-white flex items-center gap-1.5 z-10 select-none">
-                    <Mail size={13} className="text-[#1D4ED8]" />
-                    <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">E-mail</span>
-                  </div>
-                  
-                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[56px] transition-all duration-300">
-                    <input 
-                      type="text" 
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full h-full bg-transparent px-5 text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
-                      placeholder="Digite seu e-mail"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                {/* PASSWORD FIELD (Overlay Border Badge with View Toggle) */}
-                <div className="relative text-left w-full">
-                  {/* Absolute label floating directly on the top border line */}
-                  <div className="absolute -top-[10px] left-5 px-2 bg-white flex items-center gap-1.5 z-10 select-none">
-                    <Lock size={13} className="text-[#1D4ED8]" />
-                    <span className="text-[11px] font-black text-[#1D4ED8] uppercase tracking-wider">Senha</span>
-                  </div>
-                  
-                  <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-4 focus-within:ring-[#1D4ED8]/5 rounded-2xl h-[56px] pl-5 pr-12 transition-all duration-300">
-                    <input 
-                      type={showPassword ? "text" : "password"} 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-full bg-transparent text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
-                      placeholder="Digite sua senha"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4.5 text-zinc-400 hover:text-zinc-650 focus:outline-none transition-colors cursor-pointer text-center bg-transparent border-0"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Form Options Row */}
-              <div className="flex items-center justify-between text-[11px] pt-1">
-                {/* Lembrar meu acesso */}
-                <label className="flex items-center gap-2 cursor-pointer group select-none">
-                  <div 
-                    onClick={() => {
-                      handleVibrate();
-                      setRememberMe(!rememberMe);
-                    }}
-                    className={`w-[18px] h-[18px] rounded-md flex items-center justify-center border transition-all duration-200 ${
-                      rememberMe 
-                        ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]' 
-                        : 'bg-white border-gray-300 group-hover:border-gray-500'
-                    }`}
-                  >
-                    {rememberMe && (
-                      <svg className="w-3 h-3 text-white stroke-[3.5px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-zinc-400 font-bold group-hover:text-zinc-550 transition-colors pt-0.5">
-                    Lembrar meu acesso
-                  </span>
-                </label>
-
-                <button 
-                  type="button" 
-                  onClick={handleForgotPassword}
-                  className="text-[#1D4ED8] hover:text-[#0A1C5A] font-bold transition-colors bg-transparent border-0 cursor-pointer text-right p-0"
-                >
-                  Esqueci minha senha
-                </button>
-              </div>
-
-              {/* ENTRAR BUTTON (Exact gradient and icon placement) */}
-              <motion.button 
-                whileHover={{ scale: 1.01, boxShadow: '0 6px 20px rgba(29, 78, 216, 0.25)' }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="w-full bg-gradient-to-r from-[#1D4ED8] to-[#112EA7] text-white font-black text-xs uppercase tracking-[0.25em] h-[54px] rounded-2xl transition-all flex justify-center items-center gap-2.5 cursor-pointer border-0 mt-4 shadow-[0_4px_15px_rgba(29,78,216,0.2)]"
-              >
-                <Play size={10} className="fill-white text-white ml-0.5" /> ENTRAR
-              </motion.button>
-            </form>
           </motion.div>
         </div>
 
-        {/* QUICK LOGIN & ACCESSIBILITY HOOK */}
-        <div className="w-full max-w-sm mx-auto mt-3 text-center z-10 space-y-1.5 shrink-0 py-1">
-          <span className="text-white/40 text-[9px] uppercase tracking-widest block font-bold leading-none">
-            Acesso Rápido de Teste
-          </span>
-          <div className="flex gap-1.5 justify-center flex-wrap">
-            {[
-              { id: 'teste1', label: 'Henrique (T1)' },
-              { id: 'teste3', label: 'Professor' }
-            ].map(item => (
-              <button
-                key={item.id}
-                type="button"
-                id={`quick-login-${item.id}`}
-                onClick={() => handleQuickLogin(item.id)}
-                className="px-3.5 py-2 text-[9px] font-bold uppercase tracking-wider text-white/75 bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/25 rounded-full backdrop-blur-sm transition-all active:scale-95 cursor-pointer leading-none"
-              >
-                {item.label}
-              </button>
-            ))}
+        {/* BOTTOM SECTION: White Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 bg-white w-full rounded-t-[32px] pt-8 px-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col mt-auto shrink-0"
+        >
+          {/* Header Section */}
+          <div className="text-center mb-6">
+            <h3 className="text-xl sm:text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1.5">
+              Bem-vindo de volta!
+            </h3>
+            <p className="text-[12px] text-zinc-400 font-bold tracking-tight">
+              Acesse sua conta e continue evoluindo.
+            </p>
           </div>
-        </div>
 
+          {/* Form Fields */}
+          <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto w-full">
+            <div className="space-y-4">
+              
+              {/* EMAIL FIELD (Overlay Border Badge) */}
+              <div className="relative text-left w-full mt-2">
+                {/* Absolute label floating directly on the top border line */}
+                <div className="absolute -top-[9px] left-4 px-1.5 bg-white flex items-center gap-1.5 z-10 select-none">
+                  <UserIcon size={12} className="text-[#1D4ED8]" strokeWidth={2.5} />
+                  <span className="text-[10px] font-black text-[#1D4ED8] tracking-widest uppercase">E-mail</span>
+                </div>
+                
+                <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-2 focus-within:ring-[#1D4ED8]/10 rounded-2xl h-[52px] transition-all duration-300">
+                  <input 
+                    type="text" 
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full h-full bg-transparent px-4 text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
+                    placeholder="Digite seu e-mail"
+                    required
+                  />
+                </div>
+              </div>
+              
+              {/* PASSWORD FIELD (Overlay Border Badge with View Toggle) */}
+              <div className="relative text-left w-full mt-2">
+                {/* Absolute label floating directly on the top border line */}
+                <div className="absolute -top-[9px] left-4 px-1.5 bg-white flex items-center gap-1.5 z-10 select-none">
+                  <Lock size={12} className="text-[#1D4ED8]" strokeWidth={2.5} />
+                  <span className="text-[10px] font-black text-[#1D4ED8] tracking-widest uppercase">Senha</span>
+                </div>
+                
+                <div className="relative flex items-center bg-white border border-gray-200 focus-within:border-[#1D4ED8] focus-within:ring-2 focus-within:ring-[#1D4ED8]/10 rounded-2xl h-[52px] pl-4 pr-12 transition-all duration-300">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full h-full bg-transparent text-gray-800 font-semibold outline-none text-sm tracking-wide placeholder:text-gray-300"
+                    placeholder="Digite sua senha"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 text-zinc-400 hover:text-[#1D4ED8] focus:outline-none transition-colors cursor-pointer text-center bg-transparent border-0"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Form Options Row */}
+            <div className="flex items-center justify-between text-[11px] pt-1 pb-2">
+              {/* Lembrar meu acesso */}
+              <label className="flex items-center gap-2 cursor-pointer group select-none">
+                <div 
+                  onClick={() => {
+                    handleVibrate();
+                    setRememberMe(!rememberMe);
+                  }}
+                  className={`w-[18px] h-[18px] rounded flex items-center justify-center border transition-all duration-200 ${
+                    rememberMe 
+                      ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]' 
+                      : 'bg-white border-gray-300 group-hover:border-[#1D4ED8]'
+                  }`}
+                >
+                  {rememberMe && (
+                    <svg className="w-3 h-3 text-white stroke-[3px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-[#64748B] font-bold group-hover:text-[#1D4ED8] transition-colors">
+                  Lembrar meu acesso
+                </span>
+              </label>
+
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                className="text-[#1D4ED8] hover:text-[#0A1C5A] font-bold transition-colors bg-transparent border-0 cursor-pointer text-right p-0"
+              >
+                Esqueci minha senha
+              </button>
+            </div>
+
+            {/* ENTRAR BUTTON */}
+            <motion.button 
+              whileHover={{ scale: 1.01, boxShadow: '0 6px 20px rgba(29, 78, 216, 0.25)' }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full bg-[#1D4ED8] text-white font-black text-xs uppercase tracking-[0.2em] h-[52px] rounded-2xl transition-all flex justify-center items-center gap-2 cursor-pointer border-0 mt-2 shadow-[0_4px_12px_rgba(29,78,216,0.15)]"
+            >
+              <Play size={12} className="fill-white text-white ml-0.5" /> ENTRAR
+            </motion.button>
+            
+            {/* QUICK LOGIN & ACCESSIBILITY HOOK (Moved inside the card for cleaner layout) */}
+            <div className="w-full mt-4 flex flex-col items-center space-y-2 pb-2">
+              <span className="text-zinc-300 text-[9px] uppercase tracking-widest font-bold leading-none">
+                Acesso Rápido de Teste
+              </span>
+              <div className="flex gap-2 justify-center flex-wrap">
+                {[
+                  { id: 'teste1', label: 'Henrique (T1)' },
+                  { id: 'jessica', label: 'Jessica' },
+                  { id: 'teste3', label: 'Professor' }
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    id={`quick-login-${item.id}`}
+                    onClick={() => handleQuickLogin(item.id)}
+                    className="px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-[#64748B] bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-full transition-all active:scale-95 cursor-pointer leading-none"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </form>
+        </motion.div>
       </div>
     );
   }

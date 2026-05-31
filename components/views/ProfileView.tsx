@@ -98,7 +98,6 @@ export const ProfileView: React.FC = () => {
     Award: <Award size={14} className="text-accent" />
   };
 
-  const isFemale = user.username.toLowerCase() === 'teste2' || user.username.toLowerCase().includes('jessica') || user.sex === 'feminino';
   const isTeste1 = true;
   const accentColor = '#1E40AF';
 

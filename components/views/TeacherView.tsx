@@ -90,7 +90,7 @@ export const TeacherView: React.FC = () => {
   // Load students data directory from local registry
   useEffect(() => {
     const list: User[] = [];
-    const defaults = ['teste1'];
+    const defaults = ['teste1', 'jessica'];
     
     defaults.forEach(uname => {
       const saved = localStorage.getItem(`tatugym_user_profile_${uname}`);
@@ -103,14 +103,15 @@ export const TeacherView: React.FC = () => {
       } else {
         list.push({
           username: uname,
-          name: 'Henrique',
+          name: uname === 'teste1' ? 'Henrique' : 'Jessica',
           role: 'student',
-          sex: 'masculino',
-          streak: 12,
-          totalWorkouts: 12,
+          sex: uname === 'teste1' ? 'masculino' : 'feminino',
+          streak: uname === 'teste1' ? 12 : 4,
+          totalWorkouts: uname === 'teste1' ? 12 : 4,
           checkIns: [],
           history: [],
-          isProfileComplete: true
+          isProfileComplete: true,
+          password: uname === 'teste1' ? '12345' : '9860'
         });
       }
     });
@@ -119,7 +120,7 @@ export const TeacherView: React.FC = () => {
       const key = localStorage.key(i);
       if (key && key.startsWith('tatugym_user_profile_')) {
         const username = key.replace('tatugym_user_profile_', '');
-        if (username !== 'teste1' && username !== 'teste3') {
+        if (username !== 'teste1' && username !== 'jessica' && username !== 'teste3') {
           try {
             const profileData = JSON.parse(localStorage.getItem(key) || '');
             if (profileData && profileData.role === 'student' && !list.some(s => s.username === username)) {
