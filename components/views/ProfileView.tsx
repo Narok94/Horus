@@ -286,7 +286,32 @@ export const ProfileView: React.FC = () => {
         </div>
 
         {/* PWA INSTALL BANNER SECTION */}
-        {!isInstalled && (
+        {isInstalled ? (
+          <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 text-white shadow-lg space-y-3 text-left motion-preset-fade">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0">
+                <Check size={18} strokeWidth={3} />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[7.5px] font-mono font-extrabold uppercase tracking-widest text-emerald-500 block mb-0.5">Aplicativo Configurado</span>
+                <h3 className="text-sm font-black uppercase text-white tracking-tight leading-none">Horus PWA Ativo</h3>
+                <p className="text-[10px] text-zinc-400 mt-1 font-semibold leading-relaxed">
+                  Você já ativou a versão móvel de alto desempenho do Horus Training em sua tela de início.
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => {
+                handleVibrate(15);
+                setShowIOSModal(true);
+              }}
+              className="w-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900 border border-zinc-750 text-zinc-300 font-extrabold uppercase py-2.5 rounded-xl text-[10px] tracking-wider transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer shadow-md"
+            >
+              Ver Tutorial de Instalação (iOS/Safari)
+            </button>
+          </div>
+        ) : (
           <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-lg space-y-3.5 text-left motion-preset-fade">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0">
@@ -301,12 +326,23 @@ export const ProfileView: React.FC = () => {
               </div>
             </div>
             
-            <button
-              onClick={handleInstallClick}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold uppercase py-3 rounded-xl text-xs transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer shadow-lg active:scale-[0.98]"
-            >
-              <Check size={13} strokeWidth={3} /> Instalar Horus Pro
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleInstallClick}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold uppercase py-3 rounded-xl text-xs transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer shadow-lg active:scale-[0.98]"
+              >
+                <Check size={13} strokeWidth={3} /> Instalar Horus Pro
+              </button>
+              <button
+                onClick={() => {
+                  handleVibrate(15);
+                  setShowIOSModal(true);
+                }}
+                className="px-4 bg-zinc-805 hover:bg-zinc-705 border border-zinc-750 text-zinc-300 font-extrabold uppercase py-3 rounded-xl text-[10px] tracking-wide transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer shadow-md"
+              >
+                Como Instalar
+              </button>
+            </div>
           </div>
         )}
 
