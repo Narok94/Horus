@@ -50,7 +50,8 @@ export const WorkoutView: React.FC = () => {
     triggerConfetti,
     setActiveTab,
     setSelectedWorkout,
-    workoutStartTime
+    workoutStartTime,
+    handleManualCheckIn
   } = useStore();
 
   const isTeste1 = true;
@@ -175,6 +176,7 @@ export const WorkoutView: React.FC = () => {
     setIsWorkoutActive(true);
     setWorkoutStartTime(Date.now());
     setElapsedTime(0);
+    handleManualCheckIn();
   };
 
   const calculateVolume = () => {
@@ -191,7 +193,9 @@ export const WorkoutView: React.FC = () => {
 
   const handleFinishWorkout = () => {
     if (!selectedWorkout || !user || !workoutStartTime) return;
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const today = now.toISOString().split('T')[0];
     const volume = calculateVolume();
     setLastWorkoutVolume(volume);
     

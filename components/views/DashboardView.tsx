@@ -83,6 +83,7 @@ export const DashboardView: React.FC = () => {
     setSelectedWorkout, 
     logout, 
     handleManualCheckIn,
+    toggleCheckInDate,
     addToast
   } = useStore();
 
@@ -106,13 +107,27 @@ export const DashboardView: React.FC = () => {
     }
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  const todayStr = now.toISOString().split('T')[0];
   const checkedInToday = user.checkIns?.includes(todayStr) || false;
 
   const handleCheckInClick = () => {
     handleVibrate(30);
     handleManualCheckIn();
     if (addToast) addToast('Check-in rápido registrado com sucesso! +45 XP obtido', 'success');
+  };
+
+  const handleToggleDay = (dia: string, dateStr: string, wasChecked: boolean) => {
+    handleVibrate(30);
+    toggleCheckInDate(dateStr);
+    if (addToast) {
+      if (wasChecked) {
+        addToast(`Presença de ${dia} removida com sucesso.`, 'info');
+      } else {
+        addToast(`Presença de ${dia} confirmada! +45 XP obtido`, 'success');
+      }
+    }
   };
 
   const totalWorkoutsCount = user.totalWorkouts || 0;
@@ -133,9 +148,12 @@ export const DashboardView: React.FC = () => {
   const getWeekDates = () => {
     const dates = [];
     const today = new Date();
+    // Adjust today to prevent timezone shift if running near midnight
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     const day = today.getDay();
     const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(today.setDate(diff));
+    const monday = new Date(today);
+    monday.setDate(diff);
     
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
@@ -611,19 +629,24 @@ export const DashboardView: React.FC = () => {
               const isCurrent = currentDayIndex === idx;
               
               return (
-                <div key={idx} className="flex flex-col items-center gap-1.5 leading-none">
+                <button 
+                  key={idx}
+                  type="button"
+                  onClick={() => handleToggleDay(dia, dateStr, treinou)}
+                  className="flex flex-col items-center gap-1.5 leading-none bg-transparent border-0 cursor-pointer py-1.5 px-0.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-center focus:outline-none"
+                >
                   <span className={`text-[8.5px] font-mono font-black ${
                     isCurrent 
                       ? 'text-accent font-black' 
                       : (treinou 
-                          ? (isTeste1 ? 'text-zinc-950 font-[900]' : 'text-zinc-700 dark:text-zinc-350') 
-                          : (isTeste1 ? 'text-zinc-900 font-[900]' : 'text-zinc-400 dark:text-zinc-650')
+                          ? (isTeste1 ? 'text-zinc-950 font-[900]' : 'text-zinc-750 dark:text-zinc-300') 
+                          : (isTeste1 ? 'text-zinc-400 font-[900]' : 'text-zinc-500 dark:text-zinc-600')
                         )
                   }`}>
                     {dia}
                   </span>
                   <AnilhaIcon active={treinou} current={isCurrent} accentColor={accentColor} isLight={isTeste1} />
-                </div>
+                </button>
               );
             })}
           </div>

@@ -45,6 +45,7 @@ interface AppState {
   updateUserProfile: (newData: Partial<User>) => void;
   checkAchievements: () => void;
   handleManualCheckIn: () => void;
+  toggleCheckInDate: (dateStr: string) => void;
   triggerConfetti: () => void;
   addToast?: (message: string, type: 'success' | 'error' | 'info') => void;
   setAddToast: (fn: (message: string, type: 'success' | 'error' | 'info') => void) => void;
@@ -195,16 +196,50 @@ export const useStore = create<AppState>((set, get) => {
   handleManualCheckIn: () => {
     const { user, updateUserProfile, triggerConfetti } = get();
     if (!user) return;
-    const today = new Date().toISOString().split('T')[0];
-    if (user.checkIns.includes(today)) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const today = now.toISOString().split('T')[0];
+    
+    if (user.checkIns?.includes(today)) {
       return;
     }
-    const newCheckIns = [...user.checkIns, today];
+    const newCheckIns = [...(user.checkIns || []), today];
     updateUserProfile({ 
       checkIns: newCheckIns,
       streak: (user.streak || 0) + 1 
     });
     triggerConfetti();
+  },
+
+  toggleCheckInDate: (dateStr: string) => {
+    const { user, updateUserProfile, triggerConfetti } = get();
+    if (!user) return;
+    const currentCheckIns = user.checkIns ? [...user.checkIns] : [];
+    const index = currentCheckIns.indexOf(dateStr);
+    let isAdding = false;
+    
+    if (index > -1) {
+      currentCheckIns.splice(index, 1);
+    } else {
+      currentCheckIns.push(dateStr);
+      isAdding = true;
+    }
+
+    // Dynamic streak: simple calculation could just be increment/decrement,
+    // let's do a recalculation based on actual consecutive days if desired,
+    // or just increment streak on add and decrement on remove (clamped to >= 0)
+    let newStreak = user.streak || 0;
+    if (isAdding) {
+      newStreak += 1;
+      triggerConfetti();
+    } else {
+      newStreak = Math.max(0, newStreak - 1);
+    }
+
+    updateUserProfile({
+      checkIns: currentCheckIns,
+      streak: newStreak
+    });
   },
 
   triggerConfetti: () => {

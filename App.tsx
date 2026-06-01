@@ -269,8 +269,6 @@ const AppContent: React.FC = () => {
     } else {
       localStorage.removeItem('tatugym_remembered');
     }
-    
-    if (addToast) addToast(`Bem-vindo de volta, ${userData.name}!`, 'success');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -387,8 +385,6 @@ const AppContent: React.FC = () => {
       } else {
         localStorage.removeItem('tatugym_remembered');
       }
-      
-      if (addToast) addToast(`Bem-vindo de volta, ${userData.name}!`, 'success');
     } else {
       if (addToast) addToast('Usuário ou senha incorreta.', 'error');
     }
