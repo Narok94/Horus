@@ -251,7 +251,7 @@ export const DashboardView: React.FC = () => {
           
           <div className="flex justify-between items-start w-full relative z-10">
             {/* Info Text Stack - Compact block spacing */}
-            <div className="space-y-2.5 text-left">
+            <div className="space-y-2.5 text-left relative z-10">
               <span className="inline-block bg-white/10 text-white text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-white/10 shrink-0 select-none backdrop-blur-sm">
                 TREINO DE HOJE
               </span>
@@ -290,7 +290,7 @@ export const DashboardView: React.FC = () => {
             </div>
 
             {/* Premium 3D Isometric Dumbbell SVG Graphic - Repositioned and resized for compactness */}
-            <div className="absolute right-[-15px] top-[-15px] w-28 h-28 pointer-events-none select-none opacity-95">
+            <div className="absolute right-[-15px] top-[-15px] w-28 h-28 pointer-events-none select-none opacity-95 z-0">
               <svg viewBox="0 0 200 200" className="w-full h-full object-contain" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="barGradientPremium" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -421,7 +421,9 @@ export const DashboardView: React.FC = () => {
                 TEMPO TOTAL
               </span>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-extrabold text-white leading-none">{Math.max(1, Math.round(((user.totalWorkouts || 0) * 45) / 60))}h</span>
+                <span className="text-lg font-extrabold text-white leading-none">
+                  {user.totalWorkouts > 0 ? `${Math.max(1, Math.round((user.totalWorkouts * 45) / 60))}h` : '0h'}
+                </span>
                 <span className="text-[9px] font-bold text-white/70 leading-none flex items-center">dedicado</span>
               </div>
             </div>

@@ -140,6 +140,47 @@ const AppContent: React.FC = () => {
   }, [rememberMe]);
 
   useEffect(() => {
+    // One-time reset for Henrique (teste1)
+    try {
+      const hasReset = localStorage.getItem('tatugym_henrique_reset_20260601');
+      if (!hasReset) {
+        const profileKey = 'tatugym_user_profile_teste1';
+        const savedProfile = localStorage.getItem(profileKey);
+        if (savedProfile) {
+          try {
+            const parsed = JSON.parse(savedProfile);
+            if (parsed) {
+              parsed.totalWorkouts = 0;
+              parsed.streak = 0;
+              parsed.checkIns = [];
+              parsed.history = [];
+              localStorage.setItem(profileKey, JSON.stringify(parsed));
+            }
+          } catch (_) {}
+        }
+
+        const rememberedKey = 'tatugym_remembered';
+        const remembered = localStorage.getItem(rememberedKey);
+        if (remembered) {
+          try {
+            const parsed = JSON.parse(remembered);
+            if (parsed && parsed.username === 'teste1') {
+              parsed.totalWorkouts = 0;
+              parsed.streak = 0;
+              parsed.checkIns = [];
+              parsed.history = [];
+              localStorage.setItem(rememberedKey, JSON.stringify(parsed));
+            }
+          } catch (_) {}
+        }
+        localStorage.setItem('tatugym_henrique_reset_20260601', 'true');
+      }
+    } catch (e) {
+      console.error('Error running Henrique reset:', e);
+    }
+  }, []);
+
+  useEffect(() => {
     const checkAutoLogin = async () => {
       try {
         console.log('[App] Verificando auto-login...');
@@ -194,11 +235,11 @@ const AppContent: React.FC = () => {
           name: 'Henrique',
           age: 26,
           goal: 'Hipertrofia & Força',
-          totalWorkouts: 12,
+          totalWorkouts: 0,
           history: [],
           weights: {},
           checkIns: [],
-          streak: 12,
+          streak: 0,
           badges: [],
           isProfileComplete: true,
           role: 'student'
@@ -296,29 +337,16 @@ const AppContent: React.FC = () => {
 
       if (!userData) {
         if (lowerUser === 'teste1') {
-          const getWeekDatesForTeste1 = () => {
-            const today = new Date();
-            const day = today.getDay();
-            const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-            const mon = new Date(today.setDate(diff));
-            const dates = [];
-            for (let i = 0; i < 7; i++) {
-              const d = new Date(mon);
-              d.setDate(mon.getDate() + i);
-              dates.push(d.toISOString().split('T')[0]);
-            }
-            return [dates[0], dates[1], dates[5]];
-          };
           userData = {
             username: 'teste1',
             name: 'Henrique',
             age: 26,
             goal: 'Hipertrofia & Força',
-            totalWorkouts: 12,
+            totalWorkouts: 0,
             history: [],
             weights: {},
-            checkIns: getWeekDatesForTeste1(),
-            streak: 12,
+            checkIns: [],
+            streak: 0,
             badges: [],
             isProfileComplete: true,
             role: 'student'
