@@ -251,16 +251,16 @@ export const DashboardView: React.FC = () => {
           
           <div className="flex justify-between items-start w-full relative z-10">
             {/* Info Text Stack - Compact block spacing */}
-            <div className="space-y-2.5 text-left relative z-10">
+            <div className="space-y-2.5 text-left relative z-20 max-w-[75%]">
               <span className="inline-block bg-white/10 text-white text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full border border-white/10 shrink-0 select-none backdrop-blur-sm">
                 TREINO DE HOJE
               </span>
               
               <div className="space-y-1">
-                <h2 className="text-[28px] sm:text-[31px] font-nike italic font-black tracking-tighter uppercase leading-none m-0 p-0 text-white">
+                <h2 className="text-[24px] sm:text-[28px] font-extrabold tracking-tight uppercase leading-tight m-0 p-0 text-white drop-shadow-sm pr-2">
                   {nextWorkout ? nextWorkout.title : 'TREINO RESGATADO'}
                 </h2>
-                <p className="text-white/85 text-[11.5px] font-semibold tracking-wide leading-none">
+                <p className="text-white/85 text-[12px] font-medium tracking-wide leading-snug line-clamp-2 pr-2">
                   {nextWorkout ? nextWorkout.description : 'Carregando suas séries...'}
                 </p>
               </div>
@@ -290,7 +290,7 @@ export const DashboardView: React.FC = () => {
             </div>
 
             {/* Premium 3D Isometric Dumbbell SVG Graphic - Repositioned and resized for compactness */}
-            <div className="absolute right-[-15px] top-[-15px] w-28 h-28 pointer-events-none select-none opacity-95 z-0">
+            <div className="absolute right-[-15px] top-[-15px] w-28 h-28 pointer-events-none select-none opacity-40 z-0">
               <svg viewBox="0 0 200 200" className="w-full h-full object-contain" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="barGradientPremium" x1="0%" y1="0%" x2="100%" y2="100%">

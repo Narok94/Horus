@@ -418,29 +418,6 @@ const AppContent: React.FC = () => {
     return (
       <div className="h-[100dvh] max-h-[100dvh] overflow-y-auto w-full flex flex-col font-sans select-none relative bg-[#020412]">
         
-        {/* iOS TOP STATUS BAR DECORATOR FOR AUTHENTIC APP FEEL */}
-        <div className="w-full absolute top-0 left-0 right-0 z-30 px-6 pt-3 pb-1 flex justify-between items-center text-white/95 text-[11px] font-semibold select-none pointer-events-none">
-          <span>14:31</span>
-          <div className="flex items-center gap-1.5">
-            {/* Cell network signal bars */}
-            <div className="flex items-end gap-0.5 h-2.5">
-              <div className="w-0.5 h-1 bg-white/95 rounded-full"></div>
-              <div className="w-0.5 h-1.5 bg-white/95 rounded-full"></div>
-              <div className="w-0.5 h-2 bg-white/95 rounded-full"></div>
-              <div className="w-0.5 h-2.5 bg-white/95 rounded-full"></div>
-            </div>
-            {/* WiFi Icon */}
-            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-              <path d="M12 21a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6.5-6.5a1 1 0 0 1-1.42 0 7.4 7.4 0 0 0-10.16 0 1 1 0 1 1-1.42-1.42 9.4 9.4 0 0 1 13 0 1 1 0 0 1 0 1.42zm4-4a1 1 0 0 1-1.42 0 13.06 13.06 0 0 0-18.16 0A1 1 0 0 1 1.5 9.08a15.06 15.06 0 0 1 21 0 1 1 0 0 1 0 1.42z" />
-            </svg>
-            {/* Battery shape */}
-            <div className="relative w-5 h-2.5 border border-white/80 rounded-sm flex items-center p-[1px]">
-              <div className="h-full w-full bg-white rounded-[1px]"></div>
-              <div className="absolute -right-1 w-0.5 h-1 bg-white/80 rounded-r-[1px]"></div>
-            </div>
-          </div>
-        </div>
-
         {/* TOP HALF: Background Image with Overlay */}
         <div className="absolute top-0 left-0 w-full h-[55%] sm:h-[60%] z-0">
           <img 
