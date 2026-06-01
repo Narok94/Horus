@@ -25,6 +25,55 @@ export const ProfileView: React.FC = () => {
   const [editHeight, setEditHeight] = useState('');
   const [editLevel, setEditLevel] = useState('');
 
+  // PWA States
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [showIOSModal, setShowIOSModal] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isStandalone = 
+        window.matchMedia('(display-mode: standalone)').matches || 
+        (navigator as any).standalone === true;
+      setIsInstalled(!!isStandalone);
+
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const isApple = /iphone|ipad|ipod/.test(userAgent) || (navigator.maxTouchPoints > 0 && /macintosh/.test(userAgent));
+      setIsIOS(isApple);
+
+      const handleBeforeInstallPrompt = (e: Event) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+      };
+
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
+    }
+  }, []);
+
+  const handleInstallClick = async () => {
+    handleVibrate(15);
+    if (isIOS) {
+      setShowIOSModal(true);
+    } else if (deferredPrompt) {
+      deferredPrompt.prompt();
+      try {
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          setIsInstalled(true);
+        }
+      } catch (err) {
+        console.error('Error with prompt:', err);
+      }
+      setDeferredPrompt(null);
+    } else {
+      setShowIOSModal(true); // Fallback showing gorgeous general/iOS install modal instructions
+    }
+  };
+
   if (!user) return null;
 
   const handleVibrate = (ms = 10) => {
@@ -235,6 +284,31 @@ export const ProfileView: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* PWA INSTALL BANNER SECTION */}
+        {!isInstalled && (
+          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-lg space-y-3.5 text-left motion-preset-fade">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0">
+                <Rocket size={18} className="animate-pulse" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[7.5px] font-mono font-extrabold uppercase tracking-widest text-blue-500 block mb-0.5">Acesso Exclusivo</span>
+                <h3 className="text-sm font-black uppercase text-white tracking-tight leading-none">Instalar Aplicativo</h3>
+                <p className="text-[10px] text-zinc-400 mt-1 font-semibold leading-relaxed">
+                  Adicione o Horus Training à sua tela de início para desfrutar de telas cheias e desempenho acelerado.
+                </p>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleInstallClick}
+              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold uppercase py-3 rounded-xl text-xs transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer shadow-lg active:scale-[0.98]"
+            >
+              <Check size={13} strokeWidth={3} /> Instalar Horus Pro
+            </button>
+          </div>
+        )}
 
         {/* GALLERIA: Conquistas do Atleta row */}
         <div className="space-y-3 text-left">
@@ -453,6 +527,82 @@ export const ProfileView: React.FC = () => {
                   className="w-full py-3 bg-zinc-900 hover:bg-zinc-850 text-white font-extrabold text-[10px] uppercase rounded-xl tracking-wider transition-all cursor-pointer text-center"
                 >
                   Fechar Conquista
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {showIOSModal && (
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-md z-40 flex items-center justify-center p-3">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="w-full max-w-sm bg-[#080808] border border-slate-850 rounded-2xl p-5 space-y-4 shadow-2xl overflow-y-auto max-h-[92%] text-left"
+            >
+              <div className="flex justify-between items-center pb-1 border-b border-white/5">
+                <div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-tight">Instalar Horus Training</h3>
+                  <p className="text-[7.5px] font-mono text-zinc-500 uppercase tracking-widest mt-0.5">Dispositivo iOS / Safari necessário</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleVibrate(5);
+                    setShowIOSModal(false);
+                  }}
+                  className="w-7 h-7 bg-zinc-900 hover:bg-zinc-800 border border-white/5 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+
+              <div className="space-y-3.5 py-1">
+                <div className="flex gap-3 items-start">
+                  <div className="w-5 h-5 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0 mt-0.5 text-[9px] font-black font-mono">1</div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-black text-white">Abra a Barra de Navegação</p>
+                    <p className="text-[10px] text-zinc-500 leading-normal font-medium">No navegador Safari, localize a barra inferior de ferramentas.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 items-start">
+                  <div className="w-5 h-5 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0 mt-0.5 text-[9px] font-black font-mono">2</div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-black text-white">Toque no botão "Compartilhar"</p>
+                    <p className="text-[10px] text-zinc-500 leading-normal font-medium">É o ícone representado por um quadrado com uma seta apontando para cima.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 items-start">
+                  <div className="w-5 h-5 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0 mt-0.5 text-[9px] font-black font-mono">3</div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-black text-white">Selecione "Adicionar à Tela de Início"</p>
+                    <p className="text-[10px] text-zinc-500 leading-normal font-medium">Role o menu de compartilhamento para baixo até encontrar esta opção.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 items-start">
+                  <div className="w-5 h-5 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-500 shrink-0 mt-0.5 text-[9px] font-black font-mono">4</div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-black text-white">Toque em "Adicionar"</p>
+                    <p className="text-[10px] text-zinc-500 leading-normal font-medium">Confirme o nome do aplicativo e conclua a instalação com o botão no canto superior direito.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleVibrate(5);
+                    setShowIOSModal(false);
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold uppercase py-2.5 rounded-xl text-[10px] tracking-wider transition-colors text-center"
+                >
+                  Entendido, vou adicionar!
                 </button>
               </div>
             </motion.div>
