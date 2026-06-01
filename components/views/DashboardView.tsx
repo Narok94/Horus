@@ -23,7 +23,7 @@ const AnilhaIcon: React.FC<{ active: boolean; current: boolean; accentColor?: st
   const innerFill = active ? strokeColor : (isLight ? '#F1F5F9' : '#09090B');
   
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center pointer-events-none">
       <svg 
         viewBox="0 0 100 100" 
         className={`w-6 h-6 sm:w-7 sm:h-7 transition-all duration-300 ${
@@ -169,7 +169,16 @@ export const DashboardView: React.FC = () => {
   const currentDayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
   const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || [];
-  const nextWorkout = workouts[0] || null;
+  
+  // Find index of the most recently finished workout in the user's history
+  const lastCompleted = user.history && user.history.length > 0 ? user.history[0] : null;
+  const lastWorkoutIndex = lastCompleted 
+    ? workouts.findIndex(w => w.id === lastCompleted.workoutId || w.title.toLowerCase() === lastCompleted.workoutTitle.toLowerCase()) 
+    : -1;
+  
+  // The next recommended workout is the next one in the array sequence. If last was -1, it starts from workouts[0].
+  const nextWorkoutIndex = lastWorkoutIndex > -1 ? (lastWorkoutIndex + 1) % workouts.length : 0;
+  const nextWorkout = workouts[nextWorkoutIndex] || workouts[0] || null;
 
   const startActiveWorkout = () => {
     handleVibrate(40);
@@ -248,11 +257,11 @@ export const DashboardView: React.FC = () => {
               </span>
               
               <div className="space-y-1">
-                <h2 className="text-[28px] sm:text-[31px] font-black tracking-tighter uppercase font-sans leading-none m-0 p-0 text-white">
-                  TREINO A
+                <h2 className="text-[28px] sm:text-[31px] font-nike italic font-black tracking-tighter uppercase leading-none m-0 p-0 text-white">
+                  {nextWorkout ? nextWorkout.title : 'TREINO RESGATADO'}
                 </h2>
                 <p className="text-white/85 text-[11.5px] font-semibold tracking-wide leading-none">
-                  Peito • Ombro • Tríceps
+                  {nextWorkout ? nextWorkout.description : 'Carregando suas séries...'}
                 </p>
               </div>
 
@@ -273,7 +282,7 @@ export const DashboardView: React.FC = () => {
                     <Dumbbell size={11} strokeWidth={2.5} />
                   </div>
                   <div className="flex flex-col text-left leading-none justify-center">
-                    <span className="text-[11px] font-black text-white">5</span>
+                    <span className="text-[11px] font-black text-white">{nextWorkout?.exercises?.length || 0}</span>
                     <span className="text-[7.5px] text-white/50 font-black uppercase tracking-wider mt-0.5">exercícios</span>
                   </div>
                 </div>
@@ -342,7 +351,7 @@ export const DashboardView: React.FC = () => {
               FREQUÊNCIA SEMANAL
             </h3>
             <span className="bg-white/10 border border-white/10 text-white px-2.5 py-1 rounded-full text-[9px] font-black tracking-tight leading-none">
-              3/7 dias
+              {currentWeekWorkoutsCount}/7 dias
             </span>
           </div>
 
@@ -350,10 +359,14 @@ export const DashboardView: React.FC = () => {
             {weekDays.map((dia, idx) => {
               const dateStr = weekDates[idx];
               const isToday = currentDayIndex === idx;
-              const treinou = user.checkIns?.includes(dateStr) || idx === 0 || idx === 1 || idx === 5;
+              const treinou = user.checkIns?.includes(dateStr) || false;
               
               return (
-                <div key={idx} className="flex flex-col items-center gap-1.5">
+                <button 
+                  key={idx} 
+                  onClick={() => handleToggleDay(dia, dateStr, treinou)}
+                  className="flex flex-col items-center gap-1.5 cursor-pointer bg-transparent border-0 outline-none p-0 focus:outline-none"
+                >
                   <span className={`text-[9px] font-extrabold tracking-wider ${
                     isToday ? 'text-white font-black scale-105' : 'text-white/60'
                   }`}>
@@ -365,10 +378,10 @@ export const DashboardView: React.FC = () => {
                         <CheckCircle2 size={12} className="text-[#1E40AF] fill-[#1E40AF]/15 animate-fade" />
                       </div>
                     ) : (
-                      <div className="w-7 h-7 rounded-full border border-white/20 bg-white/5 flex" />
+                      <div className="w-7 h-7 rounded-full border border-white/20 bg-white/5 flex hover:bg-white/10 transition-colors" />
                     )}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -387,7 +400,7 @@ export const DashboardView: React.FC = () => {
                 SEQUÊNCIA
               </span>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-extrabold text-white leading-none">12</span>
+                <span className="text-lg font-extrabold text-white leading-none">{user.streak || 0}</span>
                 <span className="text-[9px] font-bold text-white/70 leading-none">dias</span>
               </div>
             </div>
@@ -408,13 +421,13 @@ export const DashboardView: React.FC = () => {
                 TEMPO TOTAL
               </span>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-extrabold text-white leading-none">38h</span>
+                <span className="text-lg font-extrabold text-white leading-none">{Math.max(1, Math.round(((user.totalWorkouts || 0) * 45) / 60))}h</span>
                 <span className="text-[9px] font-bold text-white/70 leading-none flex items-center">dedicado</span>
               </div>
             </div>
             
             <p className="text-[8px] text-white/80 font-medium leading-none">
-              Tempo dedicado
+              Treino consistente
             </p>
           </div>
 
@@ -426,16 +439,16 @@ export const DashboardView: React.FC = () => {
             
             <div className="leading-none space-y-0.5">
               <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
-                PRÓXIMO TREINO
+                RECOMENDADO
               </span>
               <div className="space-y-0.5">
-                <span className="text-[12px] font-black text-white block leading-none">Treino B</span>
-                <span className="text-[8px] font-bold text-white/60 block leading-none">Domingo</span>
+                <span className="text-[12px] font-black text-white block leading-none truncate">{nextWorkout ? nextWorkout.title : 'Nenhum'}</span>
+                <span className="text-[8px] font-bold text-white/60 block leading-none">Sua sequência</span>
               </div>
             </div>
             
-            <p className="text-[8px] text-white/80 font-bold leading-none truncate" title="Peito • Costas • Bíceps">
-              Peito • Costas • Bíc.
+            <p className="text-[8px] text-white/80 font-bold leading-none truncate" title={nextWorkout ? nextWorkout.description : ''}>
+              {nextWorkout ? nextWorkout.description : 'Treinos em dia.'}
             </p>
           </div>
         </div>
@@ -633,7 +646,7 @@ export const DashboardView: React.FC = () => {
                   key={idx}
                   type="button"
                   onClick={() => handleToggleDay(dia, dateStr, treinou)}
-                  className="flex flex-col items-center gap-1.5 leading-none bg-transparent border-0 cursor-pointer py-1.5 px-0.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-center focus:outline-none"
+                  className="flex flex-col items-center justify-center gap-1.5 leading-none bg-transparent border-0 cursor-pointer py-2 px-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-center focus:outline-none select-none relative z-10 w-full"
                 >
                   <span className={`text-[8.5px] font-mono font-black ${
                     isCurrent 

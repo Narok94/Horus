@@ -189,19 +189,6 @@ const AppContent: React.FC = () => {
 
     if (!userData) {
       if (lowerUser === 'teste1') {
-        const getWeekDatesForTeste1 = () => {
-          const today = new Date();
-          const day = today.getDay();
-          const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-          const mon = new Date(today.setDate(diff));
-          const dates = [];
-          for (let i = 0; i < 7; i++) {
-            const d = new Date(mon);
-            d.setDate(mon.getDate() + i);
-            dates.push(d.toISOString().split('T')[0]);
-          }
-          return [dates[0], dates[1], dates[5]];
-        };
         userData = {
           username: 'teste1',
           name: 'Henrique',
@@ -210,7 +197,7 @@ const AppContent: React.FC = () => {
           totalWorkouts: 12,
           history: [],
           weights: {},
-          checkIns: getWeekDatesForTeste1(),
+          checkIns: [],
           streak: 12,
           badges: [],
           isProfileComplete: true,
@@ -477,16 +464,6 @@ const AppContent: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 bg-white w-full rounded-t-[32px] pt-8 px-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col mt-auto shrink-0"
         >
-          {/* Header Section */}
-          <div className="text-center mb-6">
-            <h3 className="text-xl sm:text-2xl font-black text-[#112EA7] tracking-tight leading-none mb-1.5">
-              Bem-vindo de volta!
-            </h3>
-            <p className="text-[12px] text-zinc-400 font-bold tracking-tight">
-              Acesse sua conta e continue evoluindo.
-            </p>
-          </div>
-
           {/* Form Fields */}
           <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto w-full">
             <div className="space-y-4">

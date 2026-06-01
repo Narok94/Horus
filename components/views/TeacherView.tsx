@@ -841,6 +841,8 @@ export const TeacherView: React.FC = () => {
                         selectedMuscleFilter={selectedMuscleFilter}
                         setSelectedMuscleFilter={setSelectedMuscleFilter}
                         onAddExercise={handleAddNewExercise}
+                        selectedStudentUsername={selectedStudentUsername}
+                        setSheetFrequency={setSheetFrequency}
                       />
                     </section>
                   </div>
