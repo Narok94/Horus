@@ -189,7 +189,7 @@ export const ProfileView: React.FC = () => {
   ];
 
   return (
-    <div className={`h-full max-h-full overflow-hidden flex flex-col justify-between py-4 px-3 bg-transparent font-sans antialiased select-none relative ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start py-4 px-3 pb-32 bg-transparent font-sans antialiased select-none relative ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       
       {/* HEADER: Minimalist header matching Dashboard and Workouts */}
       <div className="space-y-1 px-1 shrink-0 mb-4 text-left">
@@ -203,7 +203,7 @@ export const ProfileView: React.FC = () => {
       </div>
 
       {/* BODY CONFIGURATOR AREA */}
-      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-6 px-1">
+      <div className="w-full space-y-6 px-1">
         
         {/* ATHLETE IDENTIFIER CARD */}
         <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 border transition-all duration-200 shadow-md ${

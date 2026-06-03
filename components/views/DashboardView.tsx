@@ -197,7 +197,7 @@ export const DashboardView: React.FC = () => {
 
   if (isTeste1) {
     return (
-      <div className="w-full h-full max-h-full flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased overflow-y-auto no-scrollbar select-none relative pt-3.5 pb-20 px-1">
+      <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-3.5 pb-28 px-1">
         
         {/* 1. HEADER COUPE - EXTREME CLEAN */}
         <header className="flex justify-between items-center shrink-0">
@@ -517,7 +517,7 @@ export const DashboardView: React.FC = () => {
 
 
   return (
-    <div className="w-full h-full max-h-full flex flex-col justify-between bg-transparent text-ink font-sans antialiased overflow-hidden select-none relative pt-12 sm:pt-14 pb-1">
+    <div className="w-full min-h-screen flex flex-col justify-between bg-transparent text-ink font-sans antialiased select-none relative pt-12 sm:pt-14 pb-32">
       
       {/* 1. COCKPIT HEADER COMPACTO */}
       <header className="flex justify-between items-center shrink-0 py-1.5 px-1 border-b border-zinc-200/20 dark:border-white/[0.015]">

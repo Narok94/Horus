@@ -637,11 +637,11 @@ const AppContent: React.FC = () => {
   const circleFillStrong = isLightUser ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
 
   return (
-    <div className={`h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col ${
+    <div className={`min-h-[100dvh] relative flex flex-col ${
       isLightUser 
         ? "bg-[#F5F7FA] text-gray-900 border-zinc-200" 
         : "bg-[#050505] text-white"
-    } transition-colors duration-400 select-none font-sans`}>
+    } transition-colors duration-400 select-none font-sans overflow-x-hidden`}>
       {/* Plexus Connection Grid Background available across all screens - extremely subtle and highly refined */}
       <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -673,7 +673,7 @@ const AppContent: React.FC = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
 
       {/* Main viewport-bounded view container */}
-      <div className="flex-grow flex-1 min-h-0 w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2.5 md:px-4 lg:px-6 pt-1 pb-[74px] relative z-10 flex flex-col justify-between overflow-hidden">
+      <div className="flex-1 w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2.5 md:px-4 lg:px-6 pt-1 relative z-10 flex flex-col justify-start">
         {renderView()}
       </div>
 

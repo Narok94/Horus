@@ -699,7 +699,7 @@ export const WorkoutView: React.FC = () => {
   }, 0);
 
   return (
-    <div className={`min-h-screen py-1 flex flex-col justify-between pb-28 w-full max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none duration-300 ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
+    <div className={`w-full min-h-screen py-1 flex flex-col justify-start pb-32 max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none duration-300 ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       {/* Upper Navigation Header */}
       <header className={`flex items-center justify-between py-1.5 border-b ${isTeste1 ? 'border-zinc-200' : 'border-white/5'} shrink-0`}>
         <div className="flex items-center gap-2 min-w-0">

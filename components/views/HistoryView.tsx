@@ -24,7 +24,7 @@ export const HistoryView: React.FC = () => {
   const isTeste1 = true;
 
   return (
-    <div className={`h-full max-h-full overflow-hidden flex flex-col justify-between pb-1 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start pb-32 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       <header className={`flex items-center justify-between py-1.5 px-1.5 border-b shrink-0 ${isTeste1 ? 'border-zinc-200' : 'border-white/5'}`}>
         <div>
           <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Meus <span className={isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}>Treinos</span></h1>
@@ -54,7 +54,7 @@ export const HistoryView: React.FC = () => {
           <p className="text-zinc-500 text-[8.5px] font-black uppercase tracking-[0.15em]">Sua história começa agora.</p>
         </div>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar py-2 space-y-3 mt-2">
+        <div className="w-full py-2 space-y-3 mt-2">
           {user?.history.map((entry) => {
             const accentColor = '#1E40AF';
             return (
