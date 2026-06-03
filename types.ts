@@ -101,5 +101,6 @@ export enum AppTab {
   HISTORY = 'history',
   PROFILE = 'profile',
   ADMIN = 'admin',
-  TEACHER = 'teacher'
+  TEACHER = 'teacher',
+  CARDIO = 'cardio'
 }
