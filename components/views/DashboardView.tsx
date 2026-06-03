@@ -197,7 +197,7 @@ export const DashboardView: React.FC = () => {
 
   if (isTeste1) {
     return (
-      <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-3.5 pb-28 px-1">
+      <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-12 sm:pt-6 pb-28 px-1">
         
         {/* 1. HEADER COUPE - EXTREME CLEAN */}
         <header className="flex justify-between items-center shrink-0">

@@ -53,7 +53,7 @@ export const WorkoutsListView: React.FC = () => {
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-start py-4 px-3 pb-32 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start pt-12 sm:pt-6 px-3 pb-32 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       
       {/* HEADER: Ultra-clean and aligned with Dashboard */}
       <div className="space-y-1 px-1 shrink-0 mb-4">
