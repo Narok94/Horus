@@ -441,6 +441,12 @@ export const WorkoutView: React.FC = () => {
     });
 
     if (updates.completed) {
+      if (!isWorkoutActive) {
+        setIsWorkoutActive(true);
+        setWorkoutStartTime(Date.now());
+        setElapsedTime(0);
+        handleManualCheckIn();
+      }
       handleVibrate(20);
       const allDone = updatedSets.every(s => s.completed);
       if (allDone) {
