@@ -89,16 +89,16 @@ const AppContent: React.FC = () => {
     
     if (user) {
       if (user.role === 'teacher') {
-        accentColor = '#10B981'; // Ice Green/Clean Emerald for Teacher
+        accentColor = '#10B981'; // verde
         accentRgb = '16, 185, 129';
       } else if (user.sex === 'feminino') {
-        accentColor = '#FF007F'; // Original Female Sport Pink/Rose
+        accentColor = '#FF007F'; // rosa
         accentRgb = '255, 0, 127';
-      } else if (user.role === 'student' && (!user.sex || user.sex === 'masculino') && user.username === 'teste1') {
-        accentColor = '#1E40AF'; // Strong Cobalt Royal Blue for high-contrast on light background
+      } else if (user.sex === 'masculino' && user.role === 'student') {
+        accentColor = '#1E40AF'; // azul royal
         accentRgb = '30, 64, 175';
       } else {
-        accentColor = '#00F0FF'; // Original Male Sport Cyan active theme
+        accentColor = '#00F0FF'; // ciano padrão
         accentRgb = '0, 240, 255';
       }
     }
