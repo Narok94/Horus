@@ -23,6 +23,7 @@ import { useWorkoutPersistence } from './hooks/useWorkoutPersistence';
 import { AppTab, User } from './types';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { DashboardSkeleton } from './components/ui/Skeleton';
+import { getUserByUsername, validateCredentials } from './data/users';
 import { db, auth, collection, getDocs, doc, setDoc, getDoc, onSnapshot, signInAnonymously } from './firebase';
 
 // Views
@@ -87,20 +88,15 @@ const AppContent: React.FC = () => {
     let accentRgb = '212, 175, 55';
     
     if (user) {
-      const uName = user.username.toLowerCase();
-      const isFemale = uName === 'teste2' || uName.includes('jessica') || pNameIncludes(uName, 'jessica') || user.sex === 'feminino';
-      const isTeacher = uName === 'teste3' || uName.includes('flavia') || pNameIncludes(uName, 'flavia');
-      const isTeste1 = uName === 'teste1';
-      
-      if (isTeste1) {
-        accentColor = '#1E40AF'; // Strong Cobalt Royal Blue for high-contrast on light background
-        accentRgb = '30, 64, 175';
-      } else if (isFemale) {
-        accentColor = '#FF007F'; // Original Female Sport Pink/Rose
-        accentRgb = '255, 0, 127';
-      } else if (isTeacher) {
+      if (user.role === 'teacher') {
         accentColor = '#10B981'; // Ice Green/Clean Emerald for Teacher
         accentRgb = '16, 185, 129';
+      } else if (user.sex === 'feminino') {
+        accentColor = '#FF007F'; // Original Female Sport Pink/Rose
+        accentRgb = '255, 0, 127';
+      } else if (user.role === 'student' && (!user.sex || user.sex === 'masculino') && user.username === 'teste1') {
+        accentColor = '#1E40AF'; // Strong Cobalt Royal Blue for high-contrast on light background
+        accentRgb = '30, 64, 175';
       } else {
         accentColor = '#00F0FF'; // Original Male Sport Cyan active theme
         accentRgb = '0, 240, 255';
@@ -113,10 +109,6 @@ const AppContent: React.FC = () => {
     root.style.setProperty('--highlight-color', accentColor);
     root.style.setProperty('--glow-color', `rgba(${accentRgb}, 0.08)`);
   }, [user]);
-
-  function pNameIncludes(text: string, sub: string) {
-    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(sub);
-  }
 
   // Safety sync for already logged-in users to ensure security rules work
   // Save user profile locally whenever it changes
@@ -136,52 +128,6 @@ const AppContent: React.FC = () => {
     return localStorage.getItem('tatugym_remembered') !== null;
   });
 
-  // Sync rememberMe state with localStorage on change
-  useEffect(() => {
-    // Left empty for consistency
-  }, [rememberMe]);
-
-  useEffect(() => {
-    // One-time reset for Henrique (teste1)
-    try {
-      const hasReset = localStorage.getItem('tatugym_henrique_reset_20260601');
-      if (!hasReset) {
-        const profileKey = 'tatugym_user_profile_teste1';
-        const savedProfile = localStorage.getItem(profileKey);
-        if (savedProfile) {
-          try {
-            const parsed = JSON.parse(savedProfile);
-            if (parsed) {
-              parsed.totalWorkouts = 0;
-              parsed.streak = 0;
-              parsed.checkIns = [];
-              parsed.history = [];
-              localStorage.setItem(profileKey, JSON.stringify(parsed));
-            }
-          } catch (_) {}
-        }
-
-        const rememberedKey = 'tatugym_remembered';
-        const remembered = localStorage.getItem(rememberedKey);
-        if (remembered) {
-          try {
-            const parsed = JSON.parse(remembered);
-            if (parsed && parsed.username === 'teste1') {
-              parsed.totalWorkouts = 0;
-              parsed.streak = 0;
-              parsed.checkIns = [];
-              parsed.history = [];
-              localStorage.setItem(rememberedKey, JSON.stringify(parsed));
-            }
-          } catch (_) {}
-        }
-        localStorage.setItem('tatugym_henrique_reset_20260601', 'true');
-      }
-    } catch (e) {
-      console.error('Error running Henrique reset:', e);
-    }
-  }, []);
-
   useEffect(() => {
     const checkAutoLogin = async () => {
       try {
@@ -192,8 +138,7 @@ const AppContent: React.FC = () => {
           const uName = userData.username.toLowerCase();
           const hasProfile = localStorage.getItem(`tatugym_user_profile_${uName}`) !== null;
           if (['teste1', 'teste3', 'jessica'].includes(uName) || hasProfile) {
-            const profile = localStorage.getItem(`tatugym_user_profile_${uName}`);
-            const finalUser = profile ? JSON.parse(profile) : userData;
+            const finalUser = resolveUser(uName);
             setUser(finalUser);
             setIsLoggedIn(true);
           } else {
@@ -217,68 +162,46 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const handleQuickLogin = (uname: string) => {
-    handleVibrate();
-    const lowerUser = uname.toLowerCase();
-    let userData: User | null = null;
+  const resolveUser = (username: string): User => {
+    const lowerUser = username.trim().toLowerCase();
     const profile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
     if (profile) {
       try {
-        userData = JSON.parse(profile);
+        const parsed = JSON.parse(profile);
+        if (parsed) return parsed;
       } catch (e) {
         console.error('[Login] Erro ao ler perfil salvo:', e);
       }
     }
-
-    if (!userData) {
-      if (lowerUser === 'teste1') {
-        userData = {
-          username: 'teste1',
-          name: 'Henrique',
-          age: 26,
-          goal: 'Hipertrofia & Força',
-          totalWorkouts: 0,
-          history: [],
-          weights: {},
-          checkIns: [],
-          streak: 0,
-          badges: [],
-          isProfileComplete: true,
-          role: 'student'
-        };
-      } else if (lowerUser === 'jessica') {
-        userData = {
-          username: 'jessica',
-          name: 'Jessica',
-          age: 24,
-          goal: 'Glúteo & Posterior Premium',
-          totalWorkouts: 4,
-          history: [],
-          weights: {},
-          checkIns: [],
-          streak: 4,
-          badges: [],
-          isProfileComplete: true,
-          role: 'student',
-          password: '9860'
-        };
-      } else {
-        userData = {
-          username: 'teste3',
-          name: 'Professor',
-          age: 35,
-          goal: 'Orientar alunos',
-          totalWorkouts: 0,
-          history: [],
-          weights: {},
-          checkIns: [],
-          streak: 0,
-          badges: [],
-          isProfileComplete: true,
-          role: 'teacher'
-        };
-      }
+    
+    // Fallback to default users from data/users.ts
+    const defaultUser = getUserByUsername(lowerUser);
+    if (defaultUser) {
+      return defaultUser;
     }
+    
+    // In case of a entirely new username, create a general valid student profile
+    return {
+      username: lowerUser,
+      name: username,
+      age: 20,
+      sex: 'masculino',
+      goal: 'Hipertrofia',
+      role: 'student',
+      streak: 0,
+      totalWorkouts: 0,
+      history: [],
+      weights: {},
+      checkIns: [],
+      badges: [],
+      isProfileComplete: false
+    };
+  };
+
+  const handleQuickLogin = (uname: string) => {
+    handleVibrate();
+    const lowerUser = uname.toLowerCase();
+    const userData = resolveUser(lowerUser);
 
     setUser(userData);
     setIsLoggedIn(true);
@@ -308,84 +231,21 @@ const AppContent: React.FC = () => {
     
     const hasProfile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`) !== null;
     
-    let expectedPassword = '12345';
-    if (lowerUser === 'jessica') {
-      expectedPassword = '9860';
-    } else if (hasProfile) {
+    let isValidUser = validateCredentials(lowerUser, password);
+    if (!isValidUser && hasProfile) {
       try {
         const profileStr = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
         if (profileStr) {
           const profileData = JSON.parse(profileStr);
-          if (profileData && profileData.password) {
-            expectedPassword = profileData.password;
+          if (profileData && profileData.password === password) {
+            isValidUser = true;
           }
         }
       } catch (err) {}
     }
-    
-    const isValidUser = 
-      (['teste1', 'teste3', 'jessica'].includes(lowerUser) || hasProfile) && password === expectedPassword;
 
     if (isValidUser) {
-      let userData: User | null = null;
-      const profile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
-      if (profile) {
-        try {
-          userData = JSON.parse(profile);
-        } catch (e) {
-          console.error('[Login] Erro ao ler perfil salvo:', e);
-        }
-      }
-
-      if (!userData) {
-        if (lowerUser === 'teste1') {
-          userData = {
-            username: 'teste1',
-            name: 'Henrique',
-            age: 26,
-            goal: 'Hipertrofia & Força',
-            totalWorkouts: 0,
-            history: [],
-            weights: {},
-            checkIns: [],
-            streak: 0,
-            badges: [],
-            isProfileComplete: true,
-            role: 'student'
-          };
-        } else if (lowerUser === 'jessica') {
-          userData = {
-            username: 'jessica',
-            name: 'Jessica',
-            age: 24,
-            goal: 'Glúteo & Posterior Premium',
-            totalWorkouts: 4,
-            history: [],
-            weights: {},
-            checkIns: [],
-            streak: 4,
-            badges: [],
-            isProfileComplete: true,
-            role: 'student',
-            password: '9860'
-          };
-        } else {
-          userData = {
-            username: 'teste3',
-            name: 'Professor',
-            age: 35,
-            goal: 'Orientar alunos',
-            totalWorkouts: 0,
-            history: [],
-            weights: {},
-            checkIns: [],
-            streak: 0,
-            badges: [],
-            isProfileComplete: true,
-            role: 'teacher'
-          };
-        }
-      }
+      const userData = resolveUser(lowerUser);
 
       setUser(userData);
       setIsLoggedIn(true);
