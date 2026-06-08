@@ -437,7 +437,7 @@ export const TeacherView: React.FC = () => {
 
       {/* 2. MOBILE HEADER & NAVIGATION */}
       <div className="flex md:hidden flex-col w-full shrink-0 select-none bg-white border-b border-gray-200">
-        <header className="flex flex-col justify-between py-4 px-4 gap-3">
+        <header className="flex flex-col justify-between pt-9 pb-4 px-4 gap-3">
           <div className="flex items-center justify-between">
             <span className="font-extrabold text-sm text-blue-600 tracking-tight uppercase">
               HORUS TRAINING
