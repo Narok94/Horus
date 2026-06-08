@@ -455,6 +455,31 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
+        {/* 5. PRÓXIMOS TREINOS DA SEMANA */}
+        {workouts && workouts.length > 0 && (
+          <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-[20px] p-4 text-left shadow-lg shadow-blue-900/5 shrink-0 space-y-3">
+            <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
+              PRÓXIMOS TREINOS DA SEMANA
+            </h3>
+            <div className="flex flex-wrap gap-2 pt-0.5">
+              {workouts.slice(0, 5).map((w, idx) => {
+                const label = w.title.match(/Treino\s+([A-Z])/i)?.[0] || `Treino ${String.fromCharCode(65 + idx)}`;
+                const count = w.exercises?.length || 0;
+                return (
+                  <div 
+                    key={w.id || idx}
+                    className="bg-white/10 hover:bg-white/15 border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 transition-all text-white shrink-0 select-none animate-fade"
+                  >
+                    <span className="text-[9px] font-black tracking-wider uppercase font-mono">{label}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <span className="text-[8px] font-bold text-white/70 uppercase tracking-widest">{count} Exer.</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* NOTIFICATION DRAWER FOR LIGHT MODE PORTAL */}
         {showNotificationDrawer && (
           <div className="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white border-l border-zinc-200 shadow-2xl flex flex-col justify-between overflow-hidden animate-fade-in">

@@ -51,7 +51,8 @@ export const WorkoutView: React.FC = () => {
     setActiveTab,
     setSelectedWorkout,
     workoutStartTime,
-    handleManualCheckIn
+    handleManualCheckIn,
+    addToast
   } = useStore();
 
   const isTeste1 = true;
@@ -275,13 +276,26 @@ export const WorkoutView: React.FC = () => {
   };
 
   const handleImageCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCapturedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          try {
+            setCapturedImage(reader.result as string);
+          } catch (err) {
+            console.error("Erro ao carregar imagem capturada:", err);
+            if (addToast) addToast("Permissão de câmera negada", "error");
+          }
+        };
+        reader.onerror = () => {
+          if (addToast) addToast("Permissão de câmera negada", "error");
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (err) {
+      console.error("Erro no fluxo de captura de imagem:", err);
+      if (addToast) addToast("Permissão de câmera negada", "error");
     }
   };
 
@@ -563,7 +577,14 @@ export const WorkoutView: React.FC = () => {
             
             {!capturedImage ? (
               <button 
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  try {
+                    fileInputRef.current?.click();
+                  } catch (err) {
+                    console.error("Erro abrir câmera:", err);
+                    if (addToast) addToast("Permissão de câmera negada", "error");
+                  }
+                }}
                 className={`w-full h-24 border border-dashed rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${isTeste1 ? 'border-zinc-300 hover:border-accent bg-zinc-50' : 'border-white/10 hover:border-accent/30 bg-white/[0.01]'}`}
               >
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isTeste1 ? 'bg-zinc-100 border-zinc-200' : 'bg-white/[0.02] border-white/5'}`}>
@@ -791,7 +812,7 @@ export const WorkoutView: React.FC = () => {
       {/* Filter Header separator matching attachment 1 */}
       <div className="flex-1 mt-4">
         <h3 className={`text-[9px] font-black uppercase tracking-[0.2em] px-1 mb-2 ${isTeste1 ? 'text-zinc-500' : 'text-white/50'}`}>
-          LISTA DE EXERCÍCIOS PARA FILTRAR
+          EXERCÍCIOS DO TREINO
         </h3>
 
         {/* Exercises list - Renders continuously with page scroll */}
