@@ -95,8 +95,8 @@ const AppContent: React.FC = () => {
         accentColor = '#FF007F';
         accentRgb = '255, 0, 127';
       } else if (user.sex === 'masculino') {
-        accentColor = '#1E40AF';
-        accentRgb = '30, 64, 175';
+        accentColor = '#2563EB';
+        accentRgb = '37, 99, 235';
       } else {
         accentColor = '#00F0FF';
         accentRgb = '0, 240, 255';

@@ -1,8 +1,36 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Play, Dumbbell, Activity } from 'lucide-react';
+import { Play, Dumbbell, Activity, Flame, Zap, Target, Star } from 'lucide-react';
 import { useStore } from '../../store';
 import { AppTab, WorkoutRoutine } from '../../types';
+
+const workoutThemes = [
+  {
+    color: '#EF4444',
+    icon: Flame,
+    bgClass: 'bg-red-500'
+  },
+  {
+    color: '#10B981',
+    icon: Zap,
+    bgClass: 'bg-emerald-500'
+  },
+  {
+    color: '#8B5CF6',
+    icon: Target,
+    bgClass: 'bg-violet-500'
+  },
+  {
+    color: '#F59E0B',
+    icon: Star,
+    bgClass: 'bg-amber-500'
+  },
+  {
+    color: '#06B6D4',
+    icon: Activity,
+    bgClass: 'bg-cyan-500'
+  }
+];
 
 export const WorkoutsListView: React.FC = () => {
   const { user, allWorkouts, setSelectedWorkout, setActiveTab } = useStore();
@@ -74,6 +102,9 @@ export const WorkoutsListView: React.FC = () => {
           const exerciseCount = workout.exercises.length;
           const cleanDesc = workout.description ? workout.description.replace(/^Foco:\s*/i, '') : 'Fisiologia linear de sobrecarga progressiva.';
           
+          const themeInfo = workoutThemes[index % workoutThemes.length];
+          const ThemeIcon = themeInfo.icon;
+
           return (
             <motion.div
               key={workout.id}
@@ -81,7 +112,8 @@ export const WorkoutsListView: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
               onClick={() => startWorkout(workout)}
-              className={`group relative rounded-2xl p-4.5 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 active:scale-[0.99] border ${
+              style={{ borderLeftColor: themeInfo.color }}
+              className={`group relative rounded-2xl p-4.5 border-l-4 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 active:scale-[0.99] border ${
                 isTeste1 
                   ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg shadow-blue-900/5' 
                   : 'bg-[#080808] border-white/5 hover:border-accent/40 hover:bg-[#0c0c0c]/80 shadow-sm'
@@ -90,13 +122,10 @@ export const WorkoutsListView: React.FC = () => {
               {/* Left Zone: Details */}
               <div className="min-w-0 flex-1 space-y-1.5 text-left">
                 <div className="flex items-center gap-2">
-                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono border ${
-                    isTeste1 
-                      ? 'bg-white/15 border-white/10 text-white' 
-                      : 'bg-zinc-900 border-white/5 text-zinc-400'
-                  }`}>
+                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono text-white ${themeInfo.bgClass}`}>
                     {label}
                   </span>
+                  <ThemeIcon size={12} className="shrink-0" style={{ color: themeInfo.color }} />
                   <span className={`text-[7.5px] font-mono font-bold uppercase tracking-wider ${
                     isTeste1 ? 'text-white/60' : 'text-zinc-500'
                   }`}>
