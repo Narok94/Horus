@@ -18,6 +18,7 @@ import { StudentModals } from './teacher/StudentModals';
 import { ExerciseLibrary } from '../teacher/ExerciseLibrary';
 import { WorkoutSlotPanel } from '../teacher/WorkoutSlotPanel';
 import { WorkoutBuilderSheet } from '../teacher/WorkoutBuilderSheet';
+import { KanbanBoard } from '../teacher/KanbanBoard';
 
 export const TeacherView: React.FC = () => {
   const { user, allWorkouts, setAllWorkouts, addToast, logout } = useStore();
@@ -534,72 +535,23 @@ export const TeacherView: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                /* INSPIRADO NO AI STUDIO: 3 COLUNAS FIXAS NO DESKTOP */
-                <div className="flex flex-col md:flex-row flex-grow min-h-0 md:h-full md:overflow-hidden h-auto w-full">
-                  
-                  {/* COLUNA 2: BIBLIOTECA DE EXERCÍCIOS (MÉDIO / CENTRAL) */}
-                  <div className="flex-1 md:h-full shrink-0 border-r border-gray-150 bg-[#F1F5F9] md:overflow-hidden flex flex-col">
-                    <div className="p-5 pb-1 border-b border-gray-150 shrink-0 bg-white md:bg-transparent">
-                      <span className="text-[10px] font-black text-gray-400 block uppercase tracking-wider">MÓDULO CENTRAL</span>
-                      <h4 className="text-sm font-black text-gray-900 mt-0.5">📚 Biblioteca de Exercícios</h4>
-                    </div>
-                    <div className="flex-grow overflow-y-auto no-scrollbar">
-                      <ExerciseLibrary 
-                        onAddExercise={(name, muscleGroup) => {
-                          const newEx: Exercise = {
-                            id: `ex_${Math.random().toString(36).substring(2, 9)}`,
-                            name,
-                            muscleGroup,
-                            sets: 3,
-                            reps: '12',
-                            rest: 60,
-                            notes: '15',
-                            image: getHorusGifUrl(name)
-                          };
-                          
-                          setLocalRoutines(prev => {
-                            return prev.map((item, idx) => {
-                              if (idx === activeIdx) {
-                                return {
-                                  ...item,
-                                  exercises: [...(item.exercises || []), newEx]
-                                };
-                              }
-                              return item;
-                            });
-                          });
-
-                          setIsUnsaved(true);
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* COLUNA 3: PAINEL DA FICHA (DIREITA, COMPRESSO w-[480px]) */}
-                  <div className="w-full md:w-[480px] md:h-full bg-white shrink-0 md:border-l border-gray-200 md:overflow-hidden flex flex-col">
-                    <WorkoutSlotPanel 
-                      studentName={selectedStudentProfile?.name || selectedStudentUsername}
-                      studentUsername={selectedStudentUsername}
-                      division={sheetFrequency}
-                      setDivision={setSheetFrequency}
-                      routines={localRoutines}
-                      onUpdateRoutines={(updated) => {
-                        setLocalRoutines(updated);
-                        setIsUnsaved(true);
-                      }}
-                      onGoBack={() => {
-                        setSelectedStudentUsername(null);
-                        setActiveTab('alunos');
-                      }}
-                      students={students}
-                      onSave={handleSaveWorkout}
-                      isUnsaved={isUnsaved}
-                      activeIdx={activeIdx}
-                      setActiveIdx={setActiveIdx}
-                    />
-                  </div>
-
-                </div>
+                <KanbanBoard
+                  studentName={selectedStudentProfile?.name || selectedStudentUsername}
+                  studentUsername={selectedStudentUsername}
+                  division={sheetFrequency}
+                  setDivision={setSheetFrequency}
+                  routines={localRoutines}
+                  onUpdateRoutines={(updated) => {
+                    setLocalRoutines(updated);
+                    setIsUnsaved(true);
+                  }}
+                  onSave={handleSaveWorkout}
+                  isUnsaved={isUnsaved}
+                  onGoBack={() => {
+                    setSelectedStudentUsername(null);
+                    setActiveTab('alunos');
+                  }}
+                />
               )}
             </div>
           )}
