@@ -55,7 +55,7 @@ export const WorkoutBuilderSheet: React.FC<WorkoutBuilderSheetProps> = ({
   onSave
 }) => {
   // Mobile Top Tab choice: "library" | "sheet"
-  const [mobileTab, setMobileTab] = useState<'library' | 'sheet'>('library');
+  const [mobileTab, setMobileTab] = useState<'library' | 'sheet'>('sheet');
 
   // Slots Tab Index tracker (A=0, B=1, C=2...)
   const [activeSlotIdx, setActiveSlotIdx] = useState<number>(0);
@@ -223,6 +223,19 @@ export const WorkoutBuilderSheet: React.FC<WorkoutBuilderSheetProps> = ({
             <div id="mobile-tabs-switch" className="flex border-b border-gray-150 shrink-0 bg-white select-none">
               <button
                 type="button"
+                onClick={() => setMobileTab('sheet')}
+                className={`flex-1 py-3 text-xs font-black uppercase tracking-wider relative flex items-center justify-center gap-1.5 transition-colors ${
+                  mobileTab === 'sheet' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                <span>📋 Ficha</span>
+                {mobileTab === 'sheet' && (
+                  <motion.div layoutId="m-active-indicator" className="absolute bottom-0 inset-x-6 h-0.5 bg-blue-600 rounded-full" />
+                )}
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setMobileTab('library')}
                 className={`flex-1 py-3 text-xs font-black uppercase tracking-wider relative flex items-center justify-center gap-1.5 transition-colors ${
                   mobileTab === 'library' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
@@ -233,19 +246,6 @@ export const WorkoutBuilderSheet: React.FC<WorkoutBuilderSheetProps> = ({
                   {exercises.length}
                 </span>
                 {mobileTab === 'library' && (
-                  <motion.div layoutId="m-active-indicator" className="absolute bottom-0 inset-x-6 h-0.5 bg-blue-600 rounded-full" />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setMobileTab('sheet')}
-                className={`flex-1 py-3 text-xs font-black uppercase tracking-wider relative flex items-center justify-center gap-1.5 transition-colors ${
-                  mobileTab === 'sheet' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                <span>📋 Ficha</span>
-                {mobileTab === 'sheet' && (
                   <motion.div layoutId="m-active-indicator" className="absolute bottom-0 inset-x-6 h-0.5 bg-blue-600 rounded-full" />
                 )}
               </button>
