@@ -458,7 +458,7 @@ export const DashboardView: React.FC = () => {
         {/* NOTIFICATION DRAWER FOR LIGHT MODE PORTAL */}
         {showNotificationDrawer && (
           <div className="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white border-l border-zinc-200 shadow-2xl flex flex-col justify-between overflow-hidden animate-fade-in">
-            <div className="p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+            <div className="pt-12 pb-4 px-4 sm:p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
               <h4 className="text-xs font-black tracking-widest text-[#1E40AF] uppercase flex items-center gap-1.5 leading-none">
                 <Bell size={13} />
                 CENTRAL DE NOTIFICAÇÕES
