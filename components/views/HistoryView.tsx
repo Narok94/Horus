@@ -30,20 +30,6 @@ export const HistoryView: React.FC = () => {
           <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Meus <span className={isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}>Treinos</span></h1>
           <p className={`${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'} uppercase tracking-widest mt-1 text-[8px] font-mono`}>Histórico de progresso.</p>
         </div>
-        <button 
-          onClick={() => {
-            handleVibrate(15);
-            logout();
-          }} 
-          className={`text-[7.5px] font-black uppercase tracking-widest transition-all py-1 px-2 border rounded ${
-            isTeste1 
-              ? 'bg-rose-50 border-rose-250 text-rose-600 shadow-[0_1px_2px_rgba(0,0,0,0.01)]' 
-              : 'text-rose-500/70 hover:text-rose-500 border-rose-500/10 bg-rose-500/[0.02]'
-          }`}
-          title="Sair"
-        >
-          SAIR
-        </button>
       </header>
       
       {user?.history.length === 0 ? (
