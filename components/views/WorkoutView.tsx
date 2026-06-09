@@ -57,7 +57,7 @@ export const WorkoutView: React.FC = () => {
 
   const isTeste1 = true;
   const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
-  const accentColor = '#1E40AF';
+  const accentColor = '#2563EB';
 
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = React.useState(false);
@@ -763,7 +763,7 @@ export const WorkoutView: React.FC = () => {
       {/* Selected Workout Upper Banner matching attachment 1 */}
       <div className={`relative overflow-hidden rounded-xl border p-3 text-center space-y-2 shadow-lg shrink-0 mt-1.5 ${
         isTeste1 
-          ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10' 
+          ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10' 
           : 'border-white/5 bg-gradient-to-br from-zinc-950/90 to-zinc-900/50'
       }`}>
         {/* Play Icon centering frame */}
@@ -799,11 +799,11 @@ export const WorkoutView: React.FC = () => {
               onClick={startWorkout}
               className={`w-full max-w-xs py-3 font-black text-[10px] uppercase tracking-[0.15em] rounded-xl active:scale-95 transition-all shadow-xl flex items-center justify-center gap-1.5 font-sans border-0 ${
                 isTeste1 
-                  ? 'bg-white text-[#1E40AF] hover:bg-zinc-100' 
+                  ? 'bg-white text-[#2563EB] hover:bg-zinc-100' 
                   : 'bg-accent hover:brightness-110 text-[#050505]'
               }`}
             >
-              <Play size={10} className={isTeste1 ? 'fill-[#1E40AF] text-[#1E40AF]' : 'fill-[#050505]'} /> INICIAR TREINO 🔥
+              <Play size={10} className={isTeste1 ? 'fill-[#2563EB] text-[#2563EB]' : 'fill-[#050505]'} /> INICIAR TREINO 🔥
             </button>
           )}
         </div>
@@ -844,7 +844,7 @@ export const WorkoutView: React.FC = () => {
                   onClick={handleCardClick}
                   className={`group relative overflow-hidden rounded-xl border p-3 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 shadow-md ${
                     isTeste1 
-                      ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+                      ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
                       : 'bg-[#0e0e12]/70 border-white/5 hover:border-accent/40 hover:bg-[#121217]/90'
                   } ${
                     isAllCompleted ? 'opacity-40' : 'opacity-100'
@@ -919,7 +919,7 @@ export const WorkoutView: React.FC = () => {
                       }}
                       className={`w-8 h-8 rounded-full border flex items-center justify-center active:scale-95 transition-all font-sans shrink-0 ${
                         isTeste1 
-                          ? 'bg-white border-transparent text-[#1E40AF] hover:scale-105 shadow-md hover:text-[#1e3a8a]' 
+                          ? 'bg-white border-transparent text-[#2563EB] hover:scale-105 shadow-md hover:text-blue-700' 
                           : 'bg-accent/5 border border-accent/20 hover:bg-accent hover:border-accent hover:text-black text-accent'
                       }`}
                     >

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 const AnilhaIcon: React.FC<{ active: boolean; current: boolean; accentColor?: string; isLight?: boolean }> = ({ active, current, accentColor: propAccentColor, isLight }) => {
-  const accentColor = propAccentColor || '#1E40AF';
+  const accentColor = propAccentColor || '#2563EB';
   const strokeColor = active ? accentColor : (current ? accentColor : (isLight ? '#CBD5E1' : '#27272A'));
   const innerFill = active ? strokeColor : (isLight ? '#F1F5F9' : '#09090B');
   
@@ -99,7 +99,7 @@ export const DashboardView: React.FC = () => {
 
   const isTeste1 = true;
   const isTeacher = user.username.toLowerCase() === 'teste3' || user.username.toLowerCase().includes('flavia');
-  const accentColor = '#1E40AF';
+  const accentColor = '#2563EB';
 
   const handleVibrate = (duration = 10) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -197,13 +197,13 @@ export const DashboardView: React.FC = () => {
 
   if (isTeste1) {
     return (
-      <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-12 sm:pt-6 pb-28 px-1">
+      <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-12 sm:pt-6 pb-40 px-1">
         
         {/* 1. HEADER COUPE - EXTREME CLEAN */}
         <header className="flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2.5">
             {/* Round bold initial avatar */}
-            <div className="w-10 h-10 rounded-full bg-[#1E40AF] text-white flex items-center justify-center font-black text-xs tracking-tight shadow-md shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-black text-xs tracking-tight shadow-md shrink-0">
               AT
             </div>
             <div className="text-left leading-none">
@@ -227,8 +227,8 @@ export const DashboardView: React.FC = () => {
               }}
               className="p-2 bg-white border border-zinc-200/60 text-zinc-700 hover:text-zinc-950 transition-all rounded-xl cursor-pointer hover:bg-zinc-50 relative shadow-[0_1px_2px_rgba(0,0,0,0.01)]"
             >
-              <Bell size={12} className={showNotificationDrawer ? "text-[#1E40AF]" : ""} />
-              <span className="absolute w-1.5 h-1.5 rounded-full top-1.5 right-1.5 bg-[#1E40AF]" />
+              <Bell size={12} className={showNotificationDrawer ? "text-[#2563EB]" : ""} />
+              <span className="absolute w-1.5 h-1.5 rounded-full top-1.5 right-1.5 bg-[#2563EB]" />
             </button>
 
             <button 
@@ -245,7 +245,7 @@ export const DashboardView: React.FC = () => {
         </header>
 
         {/* 2. CARD HERO PRINCIPAL - TREINO DE HOJE (Slimmer and more compact) */}
-        <div className="w-full bg-gradient-to-br from-[#1E40AF] to-[#0A192F] rounded-[22px] p-4.5 text-white relative shadow-lg shadow-blue-900/10 overflow-hidden flex flex-col justify-between min-h-[195px] shrink-0">
+        <div className="w-full bg-gradient-to-br from-[#2563EB] to-[#0A192F] rounded-[22px] p-4.5 text-white relative shadow-lg shadow-blue-900/10 overflow-hidden flex flex-col justify-between min-h-[195px] shrink-0">
           {/* Subtle flare behind dumbbell */}
           <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-400/15 rounded-full blur-3xl pointer-events-none" />
           
@@ -327,7 +327,7 @@ export const DashboardView: React.FC = () => {
                   <ellipse cx="150" cy="100" rx="14" ry="32" fill="url(#plateGradientPremium)" />
                   <ellipse cx="158" cy="100" rx="14" ry="34" fill="url(#blueGlowPremium)" />
                   <ellipse cx="166" cy="100" rx="14" ry="36" fill="url(#plateGradientPremium)" />
-                  <ellipse cx="165" cy="100" rx="8" ry="18" fill="#1E40AF" stroke="#60A5FA" strokeWidth="1" />
+                  <ellipse cx="165" cy="100" rx="8" ry="18" fill="#2563EB" stroke="#60A5FA" strokeWidth="1" />
                   <text x="165" y="104.5" fill="#FFFFFF" fontSize="12" fontWeight="950" fontFamily="sans-serif" textAnchor="middle" transform="rotate(26 165 100)">H</text>
                 </g>
               </svg>
@@ -337,15 +337,15 @@ export const DashboardView: React.FC = () => {
           {/* Compact CTA Trigger padding */}
           <button
             onClick={startActiveWorkout}
-            className="w-full mt-3.5 bg-white hover:bg-zinc-150 active:scale-[0.98] text-[#1E40AF] font-black uppercase text-[10px] py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider shadow-md relative z-10 border-0"
+            className="w-full mt-3.5 bg-white hover:bg-zinc-150 active:scale-[0.98] text-[#2563EB] font-black uppercase text-[10px] py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider shadow-md relative z-10 border-0"
           >
-            <Play size={11} className="fill-[#1E40AF] stroke-none" />
+            <Play size={11} className="fill-[#2563EB] stroke-none" />
             <span>INICIAR TREINO</span>
           </button>
         </div>
 
         {/* 3. WEEK FREQUENCY DISPLAY (Premium Blue Background and White Text) */}
-        <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-[20px] p-4 space-y-3.5 text-left shadow-lg shadow-blue-900/5 shrink-0">
+        <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 space-y-3.5 text-left shadow-lg shadow-blue-900/5 shrink-0">
           <div className="flex justify-between items-center h-4 leading-none">
             <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
               FREQUÊNCIA SEMANAL
@@ -374,8 +374,8 @@ export const DashboardView: React.FC = () => {
                   </span>
                   <div className="relative">
                     {treinou ? (
-                      <div className="w-7 h-7 rounded-full bg-white text-[#1E40AF] flex items-center justify-center shadow shadow-black/15">
-                        <CheckCircle2 size={12} className="text-[#1E40AF] fill-[#1E40AF]/15 animate-fade" />
+                      <div className="w-7 h-7 rounded-full bg-white text-[#2563EB] flex items-center justify-center shadow shadow-black/15">
+                        <CheckCircle2 size={12} className="text-[#2563EB] fill-[#2563EB]/15 animate-fade" />
                       </div>
                     ) : (
                       <div className="w-7 h-7 rounded-full border border-white/20 bg-white/5 flex hover:bg-white/10 transition-colors" />
@@ -390,7 +390,7 @@ export const DashboardView: React.FC = () => {
         {/* 4. SUMMARY METRIC TRIPLE CARDS (Premium Blue Background and White Text) */}
         <div className="grid grid-cols-3 gap-2 w-full shrink-0">
           {/* Card 1: Sequência */}
-          <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
+          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
             <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-orange-400 shrink-0">
               <Flame size={12} className="fill-orange-400/20" />
             </div>
@@ -411,7 +411,7 @@ export const DashboardView: React.FC = () => {
           </div>
 
           {/* Card 2: Tempo Total */}
-          <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
+          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
             <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-blue-200 shrink-0">
               <Clock size={12} />
             </div>
@@ -434,7 +434,7 @@ export const DashboardView: React.FC = () => {
           </div>
 
           {/* Card 3: Próximo Treino */}
-          <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
+          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
             <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-indigo-300 shrink-0">
               <Calendar size={12} />
             </div>
@@ -457,7 +457,7 @@ export const DashboardView: React.FC = () => {
 
         {/* 5. PRÓXIMOS TREINOS DA SEMANA */}
         {workouts && workouts.length > 0 && (
-          <div className="bg-gradient-to-br from-[#1E40AF] to-[#122C60] border border-white/10 rounded-[20px] p-4 text-left shadow-lg shadow-blue-900/5 shrink-0 space-y-3">
+          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 text-left shadow-lg shadow-blue-900/5 shrink-0 space-y-3">
             <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
               PRÓXIMOS TREINOS DA SEMANA
             </h3>
@@ -484,7 +484,7 @@ export const DashboardView: React.FC = () => {
         {showNotificationDrawer && (
           <div className="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white border-l border-zinc-200 shadow-2xl flex flex-col justify-between overflow-hidden animate-fade-in">
             <div className="pt-12 pb-4 px-4 sm:p-4 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-              <h4 className="text-xs font-black tracking-widest text-[#1E40AF] uppercase flex items-center gap-1.5 leading-none">
+              <h4 className="text-xs font-black tracking-widest text-[#2563EB] uppercase flex items-center gap-1.5 leading-none">
                 <Bell size={13} />
                 CENTRAL DE NOTIFICAÇÕES
               </h4>
@@ -501,10 +501,10 @@ export const DashboardView: React.FC = () => {
             
             <div className="flex-1 overflow-y-auto p-4 space-y-3.5 no-scrollbar text-left">
               <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-1">
-                <span className="text-[8px] font-black tracking-widest text-[#1E40AF] uppercase">NOVO TREINO DISPONÍVEL</span>
+                <span className="text-[8px] font-black tracking-widest text-[#2563EB] uppercase">NOVO TREINO DISPONÍVEL</span>
                 <p className="text-[11px] font-extrabold text-zinc-950">Seu Treino A foi atualizado!</p>
                 <p className="text-[10px] text-zinc-500 font-medium">O professor Henrique revisou as cargas do seu agachamento e supino.</p>
-                <span className="text-[8.5px] font-bold text-[#1E40AF]/80 block pt-1">Há 10 minutos</span>
+                <span className="text-[8.5px] font-bold text-[#2563EB]/80 block pt-1">Há 10 minutos</span>
               </div>
 
               <div className="p-3 bg-zinc-50 border border-zinc-100 rounded-2xl space-y-1">
@@ -528,7 +528,7 @@ export const DashboardView: React.FC = () => {
                   handleVibrate(15);
                   setShowNotificationDrawer(false);
                 }}
-                className="text-[10px] font-black text-[#1E40AF] tracking-wider uppercase hover:underline cursor-pointer"
+                className="text-[10px] font-black text-[#2563EB] tracking-wider uppercase hover:underline cursor-pointer"
               >
                 FECHAR NOTIFICAÇÕES
               </button>

@@ -27,7 +27,7 @@ export const HistoryView: React.FC = () => {
     <div className={`w-full min-h-screen flex flex-col justify-start pt-12 sm:pt-6 pb-32 bg-transparent select-none font-sans ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       <header className={`flex items-center justify-between py-1.5 px-1.5 border-b shrink-0 ${isTeste1 ? 'border-zinc-200' : 'border-white/5'}`}>
         <div>
-          <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Meus <span className={isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}>Treinos</span></h1>
+          <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Meus <span className={isTeste1 ? 'text-[#2563EB]' : 'text-accent'}>Treinos</span></h1>
           <p className={`${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'} uppercase tracking-widest mt-1 text-[8px] font-mono`}>Histórico de progresso.</p>
         </div>
       </header>
@@ -42,13 +42,13 @@ export const HistoryView: React.FC = () => {
       ) : (
         <div className="w-full py-2 space-y-3 mt-2">
           {user?.history.map((entry) => {
-            const accentColor = '#1E40AF';
+            const accentColor = '#2563EB';
             return (
               <div 
                 key={entry.id} 
                 className={`rounded-2xl p-4.5 space-y-3.5 shadow-md border transition-all duration-200 ${
                   isTeste1 
-                    ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+                    ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
                     : 'bg-zinc-900/40 border-zinc-850/80 hover:bg-zinc-900/60 hover:border-zinc-800 text-white'
                 }`}
               >

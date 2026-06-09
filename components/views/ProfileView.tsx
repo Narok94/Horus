@@ -148,7 +148,7 @@ export const ProfileView: React.FC = () => {
   };
 
   const isTeste1 = true;
-  const accentColor = '#1E40AF';
+  const accentColor = '#2563EB';
 
   const totalWorkoutsCount = user.totalWorkouts || 0;
   const checkInsCount = user.checkIns?.length || 0;
@@ -193,7 +193,7 @@ export const ProfileView: React.FC = () => {
       
       {/* HEADER: Minimalist header matching Dashboard and Workouts */}
       <div className="space-y-1 px-1 shrink-0 mb-4 text-left">
-        <span className={`text-[9px] font-black uppercase tracking-[0.3em] font-mono ${isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}`}>Configurações</span>
+        <span className={`text-[9px] font-black uppercase tracking-[0.3em] font-mono ${isTeste1 ? 'text-[#2563EB]' : 'text-accent'}`}>Configurações</span>
         <h1 className={`text-xl font-extrabold tracking-tight leading-none mt-1 ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>
           Meu Perfil
         </h1>
@@ -208,7 +208,7 @@ export const ProfileView: React.FC = () => {
         {/* ATHLETE IDENTIFIER CARD */}
         <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 border transition-all duration-200 shadow-md ${
           isTeste1 
-            ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+            ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
             : 'bg-[#080808] border-white/5 text-white'
         }`}>
           <div className="flex items-center gap-3.5 min-w-0">
@@ -244,7 +244,7 @@ export const ProfileView: React.FC = () => {
           {/* Biometrics widget */}
           <div className={`p-4 rounded-2xl space-y-3.5 border transition-all duration-200 shadow-md ${
             isTeste1 
-              ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+              ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
               : 'bg-[#080808] border-white/5'
           }`}>
             <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block ${isTeste1 ? 'text-white/60' : 'text-zinc-500'}`}>Biometria</span>
@@ -264,7 +264,7 @@ export const ProfileView: React.FC = () => {
           {/* Activity counts widget */}
           <div className={`p-4 rounded-2xl space-y-3.5 border transition-all duration-200 shadow-md ${
             isTeste1 
-              ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg' 
+              ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
               : 'bg-[#080808] border-white/5'
           }`}>
             <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block ${isTeste1 ? 'text-white/60' : 'text-zinc-500'}`}>Consistência</span>
@@ -365,7 +365,7 @@ export const ProfileView: React.FC = () => {
                   className={`flex flex-col items-center justify-center text-center py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer ${
                     isTeste1
                       ? (ach.unlocked 
-                          ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-transparent text-white shadow-md hover:scale-[1.02]' 
+                          ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-transparent text-white shadow-md hover:scale-[1.02]' 
                           : 'bg-zinc-100 border-zinc-200 text-zinc-500 hover:bg-zinc-155')
                       : (ach.unlocked 
                           ? 'bg-[#0E0F13]/60 border-accent/15 hover:border-accent text-white' 

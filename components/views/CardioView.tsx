@@ -125,7 +125,7 @@ export const CardioView: React.FC = () => {
   if (showSummary) {
     return (
       <div className={`w-full min-h-screen pt-12 sm:pt-6 flex flex-col justify-start pb-32 max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none duration-300 ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'} p-4 text-center items-center gap-6`}>
-        <div className={`p-6 rounded-[2rem] border shadow-2xl w-full max-w-sm flex flex-col items-center gap-4 ${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0A1128] border-[#1E40AF]/30'}`}>
+        <div className={`p-6 rounded-[2rem] border shadow-2xl w-full max-w-sm flex flex-col items-center gap-4 ${isTeste1 ? 'bg-white border-zinc-200' : 'bg-[#0A1128] border-[#2563EB]/30'}`}>
           <div className="w-16 h-16 bg-green-500/10 text-green-500 flex items-center justify-center rounded-full mb-2">
             <CheckCircle2 size={32} />
           </div>
@@ -156,7 +156,7 @@ export const CardioView: React.FC = () => {
           <button
             onClick={resetCardio}
             className={`mt-6 w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 ${
-              isTeste1 ? 'bg-zinc-950 text-white' : 'bg-[#1E40AF] text-white hover:brightness-110'
+              isTeste1 ? 'bg-zinc-950 text-white' : 'bg-[#2563EB] text-white hover:brightness-110'
             }`}
           >
             Voltar
@@ -175,7 +175,7 @@ export const CardioView: React.FC = () => {
           <Activity size={20} strokeWidth={2.5} />
         </div>
         <div>
-          <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Central <span className={isTeste1 ? 'text-[#1E40AF]' : 'text-accent'}>Cardio</span></h1>
+          <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isTeste1 ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Central <span className={isTeste1 ? 'text-[#2563EB]' : 'text-accent'}>Cardio</span></h1>
           <p className={`${isTeste1 ? 'text-zinc-500 font-bold' : 'text-white/40'} text-[8px] mt-1 font-mono uppercase tracking-widest font-black`}>Supere Seus Limites</p>
         </div>
       </div>
@@ -200,7 +200,7 @@ export const CardioView: React.FC = () => {
                       onClick={() => setSelectedType(type.id)}
                       className={`flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all active:scale-95 duration-200 ${
                         isSelected 
-                          ? (isTeste1 ? 'bg-[#1E40AF] text-white border-[#1E40AF] shadow-md' : 'bg-accent text-[#050505] border-accent shadow-[0_0_15px_rgba(var(--accent-color-rgb),0.3)]')
+                          ? (isTeste1 ? 'bg-[#2563EB] text-white border-[#2563EB] shadow-md' : 'bg-accent text-[#050505] border-accent shadow-[0_0_15px_rgba(var(--accent-color-rgb),0.3)]')
                           : (isTeste1 ? 'bg-white border-zinc-200 text-zinc-950 hover:bg-zinc-50' : 'bg-[#0c0c0e]/80 border-white/5 text-white/70 hover:border-white/10 hover:bg-[#121217]')
                       }`}
                     >

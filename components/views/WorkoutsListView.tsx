@@ -115,7 +115,7 @@ export const WorkoutsListView: React.FC = () => {
               style={{ borderLeftColor: themeInfo.color }}
               className={`group relative rounded-2xl p-4.5 border-l-4 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 active:scale-[0.99] border ${
                 isTeste1 
-                  ? 'bg-gradient-to-br from-[#1E40AF] to-[#122C60] border-white/10 text-white shadow-lg shadow-blue-900/5' 
+                  ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg shadow-blue-900/5' 
                   : 'bg-[#080808] border-white/5 hover:border-accent/40 hover:bg-[#0c0c0c]/80 shadow-sm'
               }`}
             >
@@ -149,7 +149,7 @@ export const WorkoutsListView: React.FC = () => {
               {/* Right Zone: Clean, floating Action Icon */}
               <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-300 shrink-0 select-none ${
                 isTeste1 
-                  ? 'bg-white border-transparent text-[#1E40AF] shadow-md group-hover:scale-105' 
+                  ? 'bg-white border-transparent text-[#2563EB] shadow-md group-hover:scale-105' 
                   : 'bg-zinc-900/50 border-white/5 text-zinc-400 group-hover:border-accent/20 group-hover:bg-accent/5 group-hover:text-accent'
               }`}>
                 <Play size={11} className="fill-current group-hover:scale-110 ml-0.5 transition-all duration-300" />
