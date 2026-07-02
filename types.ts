@@ -77,6 +77,7 @@ export interface User {
   weights?: Record<string, number>; 
   history: WorkoutHistoryEntry[];
   badges?: Badge[];
+  completedMeals?: Record<string, string[]>; // YYYY-MM-DD -> list of meal times or meal names
 }
 
 export interface Badge {

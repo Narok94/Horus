@@ -2,10 +2,10 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { useStore } from '../../store';
 import { henriqueDiet, jessicaDiet } from '../../src/data/dietPlans';
-import { Clock, Info, Utensils, Apple } from 'lucide-react';
+import { Clock, Info, Utensils, Apple, CheckCircle2 } from 'lucide-react';
 
 export const DietView: React.FC = () => {
-  const { user } = useStore();
+  const { user, updateUserProfile, triggerConfetti, addToast } = useStore();
   const username = user?.username.toLowerCase();
 
   // Determine which diet plan to show based on username
@@ -18,6 +18,40 @@ export const DietView: React.FC = () => {
 
   const isLightUser = user?.role !== 'teacher';
   const accentColor = isLightUser ? (user?.sex === 'feminino' ? '#FF007F' : '#2563EB') : '#10B981';
+
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  const todayStr = now.toISOString().split('T')[0];
+
+  const toggleMealCompletion = (mealName: string) => {
+    if (!user) return;
+    
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(20);
+    }
+
+    const completedMeals = user.completedMeals ? { ...user.completedMeals } : {};
+    const todayCompletedList = completedMeals[todayStr] ? [...completedMeals[todayStr]] : [];
+    
+    const index = todayCompletedList.indexOf(mealName);
+    let isAdding = false;
+    if (index > -1) {
+      todayCompletedList.splice(index, 1);
+    } else {
+      todayCompletedList.push(mealName);
+      isAdding = true;
+    }
+    
+    completedMeals[todayStr] = todayCompletedList;
+    updateUserProfile({ completedMeals });
+    
+    if (isAdding) {
+      triggerConfetti();
+      if (addToast) addToast(`Refeição "${mealName}" registrada! +30 Pontos no Projeto Julho`, 'success');
+    } else {
+      if (addToast) addToast(`Refeição "${mealName}" desmarcada.`, 'info');
+    }
+  };
 
   if (!currentDiet) {
     return (
@@ -105,6 +139,21 @@ export const DietView: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Check off button */}
+              <button
+                onClick={() => toggleMealCompletion(meal.name)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-extrabold transition-all cursor-pointer ${
+                  (user?.completedMeals?.[todayStr] || []).includes(meal.name)
+                    ? 'bg-emerald-500 border-emerald-500 text-white font-black'
+                    : isLightUser
+                      ? 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100'
+                      : 'bg-white/5 border-white/5 text-zinc-400 hover:bg-white/10'
+                }`}
+              >
+                <CheckCircle2 size={12} />
+                <span>{(user?.completedMeals?.[todayStr] || []).includes(meal.name) ? 'Concluído' : 'Concluir'}</span>
+              </button>
             </div>
 
             {/* Meal Items */}
