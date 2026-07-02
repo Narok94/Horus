@@ -16,7 +16,8 @@ import {
   Eye,
   EyeOff,
   Play,
-  Activity
+  Activity,
+  Utensils
 } from 'lucide-react';
 import { useStore } from './store';
 import { useWorkoutPersistence } from './hooks/useWorkoutPersistence';
@@ -34,6 +35,7 @@ import { ProfileView } from './components/views/ProfileView';
 import { TeacherView } from './components/views/TeacherView';
 import { WorkoutsListView } from './components/views/WorkoutsListView';
 import { CardioView } from './components/views/CardioView';
+import { DietView } from './components/views/DietView';
 
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
@@ -441,6 +443,7 @@ const AppContent: React.FC = () => {
       case AppTab.PROFILE: return <ProfileView />;
       case AppTab.TEACHER: return <TeacherView />;
       case AppTab.CARDIO: return <CardioView />;
+      case AppTab.DIET: return <DietView />;
       default: return <DashboardView />;
     }
   };
@@ -499,6 +502,7 @@ const AppContent: React.FC = () => {
               { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
               { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
               { id: AppTab.CARDIO, icon: Activity, label: 'Cardio' },
+              { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
               { id: AppTab.HISTORY, icon: isLightUser ? BarChart2 : HistoryIcon, label: isLightUser ? 'Progresso' : 'Histórico' },
               { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
             ].map((item) => {

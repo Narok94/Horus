@@ -14,6 +14,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+const getInitials = (name: string): string => {
+  const words = name.trim().split(' ');
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+};
+
 export const ProfileView: React.FC = () => {
   const { user, updateUserProfile } = useStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -108,7 +114,7 @@ export const ProfileView: React.FC = () => {
       weight: user.weight !== undefined && user.weight !== null ? user.weight : defaultWeight,
       height: user.height !== undefined && user.height !== null ? user.height : defaultHeight,
       level: user.goal || defaultLevel,
-      initial: user.name ? user.name.charAt(0).toUpperCase() : (user.username ? user.username.charAt(0).toUpperCase() : 'U')
+      initial: getInitials(user.name)
     };
   };
 

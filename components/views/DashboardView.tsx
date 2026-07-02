@@ -17,6 +17,12 @@ import {
   Dumbbell
 } from 'lucide-react';
 
+const getInitials = (name: string): string => {
+  const words = name.trim().split(' ');
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+};
+
 const AnilhaIcon: React.FC<{ active: boolean; current: boolean; accentColor?: string; isLight?: boolean }> = ({ active, current, accentColor: propAccentColor, isLight }) => {
   const accentColor = propAccentColor || '#2563EB';
   const strokeColor = active ? accentColor : (current ? accentColor : (isLight ? '#CBD5E1' : '#27272A'));
@@ -204,7 +210,7 @@ export const DashboardView: React.FC = () => {
           <div className="flex items-center gap-2.5">
             {/* Round bold initial avatar */}
             <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-black text-xs tracking-tight shadow-md shrink-0">
-              AT
+              {getInitials(user.name)}
             </div>
             <div className="text-left leading-none">
               <span className="text-zinc-500 text-[10px] font-extrabold flex items-center gap-1 leading-none uppercase tracking-wider">
@@ -245,7 +251,7 @@ export const DashboardView: React.FC = () => {
         </header>
 
         {/* 2. CARD HERO PRINCIPAL - TREINO DE HOJE (Slimmer and more compact) */}
-        <div className="w-full bg-gradient-to-br from-[#2563EB] to-[#0A192F] rounded-[22px] p-4.5 text-white relative shadow-lg shadow-blue-900/10 overflow-hidden flex flex-col justify-between min-h-[195px] shrink-0">
+        <div className="w-full bg-gradient-to-br from-[#2563EB] to-[#0A192F] rounded-[22px] p-4.5 md:py-4 text-white relative shadow-lg shadow-blue-900/10 overflow-hidden flex flex-col justify-between min-h-[195px] md:min-h-0 shrink-0">
           {/* Subtle flare behind dumbbell */}
           <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-400/15 rounded-full blur-3xl pointer-events-none" />
           
@@ -344,114 +350,117 @@ export const DashboardView: React.FC = () => {
           </button>
         </div>
 
-        {/* 3. WEEK FREQUENCY DISPLAY (Premium Blue Background and White Text) */}
-        <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 space-y-3.5 text-left shadow-lg shadow-blue-900/5 shrink-0">
-          <div className="flex justify-between items-center h-4 leading-none">
-            <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
-              FREQUÊNCIA SEMANAL
-            </h3>
-            <span className="bg-white/10 border border-white/10 text-white px-2.5 py-1 rounded-full text-[9px] font-black tracking-tight leading-none">
-              {currentWeekWorkoutsCount}/7 dias
-            </span>
+        {/* Wrapper for side-by-side md: Grid */}
+        <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4 w-full">
+          {/* 3. WEEK FREQUENCY DISPLAY (Premium Blue Background and White Text) */}
+          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 space-y-3.5 text-left shadow-lg shadow-blue-900/5 shrink-0">
+            <div className="flex justify-between items-center h-4 leading-none">
+              <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
+                FREQUÊNCIA SEMANAL
+              </h3>
+              <span className="bg-white/10 border border-white/10 text-white px-2.5 py-1 rounded-full text-[9px] font-black tracking-tight leading-none">
+                {currentWeekWorkoutsCount}/7 dias
+              </span>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 pt-0.5">
+              {weekDays.map((dia, idx) => {
+                const dateStr = weekDates[idx];
+                const isToday = currentDayIndex === idx;
+                const treinou = user.checkIns?.includes(dateStr) || false;
+                
+                return (
+                  <button 
+                    key={idx} 
+                    onClick={() => handleToggleDay(dia, dateStr, treinou)}
+                    className="flex flex-col items-center gap-1.5 cursor-pointer bg-transparent border-0 outline-none p-0 focus:outline-none"
+                  >
+                    <span className={`text-[9px] font-extrabold tracking-wider ${
+                      isToday ? 'text-white font-black scale-105' : 'text-white/60'
+                    }`}>
+                      {dia}
+                    </span>
+                    <div className="relative">
+                      {treinou ? (
+                        <div className="w-7 h-7 rounded-full bg-white text-[#2563EB] flex items-center justify-center shadow shadow-black/15">
+                          <CheckCircle2 size={12} className="text-[#2563EB] fill-[#2563EB]/15 animate-fade" />
+                        </div>
+                      ) : (
+                        <div className="w-7 h-7 rounded-full border border-white/20 bg-white/5 flex hover:bg-white/10 transition-colors" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 pt-0.5">
-            {weekDays.map((dia, idx) => {
-              const dateStr = weekDates[idx];
-              const isToday = currentDayIndex === idx;
-              const treinou = user.checkIns?.includes(dateStr) || false;
+          {/* 4. SUMMARY METRIC TRIPLE CARDS (Premium Blue Background and White Text) */}
+          <div className="grid grid-cols-3 gap-2 w-full shrink-0 md:flex md:flex-row md:gap-3">
+            {/* Card 1: Sequência */}
+            <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px] md:flex-1">
+              <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-orange-400 shrink-0">
+                <Flame size={12} className="fill-orange-400/20" />
+              </div>
               
-              return (
-                <button 
-                  key={idx} 
-                  onClick={() => handleToggleDay(dia, dateStr, treinou)}
-                  className="flex flex-col items-center gap-1.5 cursor-pointer bg-transparent border-0 outline-none p-0 focus:outline-none"
-                >
-                  <span className={`text-[9px] font-extrabold tracking-wider ${
-                    isToday ? 'text-white font-black scale-105' : 'text-white/60'
-                  }`}>
-                    {dia}
-                  </span>
-                  <div className="relative">
-                    {treinou ? (
-                      <div className="w-7 h-7 rounded-full bg-white text-[#2563EB] flex items-center justify-center shadow shadow-black/15">
-                        <CheckCircle2 size={12} className="text-[#2563EB] fill-[#2563EB]/15 animate-fade" />
-                      </div>
-                    ) : (
-                      <div className="w-7 h-7 rounded-full border border-white/20 bg-white/5 flex hover:bg-white/10 transition-colors" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 4. SUMMARY METRIC TRIPLE CARDS (Premium Blue Background and White Text) */}
-        <div className="grid grid-cols-3 gap-2 w-full shrink-0">
-          {/* Card 1: Sequência */}
-          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
-            <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-orange-400 shrink-0">
-              <Flame size={12} className="fill-orange-400/20" />
-            </div>
-            
-            <div className="leading-none space-y-0.5">
-              <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
-                SEQUÊNCIA
-              </span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-extrabold text-white leading-none">{user.streak || 0}</span>
-                <span className="text-[9px] font-bold text-white/70 leading-none">dias</span>
-              </div>
-            </div>
-            
-            <p className="text-[8px] text-white/80 font-medium leading-none">
-              Mantenha o ritmo!
-            </p>
-          </div>
-
-          {/* Card 2: Tempo Total */}
-          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
-            <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-blue-200 shrink-0">
-              <Clock size={12} />
-            </div>
-            
-            <div className="leading-none space-y-0.5">
-              <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
-                TEMPO TOTAL
-              </span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-extrabold text-white leading-none">
-                  {user.totalWorkouts > 0 ? `${Math.max(1, Math.round((user.totalWorkouts * 45) / 60))}h` : '0h'}
+              <div className="leading-none space-y-0.5">
+                <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
+                  SEQUÊNCIA
                 </span>
-                <span className="text-[9px] font-bold text-white/70 leading-none flex items-center">dedicado</span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className="text-lg font-extrabold text-white leading-none">{user.streak || 0}</span>
+                  <span className="text-[9px] font-bold text-white/70 leading-none">dias</span>
+                </div>
               </div>
+              
+              <p className="text-[8px] text-white/80 font-medium leading-none">
+                Mantenha o ritmo!
+              </p>
             </div>
-            
-            <p className="text-[8px] text-white/80 font-medium leading-none">
-              Treino consistente
-            </p>
-          </div>
 
-          {/* Card 3: Próximo Treino */}
-          <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px]">
-            <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-indigo-300 shrink-0">
-              <Calendar size={12} />
-            </div>
-            
-            <div className="leading-none space-y-0.5">
-              <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
-                RECOMENDADO
-              </span>
-              <div className="space-y-0.5">
-                <span className="text-[12px] font-black text-white block leading-none truncate">{nextWorkout ? nextWorkout.title : 'Nenhum'}</span>
-                <span className="text-[8px] font-bold text-white/60 block leading-none">Sua sequência</span>
+            {/* Card 2: Tempo Total */}
+            <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px] md:flex-1">
+              <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-blue-200 shrink-0">
+                <Clock size={12} />
               </div>
+              
+              <div className="leading-none space-y-0.5">
+                <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
+                  TEMPO TOTAL
+                </span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className="text-lg font-extrabold text-white leading-none">
+                    {user.totalWorkouts > 0 ? `${Math.max(1, Math.round((user.totalWorkouts * 45) / 60))}h` : '0h'}
+                  </span>
+                  <span className="text-[9px] font-bold text-white/70 leading-none flex items-center">dedicado</span>
+                </div>
+              </div>
+              
+              <p className="text-[8px] text-white/80 font-medium leading-none">
+                Treino consistente
+              </p>
             </div>
-            
-            <p className="text-[8px] text-white/80 font-bold leading-none truncate" title={nextWorkout ? nextWorkout.description : ''}>
-              {nextWorkout ? nextWorkout.description : 'Treinos em dia.'}
-            </p>
+
+            {/* Card 3: Próximo Treino */}
+            <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-xl p-3 space-y-1.5 flex flex-col justify-between text-left shadow-lg min-h-[96px] md:flex-1">
+              <div className="w-6.5 h-6.5 rounded-full bg-white/15 flex items-center justify-center text-indigo-300 shrink-0">
+                <Calendar size={12} />
+              </div>
+              
+              <div className="leading-none space-y-0.5">
+                <span className="text-[7px] font-black uppercase tracking-wider text-white/50">
+                  RECOMENDADO
+                </span>
+                <div className="space-y-0.5">
+                  <span className="text-[12px] font-black text-white block leading-none truncate">{nextWorkout ? nextWorkout.title : 'Nenhum'}</span>
+                  <span className="text-[8px] font-bold text-white/60 block leading-none">Sua sequência</span>
+                </div>
+              </div>
+              
+              <p className="text-[8px] text-white/80 font-bold leading-none truncate" title={nextWorkout ? nextWorkout.description : ''}>
+                {nextWorkout ? nextWorkout.description : 'Treinos em dia.'}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -556,7 +565,7 @@ export const DashboardView: React.FC = () => {
                 <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
               ) : (
                 <span className="text-[10px] font-[900] tracking-tighter uppercase text-ink leading-none font-nike italic">
-                  {user.name.substring(0, 2)}
+                  {getInitials(user.name)}
                 </span>
               )}
             </div>
