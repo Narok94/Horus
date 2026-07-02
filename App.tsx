@@ -120,8 +120,8 @@ const AppContent: React.FC = () => {
   }, [isLoggedIn, user]);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState('teste1');
-  const [password, setPassword] = useState('12345');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => {
     const saved = localStorage.getItem('tatugym_remember_me_checked');
