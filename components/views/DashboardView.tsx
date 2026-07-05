@@ -43,26 +43,16 @@ const getJulyPoints = (u: any) => {
     });
   }
   
-  // 2. Completed meals in July 2026
-  let mealsCount = 0;
-  if (u.completedMeals) {
-    Object.keys(u.completedMeals).forEach((dateStr) => {
-      if (dateStr.includes('-07-')) {
-        mealsCount += u.completedMeals[dateStr]?.length || 0;
-      }
-    });
-  }
-  
   const workoutPoints = workoutsCount * 100;
   const cardioPoints = cardioCount * 50;
-  const mealPoints = mealsCount * 30;
-  const total = workoutPoints + cardioPoints + mealPoints;
+  const mealPoints = 0;
+  const total = workoutPoints + cardioPoints;
   
   return {
     total,
     workoutsCount,
     cardioCount,
-    mealsCount,
+    mealsCount: 0,
     workoutPoints,
     cardioPoints,
     mealPoints
@@ -82,12 +72,8 @@ const getStudentJulyPoints = (username: string, currentLoggedUser: any) => {
   } catch (e) {
     console.error('Error loading other user points:', e);
   }
-  // Fallbacks
-  if (username === 'teste1') {
-    return { total: 350, workoutsCount: 2, cardioCount: 1, mealsCount: 5, workoutPoints: 200, cardioPoints: 50, mealPoints: 100 };
-  } else {
-    return { total: 290, workoutsCount: 1, cardioCount: 1, mealsCount: 5, workoutPoints: 100, cardioPoints: 50, mealPoints: 140 };
-  }
+  // Fallbacks - Zeroed out as requested
+  return { total: 0, workoutsCount: 0, cardioCount: 0, mealsCount: 0, workoutPoints: 0, cardioPoints: 0, mealPoints: 0 };
 };
 
 const AnilhaIcon: React.FC<{ active: boolean; current: boolean; accentColor?: string; isLight?: boolean }> = ({ active, current, accentColor: propAccentColor, isLight }) => {
@@ -461,26 +447,36 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* PROJETO JULHO CARD - MOTIVATIONAL AND GAMIFIED */}
-        <div className="w-full bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/5 rounded-[22px] p-4.5 text-white relative shadow-lg overflow-hidden flex flex-col justify-between shrink-0">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
+        <div 
+          style={{ 
+            borderColor: 'rgba(var(--accent-color-rgb), 0.15)',
+            boxShadow: `0 4px 20px rgba(var(--accent-color-rgb), 0.03)`
+          }}
+          className={`w-full border rounded-[22px] p-4.5 text-left relative overflow-hidden flex flex-col justify-between shrink-0 transition-all duration-300 ${
+            isTeste1 
+              ? 'bg-white text-zinc-800 border-zinc-200' 
+              : 'bg-[#0E0E12] text-white border-white/5'
+          }`}
+        >
+          <div style={{ backgroundColor: 'var(--accent-color)' }} className="absolute -top-10 -right-10 w-32 h-32 opacity-10 rounded-full blur-2xl pointer-events-none" />
           
           <div className="flex justify-between items-center w-full">
             <div className="text-left">
-              <span className="text-amber-400 text-[8.5px] font-black tracking-[0.25em] uppercase font-mono">
-                PROJETO DE JULHO ⚡ DIETA & TREINO
+              <span className="text-accent text-[8.5px] font-black tracking-[0.25em] uppercase font-mono">
+                PROJETO DE JULHO ⚡ EXERCÍCIO & CONSTÂNCIA
               </span>
-              <h2 className="text-[16px] font-black text-white tracking-tight leading-none mt-1 font-sans">
+              <h2 className={`text-[16px] font-black tracking-tight leading-none mt-1 font-sans ${isTeste1 ? 'text-zinc-900' : 'text-white'}`}>
                 Seu Desafio Diário
               </h2>
             </div>
-            <div className="w-8 h-8 rounded-full bg-amber-400/10 text-amber-400 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center shrink-0">
               <Trophy size={14} className="animate-bounce" />
             </div>
           </div>
 
-          <div className="mt-3 bg-white/5 border border-white/5 rounded-xl p-3 text-left">
-            <p className="text-zinc-200 text-[11px] font-semibold leading-relaxed italic">
-              "Henrique e Jessica, o sucesso é a soma de pequenos esforços repetidos dia após dia. Treinem pesado, sigam a dieta à risca e conquistem a melhor versão de vocês!"
+          <div className={`mt-3 border rounded-xl p-3 text-left ${isTeste1 ? 'bg-zinc-50 border-zinc-150' : 'bg-white/5 border-white/5'}`}>
+            <p className={`text-[11px] font-semibold leading-relaxed italic ${isTeste1 ? 'text-zinc-600' : 'text-zinc-200'}`}>
+              "Henrique e Jessica, o sucesso é a soma de pequenos esforços repetidos dia após dia. Treinem pesado, mantenham a constância e conquistem a melhor versão de vocês!"
             </p>
           </div>
 
@@ -490,7 +486,7 @@ export const DashboardView: React.FC = () => {
               <span className="text-[9px] font-black uppercase tracking-wider text-zinc-400">
                 Placar de Pontos • Julho
               </span>
-              <span className="text-[9px] font-bold text-amber-300">
+              <span className="text-[9px] font-bold text-accent">
                 {henriquePointsData.total === jessicaPointsData.total ? (
                   "Empate Técnico! 🤝"
                 ) : henriquePointsData.total > jessicaPointsData.total ? (
@@ -503,73 +499,50 @@ export const DashboardView: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               {/* Henrique Card */}
-              <div className={`border rounded-xl p-3 text-left space-y-1 transition-all ${isHenrique ? 'bg-white/10 border-blue-500/30' : 'bg-white/5 border-white/5'}`}>
+              <div className={`border rounded-xl p-3 text-left space-y-1 transition-all ${
+                isHenrique 
+                  ? (isTeste1 ? 'bg-[#2563EB]/5 border-[#2563EB]/25' : 'bg-white/10 border-blue-500/30') 
+                  : (isTeste1 ? 'bg-zinc-50 border-zinc-150' : 'bg-white/5 border-white/5')
+              }`}>
                 <div className="flex justify-between items-center">
-                  <span className={`text-[11px] font-black ${isHenrique ? 'text-blue-300' : 'text-zinc-300'}`}>Henrique</span>
-                  <span className="text-[11px] font-black text-white">{henriquePointsData.total} pts</span>
+                  <span className={`text-[11px] font-black ${isHenrique ? 'text-[#2563EB]' : (isTeste1 ? 'text-zinc-600' : 'text-zinc-300')}`}>Henrique</span>
+                  <span className={`text-[11px] font-black ${isTeste1 ? 'text-zinc-800' : 'text-white'}`}>{henriquePointsData.total} pts</span>
                 </div>
-                <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+                <div className={`w-full h-1 rounded-full overflow-hidden ${isTeste1 ? 'bg-zinc-100' : 'bg-zinc-800'}`}>
                   <div 
-                    className="bg-blue-500 h-full rounded-full transition-all duration-500" 
-                    style={{ width: `${Math.min(100, (henriquePointsData.total / 1500) * 100)}%` }} 
+                    className="bg-[#2563EB] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(37,99,235,0.4)]" 
+                    style={{ width: `${Math.min(100, (henriquePointsData.total / 1000) * 100)}%` }} 
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 text-[7.5px] text-zinc-400 font-bold uppercase pt-0.5 leading-none">
                   <span>💪 {henriquePointsData.workoutsCount} Treinos (+{henriquePointsData.workoutPoints} pts)</span>
                   <span>🏃 {henriquePointsData.cardioCount} Cardios (+{henriquePointsData.cardioPoints} pts)</span>
-                  <span>🍎 {henriquePointsData.mealsCount} Refeições (+{henriquePointsData.mealPoints} pts)</span>
                 </div>
               </div>
 
               {/* Jessica Card */}
-              <div className={`border rounded-xl p-3 text-left space-y-1 transition-all ${isJessica ? 'bg-white/10 border-rose-500/30' : 'bg-white/5 border-white/5'}`}>
+              <div className={`border rounded-xl p-3 text-left space-y-1 transition-all ${
+                isJessica 
+                  ? (isTeste1 ? 'bg-[#FF007F]/5 border-[#FF007F]/25' : 'bg-white/10 border-rose-500/30') 
+                  : (isTeste1 ? 'bg-zinc-50 border-zinc-150' : 'bg-white/5 border-white/5')
+              }`}>
                 <div className="flex justify-between items-center">
-                  <span className={`text-[11px] font-black ${isJessica ? 'text-rose-300' : 'text-zinc-300'}`}>Jessica</span>
-                  <span className="text-[11px] font-black text-white">{jessicaPointsData.total} pts</span>
+                  <span className={`text-[11px] font-black ${isJessica ? 'text-[#FF007F]' : (isTeste1 ? 'text-zinc-600' : 'text-zinc-300')}`}>Jessica</span>
+                  <span className={`text-[11px] font-black ${isTeste1 ? 'text-zinc-800' : 'text-white'}`}>{jessicaPointsData.total} pts</span>
                 </div>
-                <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+                <div className={`w-full h-1 rounded-full overflow-hidden ${isTeste1 ? 'bg-zinc-100' : 'bg-zinc-800'}`}>
                   <div 
-                    className="bg-rose-500 h-full rounded-full transition-all duration-500" 
-                    style={{ width: `${Math.min(100, (jessicaPointsData.total / 1500) * 100)}%` }} 
+                    className="bg-[#FF007F] h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(255,0,127,0.4)]" 
+                    style={{ width: `${Math.min(100, (jessicaPointsData.total / 1000) * 100)}%` }} 
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 text-[7.5px] text-zinc-400 font-bold uppercase pt-0.5 leading-none">
                   <span>💪 {jessicaPointsData.workoutsCount} Treinos (+{jessicaPointsData.workoutPoints} pts)</span>
                   <span>🏃 {jessicaPointsData.cardioCount} Cardios (+{jessicaPointsData.cardioPoints} pts)</span>
-                  <span>🍎 {jessicaPointsData.mealsCount} Refeições (+{jessicaPointsData.mealPoints} pts)</span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Quick Meals Log checklist */}
-          {userMeals.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-white/5">
-              <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-400 block text-left mb-2 leading-none">
-                Minhas Refeições de Hoje (+30 pts cada)
-              </span>
-              <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap">
-                {userMeals.map((mealName, idx) => {
-                  const todayCompleted = user.completedMeals?.[todayStr] || [];
-                  const done = todayCompleted.includes(mealName);
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => toggleMealCompletion(mealName)}
-                      className={`text-[9.5px] font-extrabold px-2.5 py-2 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer leading-none ${
-                        done
-                          ? 'bg-emerald-500 border-emerald-500 text-white font-black'
-                          : 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10'
-                      }`}
-                    >
-                      <CheckCircle2 size={10} className={done ? "text-white" : "text-zinc-500"} />
-                      <span className="truncate">{mealName}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Wrapper for side-by-side md: Grid */}

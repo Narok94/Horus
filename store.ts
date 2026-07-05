@@ -56,6 +56,15 @@ export const useStore = create<AppState>((set, get) => {
   // Allow user custom theme, default is 'dark' for premium dark HUD, except for teste1
   const initialTheme = (() => {
     if (typeof localStorage !== 'undefined') {
+      // Execute the one-time July 2026 Reset for Henrique and Jessica
+      const RESET_KEY = 'tatugym_reset_v5_july_challenge';
+      if (!localStorage.getItem(RESET_KEY)) {
+        localStorage.removeItem('tatugym_user_profile_teste1');
+        localStorage.removeItem('tatugym_user_profile_jessica');
+        localStorage.removeItem('tatugym_remembered');
+        localStorage.setItem(RESET_KEY, 'true');
+      }
+
       const remembered = localStorage.getItem('tatugym_remembered');
       if (remembered) {
         try {
