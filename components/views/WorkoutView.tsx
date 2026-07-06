@@ -419,11 +419,37 @@ export const WorkoutView: React.FC = () => {
       return currentSessionProgress[ex.id];
     }
     
+    // Check if it has '+' for drop sets
+    if (ex.reps.includes('+')) {
+      const parts = ex.reps.split('+').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+      if (parts.length === 2) {
+        const performance: SetPerformance[] = [];
+        const mainReps = parts[0];
+        const dropReps = parts[1];
+        const baseWeight = user.weights?.[ex.id] || 0;
+        const dropWeight = baseWeight > 0 ? Math.round(baseWeight * 0.7) : 0;
+        
+        for (let i = 0; i < ex.sets; i++) {
+          performance.push({
+            weight: baseWeight,
+            reps: mainReps,
+            completed: false
+          });
+          performance.push({
+            weight: dropWeight,
+            reps: dropReps,
+            completed: false
+          });
+        }
+        return performance;
+      }
+    }
+
     // Parse reps string to see if it's a pyramid or list (e.g. "12-10-8-6" or "12-10-8-8")
     // Only parse if it has hyphens or slashes and doesn't contain time markers like "seg" or "min"
     const isTimeBased = ex.reps.toLowerCase().includes('seg') || ex.reps.toLowerCase().includes('min');
     const repParts = !isTimeBased 
-      ? ex.reps.split(/[-+/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
+      ? ex.reps.split(/[-/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
       : [];
 
     return new Array(ex.sets).fill(null).map((_, idx) => {
@@ -452,14 +478,53 @@ export const WorkoutView: React.FC = () => {
     const updatedSets = [...currentSets];
     
     // Copy weight and reps from the first set to subsequent uncompleted sets automatically
-    if (setIndex === 0) {
+    if (currentEx.reps.includes('+')) {
+      if (setIndex === 0) {
+        // Cascade main sets weight/reps and drop sets weight
+        const mainWeight = updates.weight !== undefined ? updates.weight : updatedSets[0].weight;
+        const mainReps = updates.reps !== undefined ? updates.reps : updatedSets[0].reps;
+        const dropWeight = updates.weight !== undefined ? Math.round(updates.weight * 0.7) : updatedSets[1].weight;
+        
+        for (let i = 1; i < updatedSets.length; i++) {
+          if (!updatedSets[i].completed) {
+            if (i % 2 === 0) {
+              // Main set
+              updatedSets[i] = {
+                ...updatedSets[i],
+                weight: mainWeight,
+                reps: mainReps
+              };
+            } else {
+              // Drop set
+              updatedSets[i] = {
+                ...updatedSets[i],
+                weight: dropWeight
+              };
+            }
+          }
+        }
+      } else if (setIndex === 1) {
+        // Cascade drop sets weight/reps
+        const dropWeight = updates.weight !== undefined ? updates.weight : updatedSets[1].weight;
+        const dropReps = updates.reps !== undefined ? updates.reps : updatedSets[1].reps;
+        
+        for (let i = 3; i < updatedSets.length; i += 2) {
+          if (!updatedSets[i].completed) {
+            updatedSets[i] = {
+              ...updatedSets[i],
+              weight: dropWeight,
+              reps: dropReps
+            };
+          }
+        }
+      }
+    } else if (setIndex === 0) {
       const cascadeUpdates: Partial<SetPerformance> = {};
       if (updates.weight !== undefined) cascadeUpdates.weight = updates.weight;
       
-      // Only cascade reps if it's NOT a pyramid exercise
       const isTimeBased = currentEx.reps.toLowerCase().includes('seg') || currentEx.reps.toLowerCase().includes('min');
       const repParts = !isTimeBased 
-        ? currentEx.reps.split(/[-+/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
+        ? currentEx.reps.split(/[-/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
         : [];
       const isPyramid = repParts.length > 1;
 
@@ -848,7 +913,7 @@ export const WorkoutView: React.FC = () => {
           {selectedWorkout.exercises.map((ex, idx) => {
             const perf = getExercisePerformance(ex);
             const completedCount = perf.filter(p => p.completed).length;
-            const sizeSets = ex.sets;
+            const sizeSets = ex.reps.includes('+') ? ex.sets * 2 : ex.sets;
             const isAllCompleted = sizeSets > 0 && completedCount === sizeSets;
             
             const isExpanded = expandedExerciseId === ex.id;
@@ -1360,13 +1425,20 @@ export const WorkoutView: React.FC = () => {
                             {/* Column 1: Row Title */}
                             <div className="col-span-2 text-left shrink-0 leading-none">
                               <span className={`text-sm font-black font-mono block ${isTeste1 ? 'text-zinc-950' : 'text-white'}`}>
-                                S{setIdx + 1}
+                                {activeModalExercise.reps.includes('+')
+                                  ? `S${Math.floor(setIdx / 2) + 1}${setIdx % 2 === 0 ? '' : '+'}`
+                                  : `S${setIdx + 1}`
+                                }
                               </span>
-                              {setIdx === 0 && (
+                              {activeModalExercise.reps.includes('+') && setIdx % 2 !== 0 ? (
+                                <span className="text-[6px] font-black text-orange-500 uppercase tracking-widest mt-0.5 block italic leading-none font-mono font-bold">
+                                  DROP
+                                </span>
+                              ) : setIdx === 0 ? (
                                 <span className="text-[6px] font-black text-accent uppercase tracking-widest mt-0.5 block italic leading-none font-mono font-bold">
                                   REP
                                 </span>
-                              )}
+                              ) : null}
                             </div>
 
                             {/* Column 2: Weight Stepper */}

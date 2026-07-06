@@ -504,7 +504,6 @@ const AppContent: React.FC = () => {
               ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
               { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
               { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
-              { id: AppTab.CARDIO, icon: Activity, label: 'Cardio' },
               { id: AppTab.DESAFIO, icon: Target, label: 'Desafio' },
               { id: AppTab.HISTORY, icon: isLightUser ? BarChart2 : HistoryIcon, label: isLightUser ? 'Progresso' : 'Histórico' },
               { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
