@@ -159,6 +159,65 @@ export const WorkoutsListView: React.FC = () => {
         })}
       </div>
 
+      {/* Jessica Specific Periodization Info Card */}
+      {user.username.toLowerCase() === 'jessica' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className={`mt-4 p-4 rounded-2xl border ${
+            isTeste1
+              ? 'bg-gradient-to-br from-[#1E293B] to-[#0F172A] border-white/10 text-white'
+              : 'bg-zinc-900/40 border-white/5 text-zinc-300'
+          }`}
+        >
+          <div className="flex items-center gap-2 mb-2.5">
+            <Activity className="text-accent" size={16} />
+            <h3 className="text-xs font-black uppercase tracking-wider italic">
+              Periodização & Controle de Fadiga (4 semanas)
+            </h3>
+          </div>
+
+          <p className="text-[10px] leading-relaxed mb-3 text-zinc-300/90">
+            A periodização estruturada com semanas de descarga (deload) é fundamental para controlar a fadiga e evitar picos de dor associados à <strong>fibromialgia</strong>. Mantenha os limites estabelecidos abaixo para treinar de forma constante e segura:
+          </p>
+
+          <div className="grid grid-cols-4 gap-1.5 text-center text-[9px] font-mono mb-3">
+            <div className="bg-white/5 p-1.5 rounded-lg border border-white/5">
+              <span className="block text-accent font-black">SEM 1</span>
+              <span className="text-[7px] block text-white/50 leading-tight">Adaptação</span>
+              <span className="font-bold text-white block mt-0.5 leading-none">3 Séries</span>
+              <span className="text-white/60">60-70%</span>
+            </div>
+            <div className="bg-white/5 p-1.5 rounded-lg border border-white/5">
+              <span className="block text-accent font-black">SEM 2</span>
+              <span className="text-[7px] block text-white/50 leading-tight">Constância</span>
+              <span className="font-bold text-white block mt-0.5 leading-none">3 Séries</span>
+              <span className="text-white/60">60-70%</span>
+            </div>
+            <div className="bg-white/5 p-1.5 rounded-lg border border-white/5">
+              <span className="block text-orange-400 font-black">SEM 3</span>
+              <span className="text-[7px] block text-white/50 leading-tight">Progressão</span>
+              <span className="font-bold text-white block mt-0.5 leading-none">4 Séries</span>
+              <span className="text-white/60">70-80%</span>
+            </div>
+            <div className="bg-white/5 p-1.5 rounded-lg border border-white/5">
+              <span className="block text-emerald-400 font-black">SEM 4</span>
+              <span className="text-[7px] block text-white/50 leading-tight">Deload 💤</span>
+              <span className="font-bold text-white block mt-0.5 leading-none">2-3 Sers</span>
+              <span className="text-white/60">50-60%</span>
+            </div>
+          </div>
+
+          <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-start gap-2">
+            <span className="text-emerald-400 font-black text-xs font-mono leading-none">⚠️</span>
+            <p className="text-[9.5px] leading-relaxed text-emerald-300">
+              <strong>Semana de Deload:</strong> Reduza as séries e a carga na Semana 4 para regenerar as articulações e prevenir o acúmulo de fadiga.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {/* SUBTLE FOOTER METADATA (Instead of a heavy glowing motivational box) */}
       <div className="px-1 shrink-0 pt-4 text-center">
         <div className={`flex items-center justify-center gap-1.5 text-[8.5px] font-mono font-bold tracking-wider uppercase leading-none ${
