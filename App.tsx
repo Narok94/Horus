@@ -17,7 +17,8 @@ import {
   EyeOff,
   Play,
   Activity,
-  Utensils
+  Utensils,
+  Target
 } from 'lucide-react';
 import { useStore } from './store';
 import { useWorkoutPersistence } from './hooks/useWorkoutPersistence';
@@ -36,6 +37,7 @@ import { TeacherView } from './components/views/TeacherView';
 import { WorkoutsListView } from './components/views/WorkoutsListView';
 import { CardioView } from './components/views/CardioView';
 import { DietView } from './components/views/DietView';
+import { DesafioView } from './components/views/DesafioView';
 
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
@@ -444,6 +446,7 @@ const AppContent: React.FC = () => {
       case AppTab.TEACHER: return <TeacherView />;
       case AppTab.CARDIO: return <CardioView />;
       case AppTab.DIET: return <DietView />;
+      case AppTab.DESAFIO: return <DesafioView />;
       default: return <DashboardView />;
     }
   };
@@ -496,12 +499,13 @@ const AppContent: React.FC = () => {
             ? "bg-white/80 border-t border-gray-250/50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]"
             : "bg-[#050505]/85 border-t border-white/[0.04] shadow-2xl"
         } backdrop-blur-md select-none`}>
-          <div className="w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-6 flex items-center justify-around">
+          <div className="w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-2 sm:px-6 flex items-center justify-around">
             {[
               ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
               { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
               { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
               { id: AppTab.CARDIO, icon: Activity, label: 'Cardio' },
+              { id: AppTab.DESAFIO, icon: Target, label: 'Desafio' },
               { id: AppTab.HISTORY, icon: isLightUser ? BarChart2 : HistoryIcon, label: isLightUser ? 'Progresso' : 'Histórico' },
               { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
             ].map((item) => {

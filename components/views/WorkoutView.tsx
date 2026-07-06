@@ -251,13 +251,13 @@ export const WorkoutView: React.FC = () => {
     setWorkoutDuration(null);
     setElapsedTime(0);
     setIsWorkoutActive(false);
-    setActiveTab(AppTab.DASHBOARD);
+    setActiveTab(AppTab.WORKOUT);
   };
 
   const exitWorkout = () => {
       setSelectedWorkout(null);
       setShowSummary(false);
-      setActiveTab(AppTab.DASHBOARD);
+      setActiveTab(AppTab.WORKOUT);
   };
 
   const cancelWorkout = () => {
@@ -271,7 +271,7 @@ export const WorkoutView: React.FC = () => {
       setWorkoutStartTime(null);
       setElapsedTime(0);
       setIsWorkoutActive(false);
-      setActiveTab(AppTab.DASHBOARD);
+      setActiveTab(AppTab.WORKOUT);
     }
   };
 
@@ -418,11 +418,29 @@ export const WorkoutView: React.FC = () => {
     if (currentSessionProgress[ex.id] && currentSessionProgress[ex.id].length > 0) {
       return currentSessionProgress[ex.id];
     }
-    return new Array(ex.sets).fill(null).map(() => ({
-      weight: user.weights?.[ex.id] || 0,
-      reps: parseInt(ex.reps) || 10,
-      completed: false
-    }));
+    
+    // Parse reps string to see if it's a pyramid or list (e.g. "12-10-8-6" or "12-10-8-8")
+    // Only parse if it has hyphens or slashes and doesn't contain time markers like "seg" or "min"
+    const isTimeBased = ex.reps.toLowerCase().includes('seg') || ex.reps.toLowerCase().includes('min');
+    const repParts = !isTimeBased 
+      ? ex.reps.split(/[-+/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
+      : [];
+
+    return new Array(ex.sets).fill(null).map((_, idx) => {
+      let repsVal = parseInt(ex.reps) || 10;
+      if (repParts.length > 1) {
+        if (idx < repParts.length) {
+          repsVal = repParts[idx];
+        } else {
+          repsVal = repParts[repParts.length - 1];
+        }
+      }
+      return {
+        weight: user.weights?.[ex.id] || 0,
+        reps: repsVal,
+        completed: false
+      };
+    });
   };
 
   // Update set value and handle complete toggling transitions
@@ -437,7 +455,17 @@ export const WorkoutView: React.FC = () => {
     if (setIndex === 0) {
       const cascadeUpdates: Partial<SetPerformance> = {};
       if (updates.weight !== undefined) cascadeUpdates.weight = updates.weight;
-      if (updates.reps !== undefined) cascadeUpdates.reps = updates.reps;
+      
+      // Only cascade reps if it's NOT a pyramid exercise
+      const isTimeBased = currentEx.reps.toLowerCase().includes('seg') || currentEx.reps.toLowerCase().includes('min');
+      const repParts = !isTimeBased 
+        ? currentEx.reps.split(/[-+/]/).map(r => parseInt(r.trim())).filter(r => !isNaN(r))
+        : [];
+      const isPyramid = repParts.length > 1;
+
+      if (updates.reps !== undefined && !isPyramid) {
+        cascadeUpdates.reps = updates.reps;
+      }
       
       for (let i = 1; i < updatedSets.length; i++) {
         if (!updatedSets[i].completed) {
