@@ -514,6 +514,11 @@ const AppContent: React.FC = () => {
                   key={item.id}
                   onClick={() => {
                     handleVibrate();
+                    if (item.id === AppTab.DESAFIO) {
+                      if (typeof window !== 'undefined') {
+                        window.open('https://desafio90d.vercel.app', '_blank', 'noopener,noreferrer');
+                      }
+                    }
                     setActiveTab(item.id);
                   }}
                   className="relative flex flex-col items-center justify-center flex-1 h-full py-1 hover:scale-105 active:scale-95 transition-all duration-150 focus:outline-none group cursor-pointer"

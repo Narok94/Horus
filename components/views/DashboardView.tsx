@@ -18,6 +18,7 @@ import {
   Utensils
 } from 'lucide-react';
 import { henriqueDiet, jessicaDiet } from '../../src/data/dietPlans';
+import { CardExpensesWidget } from './CardExpensesWidget';
 
 const getInitials = (name: string): string => {
   const words = name.trim().split(' ');
@@ -560,6 +561,9 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
+        {/* CREDIT CARD EXPENSES TRACKER (GASTOS CARTÃO) */}
+        <CardExpensesWidget />
+
         {/* 5. PRÓXIMOS TREINOS DA SEMANA */}
         {workouts && workouts.length > 0 && (
           <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 text-left shadow-lg shadow-blue-900/5 shrink-0 space-y-3">
@@ -927,7 +931,8 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
-
+        {/* CREDIT CARD EXPENSES TRACKER (GASTOS CARTÃO) */}
+        <CardExpensesWidget />
 
       </main>
 

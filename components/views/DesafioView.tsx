@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Target, ExternalLink, Trophy } from 'lucide-react';
+import { Target, ExternalLink, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useStore } from '../../store';
 import { AppTab } from '../../types';
 
@@ -13,6 +13,10 @@ export const DesafioView: React.FC = () => {
       window.open('https://desafio90d.vercel.app', '_blank', 'noopener,noreferrer');
     }
   };
+
+  useEffect(() => {
+    handleRedirect();
+  }, []);
 
   const accentColor = isTeste1 ? '#2563EB' : 'var(--accent-color)';
 
@@ -36,8 +40,8 @@ export const DesafioView: React.FC = () => {
           />
         )}
 
-        <div className="flex flex-col items-center mt-4">
-          {/* Glowing/Styled Icon container */}
+        <div className="flex flex-col items-center mt-4 w-full">
+          {/* Glowing/Styled Icon container with rotation */}
           <div 
             className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 relative transition-all duration-300 ${
               isTeste1 
@@ -48,24 +52,34 @@ export const DesafioView: React.FC = () => {
             {!isTeste1 && (
               <span className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-75 pointer-events-none" />
             )}
-            <Target size={38} className="relative z-10" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+            >
+              <Target size={38} className="relative z-10 text-accent" />
+            </motion.div>
           </div>
 
           <span className="text-accent text-[8.5px] font-black tracking-[0.25em] uppercase font-mono mb-2">
-            CONEXÃO EXTERNA ⚡ DESAFIO 90 DIAS
+            CONEXÃO DIRETA ⚡ DESAFIO 90 DIAS
           </span>
 
           <h2 className={`text-xl sm:text-2xl font-black tracking-tight leading-snug font-sans uppercase italic ${
             isTeste1 ? 'text-zinc-900' : 'text-white'
           }`}>
-            Indo para o Desafio 90!
+            Abrindo o Desafio...
           </h2>
 
           <p className={`text-[12px] sm:text-[13px] font-medium leading-relaxed mt-4 max-w-xs ${
             isTeste1 ? 'text-zinc-500' : 'text-zinc-400'
           }`}>
-            Você será redirecionado para o aplicativo independente do desafio de 90 dias em uma nova janela.
+            Você está sendo redirecionado para o aplicativo do desafio em uma nova janela automaticamente.
           </p>
+
+          <div className="flex items-center gap-2 mt-4 text-[9.5px] text-zinc-450 dark:text-zinc-500 font-mono">
+            <RefreshCw size={10} className="animate-spin" />
+            <span>Se o bloqueador de pop-ups agir, clique abaixo:</span>
+          </div>
         </div>
 
         <div className="w-full space-y-3 mt-8">
@@ -80,7 +94,7 @@ export const DesafioView: React.FC = () => {
                 : 'bg-accent text-zinc-950 hover:brightness-110 shadow-accent/25'
             }`}
           >
-            <span>Continuar</span>
+            <span>Acessar Desafio</span>
             <ExternalLink size={14} strokeWidth={2.5} />
           </motion.button>
 
@@ -91,9 +105,10 @@ export const DesafioView: React.FC = () => {
               isTeste1 
                 ? 'text-zinc-500 hover:text-zinc-800 border-zinc-200 hover:bg-zinc-50' 
                 : 'text-zinc-400 hover:text-white border-white/5 hover:bg-white/[0.02]'
-            }`}
+            } flex items-center justify-center gap-1.5`}
           >
-            Voltar para o App
+            <ArrowLeft size={11} />
+            <span>Voltar para o App</span>
           </button>
         </div>
       </motion.div>

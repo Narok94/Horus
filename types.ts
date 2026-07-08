@@ -78,6 +78,16 @@ export interface User {
   history: WorkoutHistoryEntry[];
   badges?: Badge[];
   completedMeals?: Record<string, string[]>; // YYYY-MM-DD -> list of meal times or meal names
+  cardExpenses?: CardExpense[];
+}
+
+export interface CardExpense {
+  id: string;
+  description: string;
+  value: number;
+  currentInstallment?: number;
+  totalInstallments?: number;
+  isPendingValue?: boolean;
 }
 
 export interface Badge {
