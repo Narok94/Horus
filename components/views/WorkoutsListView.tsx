@@ -33,7 +33,7 @@ const workoutThemes = [
 ];
 
 export const WorkoutsListView: React.FC = () => {
-  const { user, allWorkouts, setSelectedWorkout, setActiveTab } = useStore();
+  const { user, allWorkouts, setSelectedWorkout, setActiveTab, isWorkoutActive, selectedWorkout: currentSelected, addToast } = useStore();
 
   if (!user) return null;
 
@@ -48,6 +48,11 @@ export const WorkoutsListView: React.FC = () => {
 
   const startWorkout = (workout: WorkoutRoutine) => {
     handleVibrate(20);
+    if (isWorkoutActive && currentSelected && currentSelected.id !== workout.id) {
+       if (addToast) addToast('Uma sessão já está em andamento. Finalize ou descarte para iniciar outra.', 'info');
+       setActiveTab(AppTab.WORKOUT);
+       return;
+    }
     setSelectedWorkout(workout);
     setActiveTab(AppTab.WORKOUT);
   };

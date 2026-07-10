@@ -145,7 +145,9 @@ export const DashboardView: React.FC = () => {
     toggleCheckInDate,
     addToast,
     updateUserProfile,
-    triggerConfetti
+    triggerConfetti,
+    isWorkoutActive,
+    selectedWorkout: currentSelected
   } = useStore();
 
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
@@ -284,8 +286,13 @@ export const DashboardView: React.FC = () => {
 
   const startActiveWorkout = () => {
     handleVibrate(40);
+    if (isWorkoutActive && currentSelected) {
+       setActiveTab(AppTab.WORKOUT);
+       return;
+    }
     if (nextWorkout) {
       setSelectedWorkout(nextWorkout);
+      setActiveTab(AppTab.WORKOUT);
     } else {
       setActiveTab(AppTab.WORKOUT);
     }
@@ -442,7 +449,7 @@ export const DashboardView: React.FC = () => {
             className="w-full mt-3.5 bg-white hover:bg-zinc-150 active:scale-[0.98] text-[#2563EB] font-black uppercase text-[10px] py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider shadow-md relative z-10 border-0"
           >
             <Play size={11} className="fill-[#2563EB] stroke-none" />
-            <span>INICIAR TREINO</span>
+            <span>{isWorkoutActive ? 'CONTINUAR TREINO' : 'INICIAR TREINO'}</span>
           </button>
         </div>
 
@@ -915,7 +922,7 @@ export const DashboardView: React.FC = () => {
               className="flex-1 bg-accent hover:brightness-105 active:scale-[0.98] text-[#050505] font-[950] uppercase text-[10.5px] py-3 rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider"
             >
               <Play size={11} className="fill-[#050505] stroke-none" />
-              <span>Iniciar Treino</span>
+              <span>{isWorkoutActive ? 'Continuar Treino' : 'Iniciar Treino'}</span>
             </button>
 
             <button

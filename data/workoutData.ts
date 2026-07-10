@@ -76,7 +76,7 @@ export const jessicaWorkouts: WorkoutRoutine[] = [
 
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
-    id: 'h-a',
+    id: 'h2-a',
     title: 'TREINO A — Peito e Bíceps',
     description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
     color: 'purple',
@@ -91,7 +91,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
     ]
   },
   {
-    id: 'h-b',
+    id: 'h2-b',
     title: 'TREINO B — Quadríceps e Panturrilha',
     description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
     color: 'emerald',
@@ -105,7 +105,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
     ]
   },
   {
-    id: 'h-c',
+    id: 'h2-c',
     title: 'TREINO C — Costas e Tríceps',
     description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
     color: 'orange',
@@ -120,7 +120,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
     ]
   },
   {
-    id: 'h-d',
+    id: 'h2-d',
     title: 'TREINO D — Ombro, Panturrilha e Trapézio',
     description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
     color: 'rose',
@@ -135,7 +135,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
     ]
   },
   {
-    id: 'h-e',
+    id: 'h2-e',
     title: 'TREINO E — Posterior de Perna, Glúteo e Cardio',
     description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
     color: 'blue',
