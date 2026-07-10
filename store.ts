@@ -62,6 +62,47 @@ export const useStore = create<AppState>((set, get) => {
         localStorage.setItem(RESET_KEY, 'true');
       }
 
+      // Restore Henrique's progress for Jul 6 to Jul 9
+      const RESTORE_KEY = 'tatugym_restore_july_10_v3';
+      if (!localStorage.getItem(RESTORE_KEY)) {
+        try {
+          const storedProfile = localStorage.getItem('tatugym_user_profile_teste1');
+          if (storedProfile) {
+            const profile = JSON.parse(storedProfile);
+            const missingDates = ['2026-07-06', '2026-07-07', '2026-07-08', '2026-07-09'];
+            profile.checkIns = Array.from(new Set([...(profile.checkIns || []), ...missingDates]));
+            profile.totalWorkouts = Math.max(profile.totalWorkouts || 0, (profile.totalWorkouts || 0) + missingDates.length);
+            
+            if (!profile.history) profile.history = [];
+            missingDates.forEach((date, i) => {
+               if (!profile.history.some((h: any) => h.date.startsWith(date))) {
+                 profile.history.push({
+                   id: 'dummy-' + date,
+                   date: date + 'T12:00:00.000Z',
+                   workoutId: 'dummy-old',
+                   workoutTitle: 'Treino Anterior ' + (i + 1),
+                   duration: 3600,
+                   exercises: []
+                 });
+               }
+            });
+            // Sort history descending
+            profile.history.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            localStorage.setItem('tatugym_user_profile_teste1', JSON.stringify(profile));
+            
+            const rem = localStorage.getItem('tatugym_remembered');
+            if (rem) {
+               const remData = JSON.parse(rem);
+               if (remData.username.toLowerCase() === 'teste1') {
+                 localStorage.setItem('tatugym_remembered', JSON.stringify(profile));
+               }
+            }
+          }
+        } catch (e) {}
+        localStorage.setItem(RESTORE_KEY, 'true');
+      }
+
       const remembered = localStorage.getItem('tatugym_remembered');
       if (remembered) {
         try {
