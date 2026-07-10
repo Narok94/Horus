@@ -53,10 +53,6 @@ export const WorkoutsListView: React.FC = () => {
   };
 
   const getWorkoutFocus = (workout: WorkoutRoutine) => {
-    if (workout.title.includes('Treino A') || workout.id === 'h-a') return 'Peito, Ombros e Tríceps';
-    if (workout.title.includes('Treino B') || workout.id === 'h-b') return 'Costas, Trapézio e Bíceps';
-    if (workout.title.includes('Treino C') || workout.id === 'h-c') return 'Coxas, Panturrilhas e Core';
-
     const groups = Array.from(new Set(workout.exercises.map(ex => ex.muscleGroup)))
       .filter(g => g && g.toLowerCase() !== 'manguito')
       .map(g => g.charAt(0).toUpperCase() + g.slice(1).toLowerCase());
