@@ -75,35 +75,35 @@ export const jessicaWorkouts: WorkoutRoutine[] = [
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
     id: 'h-a',
-    title: 'TREINO A — Costas + Bíceps + Trapézio',
-    description: 'Cronograma: Segunda e Quinta • Foco em Costas, Bíceps, Trapézio e Core',
-    color: 'orange',
+    title: 'TREINO A — Peito + Ombro + Tríceps',
+    description: 'Cronograma: Segunda e Quinta • Atenção ao ombro direito (lesão de ligamento)',
+    color: 'purple',
     exercises: [
-      { id: 'ha-1', name: 'Puxada frente', muscleGroup: 'Costas', sets: 4, reps: '12-10-8-8', rest: 60, notes: 'Pirâmide de carga', image: getExerciseGifUrl('Puxada frente') },
-      { id: 'ha-2', name: 'Remada baixa', muscleGroup: 'Costas', sets: 3, reps: '12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Remada baixa') },
-      { id: 'ha-3', name: 'Remada unilateral (halter)', muscleGroup: 'Costas', sets: 3, reps: '12+8', rest: 60, notes: 'Drop set', image: getExerciseGifUrl('Remada unilateral (halter)') },
-      { id: 'ha-4', name: 'Encolhimento (halteres)', muscleGroup: 'Trapézio', sets: 4, reps: '15', rest: 45, image: getExerciseGifUrl('Encolhimento (halteres)') },
-      { id: 'ha-5', name: 'Rosca barra W (polia)', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Rosca barra W (polia)') },
-      { id: 'ha-6', name: 'Rosca Scott', muscleGroup: 'Bíceps', sets: 3, reps: '8-12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Rosca Scott') },
-      { id: 'ha-7', name: 'Rosca martelo', muscleGroup: 'Bíceps', sets: 3, reps: '10+8', rest: 45, notes: 'Drop set', image: getExerciseGifUrl('Rosca martelo') },
-      { id: 'ha-8', name: 'Prancha frontal', muscleGroup: 'CORE', sets: 3, reps: '40-60 seg', rest: 30, notes: 'Apoie os joelhos se falhar antes do tempo (Finalizador de Core)', image: getExerciseGifUrl('Prancha') },
-      { id: 'ha-9', name: 'Prancha lateral', muscleGroup: 'CORE', sets: 3, reps: '30 seg', rest: 30, notes: 'Cada lado (Finalizador de Core)', image: getExerciseGifUrl('Prancha lateral') },
-      { id: 'ha-10', name: 'Prancha com marcha', muscleGroup: 'CORE', sets: 2, reps: '30 seg', rest: 30, notes: 'Alternando pernas (Finalizador de Core)', image: getExerciseGifUrl('Prancha com marcha') }
+      { id: 'ha-1', name: 'Supino reto (máquina)', muscleGroup: 'Peito', sets: 4, reps: '12-10-8-6', rest: 60, notes: 'Pirâmide de carga • Mais seguro para o ombro direito', image: getExerciseGifUrl('Supino reto (máquina)') },
+      { id: 'ha-2', name: 'Supino inclinado (máquina)', muscleGroup: 'Peito', sets: 3, reps: '12-10-8', rest: 60, notes: 'Pirâmide de carga', image: getExerciseGifUrl('Supino inclinado (máquina)') },
+      { id: 'ha-3', name: 'Voador (peck deck)', muscleGroup: 'Peito', sets: 3, reps: '12+8', rest: 60, notes: 'Drop set', image: getExerciseGifUrl('Peck Deck') },
+      { id: 'ha-4', name: 'Elevação lateral (polia)', muscleGroup: 'Ombros', sets: 4, reps: '12-15', rest: 45, notes: 'CUIDADO EXTRA! Não passar da linha do ombro. Pare se sentir instabilidade ou dor.', image: getExerciseGifUrl('Elevação lateral') },
+      { id: 'ha-5', name: 'Cross over', muscleGroup: 'Peito', sets: 3, reps: '10', rest: 45, notes: 'Série corrida', image: getExerciseGifUrl('Cross Over') },
+      { id: 'ha-6', name: 'Tríceps pulley', muscleGroup: 'Tríceps', sets: 3, reps: '10-12', rest: 45, notes: 'Série corrida', image: getExerciseGifUrl('Tríceps Pulley') },
+      { id: 'ha-7', name: 'Tríceps testa (barra W)', muscleGroup: 'Tríceps', sets: 3, reps: '12+8', rest: 45, notes: 'Drop set', image: getExerciseGifUrl('Tríceps testa') }
     ]
   },
   {
     id: 'h-b',
-    title: 'TREINO B — Peito + Ombro + Tríceps',
-    description: 'Cronograma: Terça e Sexta • Atenção ao ombro direito (lesão de ligamento)',
-    color: 'purple',
+    title: 'TREINO B — Costas + Bíceps + Trapézio',
+    description: 'Cronograma: Terça e Sexta • Foco em Costas, Bíceps, Trapézio e Core',
+    color: 'orange',
     exercises: [
-      { id: 'hb-1', name: 'Supino reto (máquina)', muscleGroup: 'Peito', sets: 4, reps: '12-10-8-6', rest: 60, notes: 'Pirâmide de carga • Mais seguro para o ombro direito', image: getExerciseGifUrl('Supino reto (máquina)') },
-      { id: 'hb-2', name: 'Supino inclinado (máquina)', muscleGroup: 'Peito', sets: 3, reps: '12-10-8', rest: 60, notes: 'Pirâmide de carga', image: getExerciseGifUrl('Supino inclinado (máquina)') },
-      { id: 'hb-3', name: 'Voador (peck deck)', muscleGroup: 'Peito', sets: 3, reps: '12+8', rest: 60, notes: 'Drop set', image: getExerciseGifUrl('Peck Deck') },
-      { id: 'hb-4', name: 'Elevação lateral (polia)', muscleGroup: 'Ombros', sets: 4, reps: '12-15', rest: 45, notes: 'CUIDADO EXTRA! Não passar da linha do ombro. Pare se sentir instabilidade ou dor.', image: getExerciseGifUrl('Elevação lateral') },
-      { id: 'hb-5', name: 'Cross over', muscleGroup: 'Peito', sets: 3, reps: '10', rest: 45, notes: 'Série corrida', image: getExerciseGifUrl('Cross Over') },
-      { id: 'hb-6', name: 'Tríceps pulley', muscleGroup: 'Tríceps', sets: 3, reps: '10-12', rest: 45, notes: 'Série corrida', image: getExerciseGifUrl('Tríceps Pulley') },
-      { id: 'hb-7', name: 'Tríceps testa (barra W)', muscleGroup: 'Tríceps', sets: 3, reps: '12+8', rest: 45, notes: 'Drop set', image: getExerciseGifUrl('Tríceps testa') }
+      { id: 'hb-1', name: 'Puxada frente', muscleGroup: 'Costas', sets: 4, reps: '12-10-8-8', rest: 60, notes: 'Pirâmide de carga', image: getExerciseGifUrl('Puxada frente') },
+      { id: 'hb-2', name: 'Remada baixa', muscleGroup: 'Costas', sets: 3, reps: '12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Remada baixa') },
+      { id: 'hb-3', name: 'Remada unilateral (halter)', muscleGroup: 'Costas', sets: 3, reps: '12+8', rest: 60, notes: 'Drop set', image: getExerciseGifUrl('Remada unilateral (halter)') },
+      { id: 'hb-4', name: 'Encolhimento (halteres)', muscleGroup: 'Trapézio', sets: 4, reps: '15', rest: 45, image: getExerciseGifUrl('Encolhimento (halteres)') },
+      { id: 'hb-5', name: 'Rosca barra W (polia)', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Rosca barra W (polia)') },
+      { id: 'hb-6', name: 'Rosca Scott', muscleGroup: 'Bíceps', sets: 3, reps: '8-12', rest: 60, notes: 'Série corrida', image: getExerciseGifUrl('Rosca Scott') },
+      { id: 'hb-7', name: 'Rosca martelo', muscleGroup: 'Bíceps', sets: 3, reps: '10+8', rest: 45, notes: 'Drop set', image: getExerciseGifUrl('Rosca martelo') },
+      { id: 'hb-8', name: 'Prancha frontal', muscleGroup: 'CORE', sets: 3, reps: '40-60 seg', rest: 30, notes: 'Apoie os joelhos se falhar antes do tempo (Finalizador de Core)', image: getExerciseGifUrl('Prancha') },
+      { id: 'hb-9', name: 'Prancha lateral', muscleGroup: 'CORE', sets: 3, reps: '30 seg', rest: 30, notes: 'Cada lado (Finalizador de Core)', image: getExerciseGifUrl('Prancha lateral') },
+      { id: 'hb-10', name: 'Prancha com marcha', muscleGroup: 'CORE', sets: 2, reps: '30 seg', rest: 30, notes: 'Alternando pernas (Finalizador de Core)', image: getExerciseGifUrl('Prancha com marcha') }
     ]
   },
   {
