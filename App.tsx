@@ -42,10 +42,10 @@ import { DesafioView } from './components/views/DesafioView';
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
     <img
-      src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png"
+      src="/logo.png"
       alt="Horus Training Logo"
       style={{ width: size, height: size }}
-      className={`${className} object-contain`}
+      className={`${className} object-contain rounded-xl`}
       referrerPolicy="no-referrer"
     />
   );
@@ -271,9 +271,9 @@ const AppContent: React.FC = () => {
             className="relative flex flex-col items-center"
           >
             <img
-              src="https://raw.githubusercontent.com/Narok94/Horus2.0/main/public/logo/logo.png"
+              src="/logo.png"
               alt="Horus Training Logo"
-              className="w-[180px] sm:w-[200px] h-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.5)] mb-4"
+              className="w-[120px] sm:w-[140px] h-auto object-contain rounded-2xl drop-shadow-[0_8px_20px_rgba(0,0,0,0.5)] mb-4"
               onError={(e) => {
                 e.currentTarget.src = "assets/logo_horus.png";
               }}
