@@ -3,12 +3,12 @@
   "name": "Horus Training",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/logo.png?v=gym_v2",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/logo.png",
+      "src": "/logo.png?v=gym_v2",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -203,6 +203,13 @@ export const TeacherView: React.FC = () => {
     };
 
     localStorage.setItem(`tatugym_user_profile_${cleanUser}`, JSON.stringify(newStudent));
+    // Save to Neon DB
+    fetch(`/api/user/${cleanUser}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newStudent)
+    }).catch(err => console.error('[Teacher API] Error saving new student profile:', err));
+
     setNewStudentData({
       username: '',
       name: '',
@@ -239,6 +246,13 @@ export const TeacherView: React.FC = () => {
     };
 
     localStorage.setItem(savedKey, JSON.stringify(updatedUser));
+    // Save to Neon DB
+    fetch(`/api/user/${editingStudent.username}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedUser)
+    }).catch(err => console.error('[Teacher API] Error updating student profile:', err));
+
     setEditingStudent(null);
     setTrigger(prev => prev + 1);
     if (addToast) addToast("Cadastro do aluno atualizado!", "success");
@@ -252,6 +266,10 @@ export const TeacherView: React.FC = () => {
     }
 
     localStorage.removeItem(`tatugym_user_profile_${username}`);
+    // Delete from Neon DB
+    fetch(`/api/user/${username}`, {
+      method: 'DELETE'
+    }).catch(err => console.error('[Teacher API] Error deleting student profile:', err));
     
     // Clear workouts
     const currentAll = { ...allWorkouts };

@@ -138,14 +138,12 @@ const AppContent: React.FC = () => {
         if (remembered) {
           const userData = JSON.parse(remembered);
           const uName = userData.username.toLowerCase();
-          const hasProfile = localStorage.getItem(`tatugym_user_profile_${uName}`) !== null;
-          const isKnownUser = getUserByUsername(uName) !== null;
-
-          if (isKnownUser || hasProfile) {
-            const profile = localStorage.getItem(`tatugym_user_profile_${uName}`);
-            const finalUser = profile ? JSON.parse(profile) : userData;
-            setUser(finalUser);
+          
+          // Synchronize profile with Neon PostgreSQL database
+          const finalUser = await useStore.getState().syncUserProfile(uName);
+          if (finalUser) {
             setIsLoggedIn(true);
+            localStorage.setItem('tatugym_remembered', JSON.stringify(finalUser));
           } else {
             localStorage.removeItem('tatugym_remembered');
           }
@@ -181,13 +179,17 @@ const AppContent: React.FC = () => {
     return getUserByUsername(lowerUser);
   };
 
-  const finishLogin = (userData: User) => {
-    setUser(userData);
+  const finishLogin = async (userData: User) => {
+    // Sync with Neon database on login
+    const finalUser = await useStore.getState().syncUserProfile(userData.username);
+    const resolvedUser = finalUser || userData;
+    
+    setUser(resolvedUser);
     setIsLoggedIn(true);
-    setActiveTab(userData.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
+    setActiveTab(resolvedUser.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
     localStorage.setItem('tatugym_remember_me_checked', rememberMe.toString());
     if (rememberMe) {
-      localStorage.setItem('tatugym_remembered', JSON.stringify(userData));
+      localStorage.setItem('tatugym_remembered', JSON.stringify(resolvedUser));
     } else {
       localStorage.removeItem('tatugym_remembered');
     }

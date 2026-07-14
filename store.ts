@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import { User, WorkoutRoutine, AppTab, SetPerformance, WorkoutHistoryEntry, Badge } from './types';
 import { jessicaWorkouts, henriqueWorkouts } from './data/workoutData';
 import { auth, signOut } from './firebase';
+import { getUserByUsername } from './data/users';
 
 interface AppState {
   user: User | null;
@@ -43,6 +44,7 @@ interface AppState {
   setIsChatLoading: (isLoading: boolean) => void;
   toggleTheme: () => void;
   updateUserProfile: (newData: Partial<User>) => void;
+  syncUserProfile: (username: string) => Promise<User | null>;
   checkAchievements: () => void;
   handleManualCheckIn: () => void;
   toggleCheckInDate: (dateStr: string) => void;
@@ -237,7 +239,61 @@ export const useStore = create<AppState>((set, get) => {
     const updatedUser = { ...user, ...newData };
     set({ user: updatedUser });
     localStorage.setItem(`tatugym_user_profile_${user.username.toLowerCase()}`, JSON.stringify(updatedUser));
+    
+    // Non-blocking sync to Neon PostgreSQL
+    fetch(`/api/user/${user.username.toLowerCase()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedUser)
+    }).catch(err => console.error('[DB Sync] Error saving profile to database:', err));
+
     get().checkAchievements();
+  },
+
+  syncUserProfile: async (username) => {
+    const lowerUser = username.trim().toLowerCase();
+    
+    // 1. Get current local profile if any
+    let localProfile: any = null;
+    const localProfileStr = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
+    if (localProfileStr) {
+      try {
+        localProfile = JSON.parse(localProfileStr);
+      } catch (e) {
+        console.error('[Sync] Error parsing local profile:', e);
+      }
+    }
+    
+    if (!localProfile) {
+      localProfile = getUserByUsername(lowerUser);
+    }
+    
+    if (!localProfile) return null;
+    
+    // 2. Call the sync API to merge local state and database state securely
+    try {
+      const response = await fetch(`/api/sync/${lowerUser}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(localProfile)
+      });
+      
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.status === 'ok' && resData.data) {
+          const mergedProfile = resData.data;
+          set({ user: mergedProfile });
+          localStorage.setItem(`tatugym_user_profile_${lowerUser}`, JSON.stringify(mergedProfile));
+          return mergedProfile;
+        }
+      }
+    } catch (err) {
+      console.error('[Sync] Failed to sync with Neon PostgreSQL backend:', err);
+    }
+    
+    // Fallback: if offline, set user to local profile
+    set({ user: localProfile });
+    return localProfile;
   },
 
   handleManualCheckIn: () => {
@@ -339,8 +395,16 @@ export const useStore = create<AppState>((set, get) => {
     }
 
     if (newBadges.length !== (user.badges || []).length) {
-      set({ user: { ...user, badges: newBadges } });
-      localStorage.setItem(`tatugym_user_profile_${user.username.toLowerCase()}`, JSON.stringify({ ...user, badges: newBadges }));
+      const updatedUser = { ...user, badges: newBadges };
+      set({ user: updatedUser });
+      localStorage.setItem(`tatugym_user_profile_${user.username.toLowerCase()}`, JSON.stringify(updatedUser));
+      
+      // Non-blocking sync to Neon PostgreSQL
+      fetch(`/api/user/${user.username.toLowerCase()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+      }).catch(err => console.error('[DB Sync] Error saving profile after badges unlock:', err));
     }
   }
 };
