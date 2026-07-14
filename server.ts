@@ -71,6 +71,98 @@ async function startServer() {
     }
   });
 
+  // Comprehensive diagnosis endpoint to check key format issues and connect directly
+  app.get("/api/diagnose", async (req, res) => {
+    const originalUrl = process.env.DATABASE_URL;
+    
+    if (!originalUrl) {
+      return res.json({
+        ok: false,
+        error: "DATABASE_URL_NOT_DEFINED",
+        message_pt: "A variável DATABASE_URL não está definida nas configurações do ambiente.",
+        suggestions: [
+          "Defina DATABASE_URL no seu painel de controle (Vercel, Railway, Render ou arquivo .env local)."
+        ]
+      });
+    }
+
+    const trimmedUrl = originalUrl.trim();
+    const suggestions: string[] = [];
+    let isOk = true;
+
+    const hasLeadingEqual = trimmedUrl.startsWith('=');
+    const hasQuotes = (trimmedUrl.startsWith('"') && trimmedUrl.endsWith('"')) || (trimmedUrl.startsWith("'") && trimmedUrl.endsWith("'"));
+    
+    // Clean string for checking protocol and attempting connection
+    let targetUrl = trimmedUrl;
+    if (targetUrl.startsWith('=')) {
+      targetUrl = targetUrl.substring(1).trim();
+    }
+    if (targetUrl.startsWith('"') && targetUrl.endsWith('"')) {
+      targetUrl = targetUrl.slice(1, -1).trim();
+    } else if (targetUrl.startsWith("'") && targetUrl.endsWith("'")) {
+      targetUrl = targetUrl.slice(1, -1).trim();
+    }
+
+    const hasCorrectProtocol = targetUrl.startsWith("postgresql://") || targetUrl.startsWith("postgres://");
+
+    if (hasLeadingEqual) {
+      isOk = false;
+      suggestions.push("Remova o caractere '=' do início da variável DATABASE_URL.");
+    }
+    if (hasQuotes) {
+      isOk = false;
+      suggestions.push("Remova as aspas simples ou duplas ao redor do valor de DATABASE_URL.");
+    }
+    if (!hasCorrectProtocol) {
+      isOk = false;
+      suggestions.push("Certifique-se de que a string comece diretamente com 'postgresql://' ou 'postgres://'.");
+    }
+
+    // Try live test connection using pg Pool
+    let liveConnectionSuccess = false;
+    let liveConnectionError = null;
+    let responseTimeMs = null;
+    let databaseTime = null;
+
+    try {
+      const testPool = new pg.Pool({
+        connectionString: targetUrl,
+        ssl: { rejectUnauthorized: false }
+      });
+      const start = Date.now();
+      const testRes = await testPool.query("SELECT NOW()");
+      responseTimeMs = Date.now() - start;
+      databaseTime = testRes.rows[0].now;
+      liveConnectionSuccess = true;
+      await testPool.end();
+    } catch (err: any) {
+      liveConnectionError = err.message;
+      isOk = false;
+      suggestions.push("A conexão real falhou: " + err.message);
+      suggestions.push("Verifique se as credenciais (host, usuário, senha) estão corretas.");
+      suggestions.push("Certifique-se de adicionar '?sslmode=require' no final da string.");
+    }
+
+    return res.json({
+      ok: isOk,
+      details: {
+        length: originalUrl.length,
+        hasLeadingEqual,
+        hasQuotes,
+        hasCorrectProtocol,
+        liveConnectionSuccess,
+        liveConnectionError,
+        responseTimeMs,
+        databaseTime
+      },
+      message_pt: isOk 
+        ? "Tudo pronto! Seu banco de dados está perfeitamente configurado e respondendo." 
+        : "Foram encontrados problemas na configuração ou conexão do banco de dados.",
+      suggestions
+    });
+  });
+
   // API Route: Get User Profile
   app.get("/api/user/:username", async (req, res) => {
     const username = req.params.username.trim().toLowerCase();
