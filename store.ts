@@ -24,6 +24,7 @@ interface AppState {
   selectedStudent: string | null;
   allWorkouts: Record<string, WorkoutRoutine[]>;
   theme: 'light' | 'dark';
+  syncStatus: 'synced' | 'syncing' | 'error' | 'offline';
 
   // Actions
   setUser: (user: User | null) => void;
@@ -42,6 +43,7 @@ interface AppState {
   setWorkoutDuration: (duration: number | null) => void;
   setChatMessages: (messages: { role: 'user' | 'model', text: string }[]) => void;
   setIsChatLoading: (isLoading: boolean) => void;
+  setSyncStatus: (status: 'synced' | 'syncing' | 'error' | 'offline') => void;
   toggleTheme: () => void;
   updateUserProfile: (newData: Partial<User>) => void;
   syncUserProfile: (username: string) => Promise<User | null>;
@@ -140,6 +142,7 @@ export const useStore = create<AppState>((set, get) => {
   isChatLoading: false,
   selectedStudent: null,
   theme: initialTheme,
+  syncStatus: 'synced',
   allWorkouts: (() => {
     const saved = localStorage.getItem('tatugym_all_workouts');
     let loadedWorkouts: Record<string, WorkoutRoutine[]> = {
@@ -196,6 +199,7 @@ export const useStore = create<AppState>((set, get) => {
   setWorkoutDuration: (workoutDuration) => set({ workoutDuration }),
   setChatMessages: (chatMessages) => set({ chatMessages }),
   setIsChatLoading: (isChatLoading) => set({ isChatLoading }),
+  setSyncStatus: (syncStatus) => set({ syncStatus }),
   setAddToast: (fn) => set({ addToast: fn }),
 
   toggleTheme: () => {
@@ -237,7 +241,7 @@ export const useStore = create<AppState>((set, get) => {
     const { user } = get();
     if (!user) return;
     const updatedUser = { ...user, ...newData };
-    set({ user: updatedUser });
+    set({ user: updatedUser, syncStatus: 'syncing' });
     localStorage.setItem(`tatugym_user_profile_${user.username.toLowerCase()}`, JSON.stringify(updatedUser));
     
     // Non-blocking sync to Neon PostgreSQL
@@ -245,13 +249,26 @@ export const useStore = create<AppState>((set, get) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedUser)
-    }).catch(err => console.error('[DB Sync] Error saving profile to database:', err));
+    })
+    .then(async (res) => {
+      if (res.ok) {
+        set({ syncStatus: 'synced' });
+      } else {
+        console.error('[DB Sync] Server error saving profile:', res.statusText);
+        set({ syncStatus: 'error' });
+      }
+    })
+    .catch(err => {
+      console.error('[DB Sync] Error saving profile to database:', err);
+      set({ syncStatus: 'offline' });
+    });
 
     get().checkAchievements();
   },
 
   syncUserProfile: async (username) => {
     const lowerUser = username.trim().toLowerCase();
+    set({ syncStatus: 'syncing' });
     
     // 1. Get current local profile if any
     let localProfile: any = null;
@@ -268,7 +285,10 @@ export const useStore = create<AppState>((set, get) => {
       localProfile = getUserByUsername(lowerUser);
     }
     
-    if (!localProfile) return null;
+    if (!localProfile) {
+      set({ syncStatus: 'error' });
+      return null;
+    }
     
     // 2. Call the sync API to merge local state and database state securely
     try {
@@ -282,13 +302,18 @@ export const useStore = create<AppState>((set, get) => {
         const resData = await response.json();
         if (resData.status === 'ok' && resData.data) {
           const mergedProfile = resData.data;
-          set({ user: mergedProfile });
+          set({ user: mergedProfile, syncStatus: 'synced' });
           localStorage.setItem(`tatugym_user_profile_${lowerUser}`, JSON.stringify(mergedProfile));
+          get().addToast?.('Sincronizado com o Banco Neon com sucesso!', 'success');
           return mergedProfile;
         }
       }
+      set({ syncStatus: 'error' });
+      get().addToast?.('Erro ao sincronizar com o Banco Neon.', 'error');
     } catch (err) {
       console.error('[Sync] Failed to sync with Neon PostgreSQL backend:', err);
+      set({ syncStatus: 'offline' });
+      get().addToast?.('Offline. Suas alterações foram salvas localmente.', 'info');
     }
     
     // Fallback: if offline, set user to local profile

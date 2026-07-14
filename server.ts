@@ -53,11 +53,31 @@ async function startServer() {
 
   app.use(express.json({ limit: '15mb' }));
 
+  // Health and DB status check endpoint
+  app.get("/api/health", async (req, res) => {
+    try {
+      if (!pool) {
+        return res.json({ status: "error", message: "Database pool not initialized. DATABASE_URL might be missing." });
+      }
+      const dbRes = await pool.query("SELECT NOW()");
+      return res.json({ 
+        status: "ok", 
+        database: "connected", 
+        serverTime: dbRes.rows[0].now,
+        envHasDatabaseUrl: !!process.env.DATABASE_URL
+      });
+    } catch (err: any) {
+      return res.status(500).json({ status: "error", message: err.message, envHasDatabaseUrl: !!process.env.DATABASE_URL });
+    }
+  });
+
   // API Route: Get User Profile
   app.get("/api/user/:username", async (req, res) => {
     const username = req.params.username.trim().toLowerCase();
+    console.log(`[API GET] Fetch request received for username: "${username}"`);
     
     if (!pool) {
+      console.warn(`[API GET] Fallback mode: No database connection for username "${username}"`);
       return res.json({ status: "fallback", data: null, message: "No database connection" });
     }
     
@@ -68,12 +88,14 @@ async function startServer() {
       );
       
       if (result.rows.length > 0) {
+        console.log(`[API GET] Profile found in database for "${username}"! Checkins count: ${(result.rows[0].profile_data.checkIns || []).length}`);
         return res.json({ status: "ok", data: result.rows[0].profile_data });
       } else {
+        console.log(`[API GET] Profile not found in database for "${username}"`);
         return res.json({ status: "not_found", data: null });
       }
     } catch (err: any) {
-      console.error(`[API] Error fetching profile for ${username}:`, err);
+      console.error(`[API GET] Error fetching profile for ${username}:`, err);
       return res.status(500).json({ error: err.message });
     }
   });
@@ -82,8 +104,10 @@ async function startServer() {
   app.post("/api/user/:username", async (req, res) => {
     const username = req.params.username.trim().toLowerCase();
     const profileData = req.body;
+    console.log(`[API POST] Save profile request received for "${username}". Checkins count in payload: ${(profileData?.checkIns || []).length}`);
     
     if (!pool) {
+      console.warn(`[API POST] Fallback mode: No database connection to save profile for "${username}"`);
       return res.json({ status: "fallback", message: "No database connection" });
     }
     
@@ -95,9 +119,10 @@ async function startServer() {
          DO UPDATE SET profile_data = EXCLUDED.profile_data, updated_at = CURRENT_TIMESTAMP`,
         [username, profileData]
       );
+      console.log(`[API POST] Profile successfully saved/updated in database for "${username}"!`);
       return res.json({ status: "ok" });
     } catch (err: any) {
-      console.error(`[API] Error saving profile for ${username}:`, err);
+      console.error(`[API POST] Error saving profile for ${username}:`, err);
       return res.status(500).json({ error: err.message });
     }
   });
@@ -126,8 +151,10 @@ async function startServer() {
   app.post("/api/sync/:username", async (req, res) => {
     const username = req.params.username.trim().toLowerCase();
     const clientProfile = req.body;
+    console.log(`[API SYNC] Sync request received for "${username}". Client checkins count: ${(clientProfile?.checkIns || []).length}`);
     
     if (!pool) {
+      console.warn(`[API SYNC] Fallback mode: No database connection to sync profile for "${username}"`);
       return res.json({ status: "fallback", data: clientProfile, message: "No database connection" });
     }
     
@@ -139,6 +166,7 @@ async function startServer() {
       );
       
       if (result.rows.length === 0) {
+        console.log(`[API SYNC] No existing profile in DB for "${username}". Inserting client profile as initial state.`);
         // No DB profile yet, insert client profile
         await pool.query(
           "INSERT INTO user_profiles (username, profile_data, updated_at) VALUES ($1, $2, CURRENT_TIMESTAMP)",
@@ -148,6 +176,7 @@ async function startServer() {
       }
       
       const dbProfile = result.rows[0].profile_data;
+      console.log(`[API SYNC] Found DB profile for "${username}". DB checkins count: ${(dbProfile?.checkIns || []).length}`);
       
       // 2. Merge logic (ensure history & checkins are merged to prevent any loss!)
       const mergedCheckIns = Array.from(new Set([
@@ -195,6 +224,8 @@ async function startServer() {
         streak: Math.max(dbProfile.streak || 0, clientProfile.streak || 0)
       };
       
+      console.log(`[API SYNC] Successfully merged profiles for "${username}". Merged checkins count: ${mergedCheckIns.length}`);
+      
       // Update DB with the merged profile
       await pool.query(
         "UPDATE user_profiles SET profile_data = $1, updated_at = CURRENT_TIMESTAMP WHERE username = $2",
@@ -203,7 +234,7 @@ async function startServer() {
       
       return res.json({ status: "ok", data: mergedProfile, source: "merged" });
     } catch (err: any) {
-      console.error(`[API] Error syncing profile for ${username}:`, err);
+      console.error(`[API SYNC] Error syncing profile for ${username}:`, err);
       return res.status(500).json({ error: err.message });
     }
   });

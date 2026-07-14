@@ -15,7 +15,10 @@ import {
   Clock,
   Calendar,
   Dumbbell,
-  Utensils
+  Utensils,
+  Cloud,
+  CloudOff,
+  RefreshCw
 } from 'lucide-react';
 import { henriqueDiet, jessicaDiet } from '../../src/data/dietPlans';
 
@@ -147,7 +150,9 @@ export const DashboardView: React.FC = () => {
     updateUserProfile,
     triggerConfetti,
     isWorkoutActive,
-    selectedWorkout: currentSelected
+    selectedWorkout: currentSelected,
+    syncStatus,
+    syncUserProfile
   } = useStore();
 
   const [showNotificationDrawer, setShowNotificationDrawer] = useState<boolean>(false);
@@ -329,6 +334,39 @@ export const DashboardView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-1.5">
+            {/* REAL-TIME NEON DB CLOUD SYNC BUTTON */}
+            <button
+              onClick={() => {
+                handleVibrate(30);
+                syncUserProfile(user.username);
+              }}
+              title={
+                syncStatus === 'syncing' ? 'Sincronizando com Banco Neon...' :
+                syncStatus === 'synced' ? 'Sincronizado com Banco Neon! Clique para sincronizar novamente.' :
+                syncStatus === 'error' ? 'Erro na sincronização. Clique para tentar novamente.' :
+                'Banco de dados offline. Clique para tentar conectar.'
+              }
+              className={`p-2 border transition-all rounded-xl cursor-pointer flex items-center justify-center relative shadow-[0_1px_2px_rgba(0,0,0,0.01)] ${
+                syncStatus === 'syncing' 
+                  ? 'bg-blue-50 border-blue-200 text-blue-500 hover:bg-blue-100' 
+                  : syncStatus === 'error'
+                  ? 'bg-rose-50 border-rose-200 text-rose-500 hover:bg-rose-100'
+                  : syncStatus === 'offline'
+                  ? 'bg-amber-50 border-amber-200 text-amber-500 hover:bg-amber-100'
+                  : 'bg-white border-zinc-200/60 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50'
+              }`}
+            >
+              {syncStatus === 'syncing' ? (
+                <RefreshCw size={12} className="animate-spin text-blue-500" />
+              ) : syncStatus === 'error' ? (
+                <CloudOff size={12} className="text-rose-500" />
+              ) : syncStatus === 'offline' ? (
+                <CloudOff size={12} className="text-amber-500" />
+              ) : (
+                <Cloud size={12} className="text-emerald-500" />
+              )}
+            </button>
+
             <button 
               onClick={() => {
                 handleVibrate(15);
