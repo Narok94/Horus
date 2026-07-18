@@ -142,7 +142,9 @@ const AppContent: React.FC = () => {
           // Synchronize profile with Neon PostgreSQL database
           const finalUser = await useStore.getState().syncUserProfile(uName);
           if (finalUser) {
+            setUser(finalUser);
             setIsLoggedIn(true);
+            setActiveTab(finalUser.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
             localStorage.setItem('tatugym_remembered', JSON.stringify(finalUser));
           } else {
             localStorage.removeItem('tatugym_remembered');
@@ -157,7 +159,7 @@ const AppContent: React.FC = () => {
     };
 
     checkAutoLogin();
-  }, [setUser, setIsLoggedIn]);
+  }, [setUser, setIsLoggedIn, setActiveTab]);
 
   const handleVibrate = () => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -348,12 +350,14 @@ const AppContent: React.FC = () => {
 
             {/* Form Options Row */}
             <div className="flex items-center justify-between text-[11px] pt-1 pb-2">
-              <label className="flex items-center gap-2 cursor-pointer group select-none">
+              <label 
+                onClick={() => {
+                  handleVibrate();
+                  setRememberMe(!rememberMe);
+                }}
+                className="flex items-center gap-2 cursor-pointer group select-none"
+              >
                 <div
-                  onClick={() => {
-                    handleVibrate();
-                    setRememberMe(!rememberMe);
-                  }}
                   className={`w-[18px] h-[18px] rounded flex items-center justify-center border transition-all duration-200 ${
                     rememberMe
                       ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]'
