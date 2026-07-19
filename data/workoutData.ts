@@ -147,5 +147,20 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
       { id: 'he-5', name: 'Cadeira Abdutora', muscleGroup: 'Glúteo', sets: 3, reps: '15-20', rest: 45, notes: 'Para glúteo médio', image: getExerciseGifUrl('Cadeira Abdutora') },
       { id: 'he-6', name: 'Cardio (Esteira/Bike)', muscleGroup: 'Cardio', sets: 1, reps: '20-30 min', rest: 0, notes: 'Intensidade moderada a alta', image: getExerciseGifUrl('Cardio') }
     ]
+  },
+  {
+    id: 'h-f',
+    title: 'TREINO F — Combinado: Peito, Costas, Bíceps e Tríceps',
+    description: 'Treino especial feito apenas hoje • Descanso: 45s • Bom treino! 💪',
+    color: 'purple',
+    exercises: [
+      { id: 'hf-1', name: 'Supino Reto (Barra)', muscleGroup: 'Peito', sets: 3, reps: '8-10', rest: 45, image: getExerciseGifUrl('Supino Reto (Barra)') },
+      { id: 'hf-2', name: 'Supino Inclinado (Halteres)', muscleGroup: 'Peito', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Supino Inclinado (Halteres)') },
+      { id: 'hf-3', name: 'Puxada Alta (Pulley Frente)', muscleGroup: 'Costas', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Puxada Alta (Pulley Frente)') },
+      { id: 'hf-4', name: 'Remada Curvada (Barra)', muscleGroup: 'Costas', sets: 3, reps: '8-10', rest: 45, image: getExerciseGifUrl('Remada Curvada (Barra)') },
+      { id: 'hf-5', name: 'Rosca Direta (Barra)', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Rosca Direta (Barra)') },
+      { id: 'hf-6', name: 'Tríceps Testa (Barra W)', muscleGroup: 'Tríceps', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Tríceps Testa (Barra W)') },
+      { id: 'hf-7', name: 'Tríceps Pulley (Corda)', muscleGroup: 'Tríceps', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Tríceps Pulley (Corda)') }
+    ]
   }
 ];
