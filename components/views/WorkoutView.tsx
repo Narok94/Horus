@@ -38,6 +38,7 @@ export const WorkoutView: React.FC = () => {
     currentSessionProgress,
     currentCardioProgress,
     workoutDuration,
+    theme,
     setIsWorkoutActive,
     setWorkoutStartTime,
     setElapsedTime,
@@ -55,7 +56,7 @@ export const WorkoutView: React.FC = () => {
     addToast
   } = useStore();
 
-  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || theme === 'light';
   const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
   const accentColor = '#2563EB';
 

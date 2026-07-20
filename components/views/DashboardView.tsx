@@ -309,6 +309,30 @@ export const DashboardView: React.FC = () => {
   };
 
 
+  // Upcoming Meals Logic
+  const dietPlan = user.dietPlan;
+  let upcomingMeals: any[] = [];
+  if (dietPlan && dietPlan.meals && dietPlan.meals.length > 0) {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    const now = new Date(Date.now() - tzOffset);
+    const today = now.toISOString().split('T')[0];
+    const currentHours = now.getUTCHours();
+    const currentMinutes = now.getUTCMinutes();
+    const currentTimeStr = `${currentHours.toString().padStart(2, '0')}:${currentMinutes.toString().padStart(2, '0')}`;
+    
+    const todayCompletedMeals = user.completedMeals && user.completedMeals[today] ? user.completedMeals[today] : [];
+
+    const upcomingToday = dietPlan.meals.filter(m => m.time >= currentTimeStr);
+    
+    if (upcomingToday.length > 0) {
+      upcomingMeals = upcomingToday.slice(0, 3).map(m => ({ ...m, isTomorrow: false, isCompleted: todayCompletedMeals.includes(m.id) }));
+    } else {
+      const tomorrowStr = new Date(Date.now() - tzOffset + 86400000).toISOString().split('T')[0];
+      const tomorrowCompletedMeals = user.completedMeals && user.completedMeals[tomorrowStr] ? user.completedMeals[tomorrowStr] : [];
+      upcomingMeals = [ { ...dietPlan.meals[0], isTomorrow: true, isCompleted: tomorrowCompletedMeals.includes(dietPlan.meals[0].id) } ];
+    }
+  }
+
   if (isTeste1) {
     return (
       <div className="w-full min-h-screen flex flex-col justify-start gap-3 bg-transparent text-zinc-950 font-sans antialiased select-none relative pt-12 sm:pt-6 pb-40 px-1">
@@ -605,27 +629,23 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
-        {/* 5. PRÓXIMOS TREINOS DA SEMANA */}
-        {workouts && workouts.length > 0 && (
+        {/* 5. PRÓXIMAS REFEIÇÕES */}
+        {upcomingMeals && upcomingMeals.length > 0 && (
           <div className="bg-gradient-to-br from-[#2563EB] to-[#122C60] border border-white/10 rounded-[20px] p-4 text-left shadow-lg shadow-blue-900/5 shrink-0 space-y-3">
             <h3 className="text-[9px] font-black tracking-widest uppercase text-white font-sans">
-              PRÓXIMOS TREINOS DA SEMANA
+              PRÓXIMAS REFEIÇÕES
             </h3>
             <div className="flex flex-wrap gap-2 pt-0.5">
-              {workouts.slice(0, 5).map((w, idx) => {
-                const label = w.title.match(/Treino\s+([A-Z])/i)?.[0] || `Treino ${String.fromCharCode(65 + idx)}`;
-                const count = w.exercises?.length || 0;
-                return (
-                  <div 
-                    key={w.id || idx}
-                    className="bg-white/10 hover:bg-white/15 border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 transition-all text-white shrink-0 select-none animate-fade"
-                  >
-                    <span className="text-[9px] font-black tracking-wider uppercase font-mono">{label}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                    <span className="text-[8px] font-bold text-white/70 uppercase tracking-widest">{count} Exer.</span>
-                  </div>
-                );
-              })}
+              {upcomingMeals.map((m, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => { handleVibrate(15); setActiveTab(AppTab.DIET); }}
+                  className="bg-white/10 hover:bg-white/15 border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2 transition-all text-white shrink-0 select-none animate-fade cursor-pointer"
+                >
+                  <div className={`w-2.5 h-2.5 rounded-full border border-white/50 flex-shrink-0 ${m.isCompleted ? 'bg-white border-white' : ''}`} />
+                  <span className="text-[9px] font-black tracking-wider uppercase font-mono">{m.time} &middot; {m.name}{m.isTomorrow ? ' (Amanhã)' : ''}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

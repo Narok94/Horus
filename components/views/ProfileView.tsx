@@ -25,7 +25,7 @@ const getInitials = (name: string): string => {
 };
 
 export const ProfileView: React.FC = () => {
-  const { user, updateUserProfile } = useStore();
+  const { user, theme, updateUserProfile } = useStore();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
 
@@ -167,7 +167,7 @@ export const ProfileView: React.FC = () => {
     Award: <Award size={14} className="text-accent" />
   };
 
-  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || theme === 'light';
   const accentColor = '#2563EB';
 
   const totalWorkoutsCount = user.totalWorkouts || 0;

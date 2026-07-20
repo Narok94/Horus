@@ -14,14 +14,14 @@ const CARDIO_TYPES = [
 ];
 
 export const CardioView: React.FC = () => {
-  const { user, updateUserProfile, triggerConfetti } = useStore();
+  const { user, theme, updateUserProfile, triggerConfetti } = useStore();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
 
-  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || theme === 'light';
 
   // Wake lock ref to keep screen on during cardio
   const wakeLockRef = useRef<any>(null);
