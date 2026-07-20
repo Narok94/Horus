@@ -56,6 +56,29 @@ export interface WorkoutHistoryEntry {
   };
 }
 
+export interface MealItem {
+  food: string;
+  quantity?: string;
+  alternatives?: string[];
+}
+
+export interface Meal {
+  id: string;
+  time: string;
+  name: string;
+  items: MealItem[];
+  obs?: string;
+  completed: boolean;
+}
+
+export interface DietPlan {
+  nutritionist: { name: string; crn: string; contact: string };
+  createdAt: string;
+  generalGuidelines: string;
+  meals: Meal[];
+  substitutions: { name: string; items: MealItem[]; obs?: string }[];
+}
+
 export interface User {
   username: string;
   password?: string;
@@ -78,6 +101,7 @@ export interface User {
   history: WorkoutHistoryEntry[];
   badges?: Badge[];
   completedMeals?: Record<string, string[]>; // YYYY-MM-DD -> list of meal times or meal names
+  dietPlan?: DietPlan;
 }
 
 export interface Badge {

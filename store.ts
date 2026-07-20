@@ -47,6 +47,8 @@ interface AppState {
   toggleTheme: () => void;
   updateUserProfile: (newData: Partial<User>) => void;
   syncUserProfile: (username: string) => Promise<User | null>;
+  setDietPlan: (plan: import('./types').DietPlan) => void;
+  toggleMealComplete: (mealId: string) => void;
   checkAchievements: () => void;
   handleManualCheckIn: () => void;
   toggleCheckInDate: (dateStr: string) => void;
@@ -264,6 +266,36 @@ export const useStore = create<AppState>((set, get) => {
     });
 
     get().checkAchievements();
+  },
+
+  setDietPlan: (plan) => {
+    get().updateUserProfile({ dietPlan: plan });
+  },
+
+  toggleMealComplete: (mealId) => {
+    const { user, updateUserProfile } = get();
+    if (!user) return;
+
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    const today = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
+
+    const completedMeals = user.completedMeals ? { ...user.completedMeals } : {};
+    const todayMeals = completedMeals[today] ? [...completedMeals[today]] : [];
+
+    const index = todayMeals.indexOf(mealId);
+    if (index > -1) {
+      todayMeals.splice(index, 1);
+    } else {
+      todayMeals.push(mealId);
+    }
+
+    if (todayMeals.length > 0) {
+      completedMeals[today] = todayMeals;
+    } else {
+      delete completedMeals[today];
+    }
+
+    updateUserProfile({ completedMeals });
   },
 
   syncUserProfile: async (username) => {

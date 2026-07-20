@@ -31,7 +31,6 @@ import { getUserByUsername, validateCredentials } from './data/users';
 // Views
 import { DashboardView } from './components/views/DashboardView';
 import { WorkoutView } from './components/views/WorkoutView';
-import { HistoryView } from './components/views/HistoryView';
 import { ProfileView } from './components/views/ProfileView';
 import { TeacherView } from './components/views/TeacherView';
 import { WorkoutsListView } from './components/views/WorkoutsListView';
@@ -447,11 +446,10 @@ const AppContent: React.FC = () => {
     switch (activeTab) {
       case AppTab.DASHBOARD: return <DashboardView />;
       case AppTab.WORKOUT: return <WorkoutsListView />;
-      case AppTab.HISTORY: return <HistoryView />;
+      case AppTab.DIET: return <DietView />;
       case AppTab.PROFILE: return <ProfileView />;
       case AppTab.TEACHER: return <TeacherView />;
       case AppTab.CARDIO: return <CardioView />;
-      case AppTab.DIET: return <DietView />;
       case AppTab.DESAFIO: return <DesafioView />;
       default: return <DashboardView />;
     }
@@ -511,7 +509,7 @@ const AppContent: React.FC = () => {
               { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
               { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
               { id: AppTab.DESAFIO, icon: Target, label: 'Desafio' },
-              { id: AppTab.HISTORY, icon: isLightUser ? BarChart2 : HistoryIcon, label: isLightUser ? 'Progresso' : 'Histórico' },
+              { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
               { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
             ].map((item) => {
               const isActive = activeTab === item.id;

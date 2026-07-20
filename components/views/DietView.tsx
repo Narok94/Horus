@@ -1,224 +1,156 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { useStore } from '../../store';
-import { henriqueDiet, jessicaDiet } from '../../src/data/dietPlans';
-import { Clock, Info, Utensils, Apple, CheckCircle2 } from 'lucide-react';
+import { Utensils, Info, Check, Clock, Edit2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { DietPlan, Meal, MealItem } from '../../types';
 
 export const DietView: React.FC = () => {
-  const { user, updateUserProfile, triggerConfetti, addToast } = useStore();
-  const username = user?.username.toLowerCase();
+  const { user, toggleMealComplete, theme } = useStore();
+  const dietPlan = user?.dietPlan;
 
-  // Determine which diet plan to show based on username
-  let currentDiet = null;
-  if (username === 'teste1' || username?.includes('henrique')) {
-    currentDiet = henriqueDiet;
-  } else if (username === 'jessica' || username?.includes('jessica')) {
-    currentDiet = jessicaDiet;
-  }
+  const isLightUser = user?.username.toLowerCase() === 'teste1' || theme === 'light';
 
-  const isLightUser = user?.role !== 'teacher';
-  const accentColor = isLightUser ? (user?.sex === 'feminino' ? '#FF007F' : '#2563EB') : '#10B981';
-
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  const todayStr = now.toISOString().split('T')[0];
-
-  const toggleMealCompletion = (mealName: string) => {
-    if (!user) return;
-    
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(20);
-    }
-
-    const completedMeals = user.completedMeals ? { ...user.completedMeals } : {};
-    const todayCompletedList = completedMeals[todayStr] ? [...completedMeals[todayStr]] : [];
-    
-    const index = todayCompletedList.indexOf(mealName);
-    let isAdding = false;
-    if (index > -1) {
-      todayCompletedList.splice(index, 1);
-    } else {
-      todayCompletedList.push(mealName);
-      isAdding = true;
-    }
-    
-    completedMeals[todayStr] = todayCompletedList;
-    updateUserProfile({ completedMeals });
-    
-    if (isAdding) {
-      triggerConfetti();
-      if (addToast) addToast(`Refeição "${mealName}" registrada! +30 Pontos no Projeto Julho`, 'success');
-    } else {
-      if (addToast) addToast(`Refeição "${mealName}" desmarcada.`, 'info');
-    }
-  };
-
-  if (!currentDiet) {
+  if (!dietPlan) {
     return (
-      <div className="h-full flex flex-col items-center justify-center space-y-4 p-6 text-center">
-        <Utensils size={48} className={isLightUser ? 'text-zinc-300' : 'text-zinc-700'} />
-        <h2 className={`text-xl font-black tracking-tight ${isLightUser ? 'text-zinc-900' : 'text-white'}`}>Plano Alimentar Indisponível</h2>
-        <p className={`text-sm ${isLightUser ? 'text-zinc-500' : 'text-zinc-400'}`}>Não encontramos um plano alimentar específico para o seu usuário. Por favor, consulte sua nutricionista.</p>
+      <div className={`w-full min-h-screen flex flex-col justify-start pt-12 sm:pt-6 pb-32 bg-transparent select-none font-sans ${isLightUser ? 'text-zinc-950 font-black' : 'text-white'}`}>
+        <header className={`flex items-center justify-between py-1.5 px-1.5 border-b shrink-0 ${isLightUser ? 'border-zinc-200' : 'border-white/5'}`}>
+          <div>
+            <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isLightUser ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Sua <span className={isLightUser ? 'text-[#2563EB]' : 'text-accent'}>Dieta</span></h1>
+            <p className={`${isLightUser ? 'text-zinc-500 font-bold' : 'text-white/40'} uppercase tracking-widest mt-1 text-[8px] font-mono`}>Plano Alimentar.</p>
+          </div>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center mt-12">
+          <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-zinc-500 mb-2">
+            <Utensils size={16} />
+          </div>
+          <p className="text-zinc-500 text-[8.5px] font-black uppercase tracking-[0.15em]">Nenhum plano alimentar cadastrado.</p>
+        </div>
       </div>
     );
   }
 
+  // Find if meal is completed today
+  const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+  const today = (new Date(Date.now() - tzOffset)).toISOString().split('T')[0];
+  const completedToday = user?.completedMeals?.[today] || [];
+
   return (
-    <div className="h-full flex flex-col pb-24 font-sans max-w-full">
-      {/* HEADER */}
-      <div className="px-1 shrink-0 mb-6 text-left mt-2">
-        <span className={`text-[9px] font-black uppercase tracking-[0.3em] font-mono`} style={{ color: accentColor }}>Nutrição</span>
-        <h1 className={`text-2xl font-extrabold tracking-tight leading-none mt-1 ${isLightUser ? 'text-zinc-950 font-[900]' : 'text-white'}`}>
-          Plano Alimentar
-        </h1>
-        <p className={`text-[10px] mt-1.5 font-bold uppercase tracking-wider ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>
-          {user?.name}
-        </p>
-      </div>
+    <div className={`w-full min-h-screen flex flex-col justify-start pt-12 sm:pt-6 pb-32 bg-transparent select-none font-sans ${isLightUser ? 'text-zinc-950 font-black' : 'text-white'}`}>
+      <header className={`flex items-center justify-between py-1.5 px-1.5 border-b shrink-0 ${isLightUser ? 'border-zinc-200' : 'border-white/5'}`}>
+        <div>
+          <h1 className={`text-xl font-black tracking-tighter uppercase leading-none ${isLightUser ? 'text-zinc-950 font-[900]' : 'text-white'}`}>Sua <span className={isLightUser ? 'text-[#2563EB]' : 'text-accent'}>Dieta</span></h1>
+          <p className={`${isLightUser ? 'text-zinc-500 font-bold' : 'text-white/40'} uppercase tracking-widest mt-1 text-[8px] font-mono`}>Plano Alimentar.</p>
+        </div>
+      </header>
 
-      <div className="space-y-4">
-        {/* ORIENTATIONS CARD */}
-        {currentDiet.orientations && currentDiet.orientations.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`p-4 rounded-[20px] shadow-sm border ${
-              isLightUser 
-                ? 'bg-zinc-100 border-zinc-200' 
-                : 'bg-zinc-800/50 border-white/10'
-            }`}
-          >
-            <h3 className={`font-black text-xs uppercase tracking-widest mb-3`} style={{ color: accentColor }}>
-              Orientações Gerais
-            </h3>
-            <ul className="space-y-2">
-              {currentDiet.orientations.map((orientation, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <div className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
-                  <span className={`text-[11px] font-semibold leading-relaxed ${isLightUser ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                    {orientation}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
+      {/* Resumo/Header da Dieta */}
+      <div className="px-1.5 mt-3 space-y-3">
+        <div className={`rounded-xl p-3 border shadow-sm ${isLightUser ? 'bg-white border-zinc-200' : 'bg-zinc-900/40 border-zinc-800'}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <Info size={14} className={isLightUser ? 'text-[#2563EB]' : 'text-accent'} />
+            <span className="text-[10px] font-black uppercase tracking-tight">Orientações Gerais</span>
+          </div>
+          <p className={`text-[11px] leading-snug font-medium ${isLightUser ? 'text-zinc-700' : 'text-zinc-400'}`}>
+            {dietPlan.generalGuidelines}
+          </p>
+          <div className="mt-3 pt-2 border-t border-dashed border-zinc-200 dark:border-white/10 flex flex-col gap-0.5">
+            <span className={`text-[8.5px] font-bold uppercase tracking-widest ${isLightUser ? 'text-zinc-500' : 'text-zinc-500'}`}>
+              Nutricionista: {dietPlan.nutritionist.name} (CRN {dietPlan.nutritionist.crn})
+            </span>
+          </div>
+        </div>
 
-        {/* MEALS */}
-        {currentDiet.meals.map((meal, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={`p-4 rounded-[20px] shadow-sm border ${
-              isLightUser 
-                ? 'bg-white border-zinc-200' 
-                : 'bg-zinc-900/50 border-white/5'
-            }`}
-          >
-            {/* Meal Header */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2.5">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                  isLightUser ? 'bg-zinc-100' : 'bg-black/40'
-                }`} style={{ color: accentColor }}>
-                  <Apple size={16} />
-                </div>
-                <div>
-                  <h3 className={`font-black text-sm tracking-tight ${isLightUser ? 'text-zinc-900' : 'text-white'}`}>
-                    {meal.name}
-                  </h3>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <Clock size={10} className={isLightUser ? 'text-zinc-400' : 'text-zinc-500'} />
-                    <span className={`text-[9.5px] font-bold tracking-widest uppercase font-mono ${
-                      isLightUser ? 'text-zinc-400' : 'text-zinc-500'
-                    }`}>
-                      {meal.time}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Check off button */}
-              <button
-                onClick={() => toggleMealCompletion(meal.name)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[10px] font-extrabold transition-all cursor-pointer ${
-                  (user?.completedMeals?.[todayStr] || []).includes(meal.name)
-                    ? 'bg-emerald-500 border-emerald-500 text-white font-black'
-                    : isLightUser
-                      ? 'bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100'
-                      : 'bg-white/5 border-white/5 text-zinc-400 hover:bg-white/10'
+        {/* Timeline das Refeições */}
+        <div className="space-y-3">
+          {dietPlan.meals.map((meal) => {
+            const isCompleted = completedToday.includes(meal.id);
+            return (
+              <div 
+                key={meal.id} 
+                className={`rounded-2xl p-4 shadow-md border transition-all duration-200 ${
+                  isCompleted 
+                    ? (isLightUser ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-900/20 border-emerald-500/20')
+                    : (isLightUser ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' : 'bg-zinc-900/40 border-zinc-850/80')
                 }`}
               >
-                <CheckCircle2 size={12} />
-                <span>{(user?.completedMeals?.[todayStr] || []).includes(meal.name) ? 'Concluído' : 'Concluir'}</span>
-              </button>
-            </div>
-
-            {/* Meal Items */}
-            <ul className="space-y-2 mt-4">
-              {meal.items.map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <div className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
-                  <span className={`text-xs font-semibold leading-relaxed ${isLightUser ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Meal Tips */}
-            {meal.tips && meal.tips.length > 0 && (
-              <div className={`mt-4 p-3 rounded-xl border ${
-                isLightUser ? 'bg-zinc-50 border-zinc-100' : 'bg-black/30 border-white/5'
-              }`}>
-                {meal.tips.map((tip, i) => (
-                  <p key={i} className={`text-[10px] font-medium leading-relaxed flex items-start gap-1.5 ${
-                    i > 0 ? 'mt-2' : ''
-                  } ${isLightUser ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                    <Info size={12} className="shrink-0 mt-0.5" style={{ color: accentColor }} />
-                    {tip}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            {/* Substitutions */}
-            {meal.substitutions && meal.substitutions.length > 0 && (
-              <div className="mt-4 space-y-3">
-                {meal.substitutions.map((sub, i) => (
-                  <div key={i} className={`p-3 rounded-xl border border-dashed ${
-                    isLightUser ? 'border-zinc-300 bg-transparent' : 'border-white/15 bg-transparent'
-                  }`}>
-                    <h4 className={`text-[10px] font-black uppercase tracking-widest mb-2`} style={{ color: accentColor }}>
-                      {sub.name}
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {sub.items.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5">
-                          <div className="mt-1.5 w-1 h-1 rounded-full shrink-0 bg-current opacity-40" />
-                          <span className={`text-[11px] font-semibold leading-relaxed ${isLightUser ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                            {item}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    {sub.tips && sub.tips.length > 0 && (
-                      <div className="mt-2 pt-2 border-t border-dashed border-current border-opacity-10">
-                        {sub.tips.map((tip, idx) => (
-                          <p key={idx} className={`text-[9px] font-medium leading-relaxed ${isLightUser ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                            • {tip}
-                          </p>
-                        ))}
-                      </div>
-                    )}
+                <div className="flex justify-between items-start gap-3 mb-3">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <Clock size={10} className={isCompleted ? 'text-emerald-500' : (isLightUser ? 'text-white/70' : 'text-accent')} />
+                      <span className={`text-[9px] font-mono font-bold tracking-widest ${isCompleted ? 'text-emerald-600 dark:text-emerald-400' : (isLightUser ? 'text-white/80' : 'text-zinc-400')}`}>
+                        {meal.time}
+                      </span>
+                    </div>
+                    <h3 className={`text-[14px] font-black uppercase tracking-tight italic leading-tight ${isCompleted ? (isLightUser ? 'text-emerald-700' : 'text-emerald-400') : (isLightUser ? 'text-white' : 'text-white')}`}>
+                      {meal.name}
+                    </h3>
                   </div>
-                ))}
+
+                  <button 
+                    onClick={() => toggleMealComplete(meal.id)}
+                    className={`w-7 h-7 rounded flex items-center justify-center border transition-all duration-200 shrink-0 ${
+                      isCompleted
+                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                        : (isLightUser ? 'bg-white/10 border-white/20 text-transparent' : 'bg-zinc-950 border-zinc-800 text-transparent')
+                    }`}
+                  >
+                    <Check size={14} className={isCompleted ? 'opacity-100' : 'opacity-0'} />
+                  </button>
+                </div>
+
+                {/* Items */}
+                <div className={`space-y-1.5 pt-2 border-t ${isCompleted ? 'border-emerald-500/10' : (isLightUser ? 'border-white/10' : 'border-white/[0.03]')}`}>
+                  {meal.items.map((item, idx) => (
+                    <div key={idx} className="flex flex-col gap-0.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className={`text-[11px] font-bold leading-tight ${isCompleted ? (isLightUser ? 'text-emerald-800' : 'text-emerald-100') : (isLightUser ? 'text-white' : 'text-zinc-200')}`}>
+                          • {item.food}
+                        </span>
+                        {item.quantity && (
+                          <span className={`text-[9px] font-mono font-bold tracking-wider shrink-0 mt-0.5 ${isCompleted ? 'text-emerald-600 dark:text-emerald-400/70' : (isLightUser ? 'text-white/70' : 'text-zinc-500')}`}>
+                            {item.quantity}
+                          </span>
+                        )}
+                      </div>
+                      {item.alternatives && item.alternatives.length > 0 && (
+                        <div className={`text-[9px] font-medium italic pl-3 ${isCompleted ? 'text-emerald-600/70 dark:text-emerald-400/50' : (isLightUser ? 'text-white/60' : 'text-zinc-500')}`}>
+                          ou: {item.alternatives.join(' / ')}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {meal.obs && (
+                  <div className={`mt-3 pt-2 border-t text-[10px] italic font-medium leading-snug ${isCompleted ? 'border-emerald-500/10 text-emerald-700/80 dark:text-emerald-300/70' : (isLightUser ? 'border-white/10 text-white/70' : 'border-white/[0.03] text-zinc-400')}`}>
+                    <span className="font-bold not-italic">Obs:</span> {meal.obs}
+                  </div>
+                )}
               </div>
-            )}
-          </motion.div>
-        ))}
+            );
+          })}
+        </div>
+        
+        {/* Substitutions */}
+        {dietPlan.substitutions && dietPlan.substitutions.length > 0 && (
+          <div className={`mt-4 rounded-xl p-3 border border-dashed ${isLightUser ? 'bg-white/50 border-zinc-300' : 'bg-zinc-900/20 border-zinc-800'}`}>
+            <h4 className={`text-[10px] font-black uppercase tracking-widest mb-2 ${isLightUser ? 'text-zinc-800' : 'text-zinc-400'}`}>Substituições e Dicas</h4>
+            <div className="space-y-3">
+              {dietPlan.substitutions.map((sub, idx) => (
+                <div key={idx} className="space-y-1">
+                  <span className={`text-[11px] font-bold uppercase ${isLightUser ? 'text-zinc-900' : 'text-white'}`}>{sub.name}</span>
+                  {sub.items.map((item, i) => (
+                     <div key={i} className="flex justify-between items-start gap-2">
+                        <span className={`text-[10px] font-medium leading-tight ${isLightUser ? 'text-zinc-700' : 'text-zinc-300'}`}>- {item.food}</span>
+                        <span className={`text-[9px] font-mono font-bold ${isLightUser ? 'text-zinc-500' : 'text-zinc-500'}`}>{item.quantity}</span>
+                     </div>
+                  ))}
+                  {sub.obs && <p className={`text-[9px] italic mt-1 ${isLightUser ? 'text-zinc-500' : 'text-zinc-500'}`}>* {sub.obs}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

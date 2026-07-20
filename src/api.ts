@@ -216,6 +216,17 @@ apiRouter.post("/sync/:username", async (req, res) => {
     
     const mergedWeights = { ...(dbProfile.weights || {}), ...(clientProfile.weights || {}) };
     
+    // Merge completedMeals properly
+    const dbCompleted = dbProfile.completedMeals || {};
+    const clientCompleted = clientProfile.completedMeals || {};
+    const mergedCompletedMeals: Record<string, string[]> = { ...dbCompleted };
+    
+    Object.keys(clientCompleted).forEach(date => {
+      const dbMeals = new Set(mergedCompletedMeals[date] || []);
+      clientCompleted[date].forEach((m: string) => dbMeals.add(m));
+      mergedCompletedMeals[date] = Array.from(dbMeals);
+    });
+    
     const dbBadgeIds = new Set((dbProfile.badges || []).map((b: any) => b.id));
     const mergedBadges = [...(dbProfile.badges || [])];
     (clientProfile.badges || []).forEach((b: any) => {
@@ -232,6 +243,8 @@ apiRouter.post("/sync/:username", async (req, res) => {
       history: mergedHistory,
       weights: mergedWeights,
       badges: mergedBadges,
+      completedMeals: mergedCompletedMeals,
+      dietPlan: clientProfile.dietPlan || dbProfile.dietPlan,
       totalWorkouts: Math.max(dbProfile.totalWorkouts || 0, clientProfile.totalWorkouts || 0, mergedHistory.length),
       streak: Math.max(dbProfile.streak || 0, clientProfile.streak || 0)
     };
