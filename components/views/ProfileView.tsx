@@ -167,7 +167,7 @@ export const ProfileView: React.FC = () => {
     Award: <Award size={14} className="text-accent" />
   };
 
-  const isTeste1 = true;
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
   const accentColor = '#2563EB';
 
   const totalWorkoutsCount = user.totalWorkouts || 0;

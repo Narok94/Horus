@@ -8,7 +8,7 @@ export const DietView: React.FC = () => {
   const { user, toggleMealComplete, theme } = useStore();
   const dietPlan = user?.dietPlan;
 
-  const isLightUser = user?.username.toLowerCase() === 'teste1' || theme === 'light';
+  const isLightUser = user?.username.toLowerCase() === 'henrique' || theme === 'light';
 
   if (!dietPlan) {
     return (

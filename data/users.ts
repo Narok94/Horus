@@ -82,8 +82,103 @@ export const henriqueDietPlan: DietPlan = {
   ]
 };
 
+export const jessicaDietPlan: DietPlan = {
+  nutritionist: { name: "Karine Calixto Braga Lino", crn: "28995", contact: "karine.calixtob@gmail.com" },
+  createdAt: "2026-07-20",
+  generalGuidelines: "Emagrecimento (meta inicial: 78kg). Bater meta de água todos os dias. Atividade física no mínimo 4x na semana. Liberado 1 a 2 refeições livres por semana.",
+  meals: [
+    {
+      id: "cafe-manha",
+      time: "07:30",
+      name: "Café da manhã",
+      items: [
+        { food: "Leite de vaca desnatado", quantity: "100ml" },
+        { food: "Farelo de aveia", quantity: "20g" },
+        { food: "Cacau", quantity: "10g" },
+        { food: "Whey Protein", quantity: "30g" }
+      ],
+      completed: false
+    },
+    {
+      id: "colacao",
+      time: "10:00",
+      name: "Colação",
+      items: [
+        { food: "Fruta", quantity: "1 porção" }
+      ],
+      obs: "1 porção de fruta = 10 unidades de uva OU 1 kiwi OU 2 fatias finas de melão (240g) OU 1 fatia grossa de mamão formosa (200g) OU ½ mamão papaia OU 2 rodelas finas de abacaxi (180g) OU 1 maçã pequena OU 1 pêra pequena OU 1 mexerica OU 1 laranja OU 1 fatia grossa de melancia (200g) OU 1 pedaço médio de manga (100g)",
+      completed: false
+    },
+    {
+      id: "almoco",
+      time: "12:30",
+      name: "Almoço",
+      items: [
+        { food: "Pão integral", quantity: "2 fatias" },
+        { food: "Ovos", quantity: "2 unidades", alternatives: ["2 fatias de queijo minas", "3 colheres de sopa de frango desfiado"] },
+        { food: "Requeijão light", quantity: "1 colher de sopa", alternatives: ["creme de ricota"] },
+        { food: "Alface", quantity: "1 folha" },
+        { food: "Tomate", quantity: "3 fatias médias" }
+      ],
+      obs: "Sanduiche natural",
+      completed: false
+    },
+    {
+      id: "lanche-tarde",
+      time: "16:30",
+      name: "Lanche da tarde / Pós treino",
+      items: [
+        { food: "Ovo de galinha", quantity: "2 unidades" },
+        { food: "Farelo de aveia", quantity: "15g" },
+        { food: "Banana", quantity: "1 unidade", alternatives: ["ouro", "prata", "d'água", "da terra"] },
+        { food: "Canela em pó", quantity: "1 colher de café (1,2g)" },
+        { food: "Café", quantity: "1 xícara" }
+      ],
+      obs: "Panqueca de banana",
+      completed: false
+    },
+    {
+      id: "jantar",
+      time: "20:30",
+      name: "Jantar",
+      items: [
+        { food: "Arroz", quantity: "90g" },
+        { food: "Feijão", quantity: "60g", alternatives: ["lentilha", "grão de bico"] },
+        { food: "Carne bovina", quantity: "100g", alternatives: ["Frango"] },
+        { food: "Legumes cozidos", quantity: "80g" },
+        { food: "Salada ou verdura crua", quantity: "à vontade" }
+      ],
+      obs: "Proteína: 100 g de carne magra -> frango grelhado OU frango desfiado OU frango xadrez OU peixe grelhado, cozido ou assado OU lombo suíno OU carne moída OU carne bovina OU carne em cubos OU 2 ovos OU omelete de 2 ovos com tomate, cebola, cebolinha, salsinha, sal e temperos naturais. Legumes e verduras: sempre variar as opções ao máximo, e escolher, no mínimo, 3 opções de cores diferentes. Consumir até 3 colheres de sopa de cada opção. Se forem folhas cruas, consumir à vontade. Dica: Escolha, pelo menos, 1 tipo de folha, um legume cru e um cozido. Por exemplo: alface roxa, cenoura ralada e berinjela refogada.",
+      completed: false
+    }
+  ],
+  substitutions: [
+    {
+      name: "Substituição 1 (Café da manhã)",
+      items: [
+        { food: "Iogurte Batavo Tradicional", quantity: "150g" },
+        { food: "Farelo de aveia", quantity: "20g" },
+        { food: "Semente de chia", quantity: "10g" },
+        { food: "Fruta", quantity: "100g" },
+        { food: "Whey Protein", quantity: "30g" }
+      ],
+      obs: "Overnight"
+    },
+    {
+      name: "Substituição 1 (Lanche da tarde)",
+      items: [
+        { food: "Ovo de galinha", quantity: "2 unidades" },
+        { food: "Tapioca de goma", quantity: "1 colher de sopa (15g)" },
+        { food: "Mussarela", quantity: "1 fatia", alternatives: ["1 colher de sopa rasa de requeijão light"] },
+        { food: "Café", quantity: "1 xícara" }
+      ],
+      obs: "Crepioca: misture os ovos com a tapioca depois recheie"
+    }
+  ]
+};
+
 export const henriqueDefault: User = {
-  username: 'teste1',
+  username: 'henrique',
   name: 'Henrique',
   age: 26,
   sex: 'masculino',
@@ -112,7 +207,8 @@ export const jessicaDefault: User = {
   weights: {},
   checkIns: [],
   badges: [],
-  isProfileComplete: true
+  isProfileComplete: true,
+  dietPlan: jessicaDietPlan
 };
 
 export const professorDefault: User = {
@@ -132,14 +228,14 @@ export const professorDefault: User = {
 };
 
 const DEFAULT_PASSWORDS: Record<string, string> = {
-  teste1: '12345',
+  henrique: '12345',
   jessica: '9860',
   teste3: '12345'
 };
 
 export function getUserByUsername(username: string): User | null {
   const normalized = username.trim().toLowerCase();
-  if (normalized === 'teste1') return { ...henriqueDefault };
+  if (normalized === 'henrique') return { ...henriqueDefault };
   if (normalized === 'jessica') return { ...jessicaDefault };
   if (normalized === 'teste3') return { ...professorDefault };
   return null;

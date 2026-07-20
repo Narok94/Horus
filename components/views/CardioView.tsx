@@ -21,7 +21,7 @@ export const CardioView: React.FC = () => {
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
 
-  const isTeste1 = user?.username.toLowerCase() === 'teste1';
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
 
   // Wake lock ref to keep screen on during cardio
   const wakeLockRef = useRef<any>(null);

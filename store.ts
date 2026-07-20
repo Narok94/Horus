@@ -59,7 +59,7 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set, get) => {
-  // Allow user custom theme, default is 'dark' for premium dark HUD, except for teste1
+  // Allow user custom theme, default is 'dark' for premium dark HUD, except for henrique
   const initialTheme = (() => {
     if (typeof localStorage !== 'undefined') {
       // Safely ensure no accidental resets ever run
@@ -72,7 +72,7 @@ export const useStore = create<AppState>((set, get) => {
       const RESTORE_KEY = 'tatugym_restore_july_10_v3';
       if (!localStorage.getItem(RESTORE_KEY)) {
         try {
-          const storedProfile = localStorage.getItem('tatugym_user_profile_teste1');
+          const storedProfile = localStorage.getItem('tatugym_user_profile_henrique');
           if (storedProfile) {
             const profile = JSON.parse(storedProfile);
             const missingDates = ['2026-07-06', '2026-07-07', '2026-07-08', '2026-07-09'];
@@ -95,12 +95,12 @@ export const useStore = create<AppState>((set, get) => {
             // Sort history descending
             profile.history.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-            localStorage.setItem('tatugym_user_profile_teste1', JSON.stringify(profile));
+            localStorage.setItem('tatugym_user_profile_henrique', JSON.stringify(profile));
             
             const rem = localStorage.getItem('tatugym_remembered');
             if (rem) {
                const remData = JSON.parse(rem);
-               if (remData.username.toLowerCase() === 'teste1') {
+               if (remData.username.toLowerCase() === 'henrique') {
                  localStorage.setItem('tatugym_remembered', JSON.stringify(profile));
                }
             }
@@ -113,7 +113,7 @@ export const useStore = create<AppState>((set, get) => {
       if (remembered) {
         try {
           const userData = JSON.parse(remembered);
-          if (userData && userData.username.toLowerCase() === 'teste1') {
+          if (userData && userData.username.toLowerCase() === 'henrique') {
             return 'light';
           }
         } catch (_) {}
@@ -148,7 +148,7 @@ export const useStore = create<AppState>((set, get) => {
   allWorkouts: (() => {
     const saved = localStorage.getItem('tatugym_all_workouts');
     let loadedWorkouts: Record<string, WorkoutRoutine[]> = {
-      teste1: henriqueWorkouts,
+      henrique: henriqueWorkouts,
       teste3: [],
       jessica: jessicaWorkouts
     };
@@ -161,7 +161,7 @@ export const useStore = create<AppState>((set, get) => {
       }
     }
     // Forçar os treinos corretos para atualizar a versão salva em cache do navegador
-    loadedWorkouts.teste1 = henriqueWorkouts;
+    loadedWorkouts.henrique = henriqueWorkouts;
     loadedWorkouts.jessica = jessicaWorkouts;
     loadedWorkouts.teste3 = [];
     if (typeof localStorage !== 'undefined') {

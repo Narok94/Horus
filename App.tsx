@@ -124,11 +124,7 @@ const AppContent: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(() => {
-    const saved = localStorage.getItem('tatugym_remember_me_checked');
-    if (saved !== null) return saved === 'true';
-    return localStorage.getItem('tatugym_remembered') !== null;
-  });
+  const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
     const checkAutoLogin = async () => {
@@ -188,12 +184,8 @@ const AppContent: React.FC = () => {
     setUser(resolvedUser);
     setIsLoggedIn(true);
     setActiveTab(resolvedUser.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
-    localStorage.setItem('tatugym_remember_me_checked', rememberMe.toString());
-    if (rememberMe) {
-      localStorage.setItem('tatugym_remembered', JSON.stringify(resolvedUser));
-    } else {
-      localStorage.removeItem('tatugym_remembered');
-    }
+    localStorage.setItem('tatugym_remember_me_checked', 'true');
+    localStorage.setItem('tatugym_remembered', JSON.stringify(resolvedUser));
   };
 
   const handleQuickLogin = (uname: string) => {
@@ -348,31 +340,7 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Form Options Row */}
-            <div className="flex items-center justify-between text-[11px] pt-1 pb-2">
-              <label 
-                onClick={() => {
-                  handleVibrate();
-                  setRememberMe(!rememberMe);
-                }}
-                className="flex items-center gap-2 cursor-pointer group select-none"
-              >
-                <div
-                  className={`w-[18px] h-[18px] rounded flex items-center justify-center border transition-all duration-200 ${
-                    rememberMe
-                      ? 'bg-[#1D4ED8] border-[#1D4ED8] shadow-[0_2px_5px_rgba(29,78,216,0.18)]'
-                      : 'bg-white border-gray-300 group-hover:border-[#1D4ED8]'
-                  }`}
-                >
-                  {rememberMe && (
-                    <svg className="w-3 h-3 text-white stroke-[3px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                <span className="text-[#64748B] font-bold group-hover:text-[#1D4ED8] transition-colors">
-                  Lembrar meu acesso
-                </span>
-              </label>
+            <div className="flex items-center justify-end text-[11px] pt-1 pb-2">
               <button
                 type="button"
                 onClick={handleForgotPassword}
@@ -399,7 +367,7 @@ const AppContent: React.FC = () => {
               </span>
               <div className="flex gap-2 justify-center flex-wrap">
                 {[
-                  { id: 'teste1', label: 'Henrique (T1)' },
+                  { id: 'henrique', label: 'Henrique' },
                   { id: 'jessica', label: 'Jessica' },
                   { id: 'teste3', label: 'Professor' }
                 ].map(item => (

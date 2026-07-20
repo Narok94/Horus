@@ -55,7 +55,7 @@ export const WorkoutView: React.FC = () => {
     addToast
   } = useStore();
 
-  const isTeste1 = true;
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
   const isTeacher = user?.username.toLowerCase() === 'teste3' || user?.username.toLowerCase().includes('flavia');
   const accentColor = '#2563EB';
 

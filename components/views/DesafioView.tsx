@@ -6,7 +6,7 @@ import { AppTab } from '../../types';
 
 export const DesafioView: React.FC = () => {
   const { user, setActiveTab } = useStore();
-  const isTeste1 = user?.username.toLowerCase() === 'teste1';
+  const isTeste1 = user?.username.toLowerCase() === 'henrique' || user?.theme === 'light';
 
   const handleRedirect = () => {
     if (typeof window !== 'undefined') {
