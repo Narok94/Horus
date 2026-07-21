@@ -102,6 +102,22 @@ export interface BodyMeasurement {
   peito?: number;
   barriga?: number;
   observacao?: string;
+  abdomen?: number;
+  panturrilhaDireita?: number;
+  panturrilhaEsquerda?: number;
+  coxaDireita?: number;
+  coxaEsquerda?: number;
+  bracoRelaxadoDireito?: number;
+  bracoRelaxadoEsquerdo?: number;
+  bracoContraidoDireito?: number;
+  bracoContraidoEsquerdo?: number;
+  pregaTriceps?: number;
+  pregaAxilarMedia?: number;
+  pregaTorax?: number;
+  pregaAbdominal?: number;
+  pregaSuprailiaca?: number;
+  pregaSubescapular?: number;
+  pregaCoxa?: number;
 }
 
 export interface ChallengeGoal {

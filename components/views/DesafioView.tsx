@@ -21,6 +21,8 @@ const HABITS: { key: keyof DailyCheck; label: string; icon: any; manual: boolean
 export const DesafioView: React.FC = () => {
   const { user, theme, setActiveTab, toggleDailyHabit, addMeasurement } = useStore();
   const [activeSubTab, setActiveSubTab] = useState<'hoje' | 'progresso' | 'historico' | 'comparativo'>('hoje');
+  const [expandedDate, setExpandedDate] = useState<string | null>(null);
+  const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   
   const getLocalToday = () => {
     const tzOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -272,34 +274,190 @@ export const DesafioView: React.FC = () => {
 
             {/* Measurements List */}
             <div className="space-y-2">
-              {measurements.slice().reverse().map((m, idx) => (
-                <div key={m.date} className={`border rounded-xl p-4 flex items-center justify-between ${cardClass}`}>
-                  <div>
-                    <span className={`text-[10px] font-bold ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>{new Date(m.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
-                    <div className="flex gap-4 mt-1">
-                      <div className="flex flex-col">
-                        <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Peso</span>
-                        <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.peso}kg</span>
+              {measurements.slice().reverse().map((m, idx) => {
+                const isExpanded = expandedDate === m.date;
+                const hasDetails = !!(m.peito || m.abdomen || m.pregaTriceps || m.bracoRelaxadoDireito || m.bracoContraidoDireito || m.pernaDireita || m.panturrilhaDireita);
+
+                return (
+                  <div 
+                    key={m.date} 
+                    className={`border rounded-2xl overflow-hidden transition-all duration-300 ${cardClass} ${
+                      hasDetails ? 'cursor-pointer hover:border-[#2563EB]/40' : ''
+                    }`}
+                    onClick={() => {
+                      if (hasDetails) {
+                        setExpandedDate(isExpanded ? null : m.date);
+                      }
+                    }}
+                  >
+                    <div className="p-4 flex items-center justify-between">
+                      <div>
+                        <span className={`text-[10px] font-bold ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>
+                          {new Date(m.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                        </span>
+                        <div className="flex gap-4 mt-1">
+                          <div className="flex flex-col">
+                            <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Peso</span>
+                            <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.peso}kg</span>
+                          </div>
+                          {m.percentualGordura && (
+                            <div className="flex flex-col">
+                              <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>% Gordura</span>
+                              <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.percentualGordura}%</span>
+                            </div>
+                          )}
+                          {m.cintura && (
+                            <div className="flex flex-col">
+                              <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Cintura</span>
+                              <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.cintura}cm</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      {m.percentualGordura && (
-                        <div className="flex flex-col">
-                          <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>% Gordura</span>
-                          <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.percentualGordura}%</span>
-                        </div>
-                      )}
-                      {m.cintura && (
-                        <div className="flex flex-col">
-                          <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Cintura</span>
-                          <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.cintura}cm</span>
-                        </div>
-                      )}
+
+                      <div className="flex items-center gap-2" onClick={(e) => {
+                        if (hasDetails) {
+                          e.stopPropagation();
+                          setExpandedDate(isExpanded ? null : m.date);
+                        }
+                      }}>
+                        {idx === measurements.length - 1 && (
+                          <span className="text-[8px] font-black tracking-widest uppercase text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">Partida</span>
+                        )}
+                        {hasDetails && (
+                          <span className={`text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded transition-colors ${
+                            isExpanded 
+                              ? 'bg-[#2563EB]/10 text-[#2563EB]' 
+                              : isLightUser ? 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200' : 'bg-white/5 text-white/70 hover:bg-white/10'
+                          }`}>
+                            {isExpanded ? 'Ocultar' : 'Detalhes'}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    {isExpanded && (
+                      <div className={`p-4 border-t ${isLightUser ? 'bg-zinc-50 border-zinc-100' : 'bg-black/20 border-white/[0.03]'} space-y-4 text-xs`} onClick={(e) => e.stopPropagation()}>
+                        {/* Perímetros Section */}
+                        {(m.peito !== undefined || m.abdomen !== undefined || m.bracoRelaxadoDireito !== undefined || m.bracoContraidoDireito !== undefined || m.pernaDireita !== undefined || m.panturrilhaDireita !== undefined) && (
+                          <div>
+                            <h4 className={`text-[10px] font-black uppercase tracking-wider mb-2 ${isLightUser ? 'text-zinc-950 font-black' : 'text-white'}`}>Perímetros (Circunferências)</h4>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                              {m.peito !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Peitoral:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.peito.toFixed(2)} cm</span>
+                                </div>
+                              )}
+                              {m.cintura !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Cintura:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.cintura.toFixed(2)} cm</span>
+                                </div>
+                              )}
+                              {m.abdomen !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Abdômen:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.abdomen.toFixed(2)} cm</span>
+                                </div>
+                              )}
+                              {(m.bracoRelaxadoDireito !== undefined || m.bracoRelaxadoEsquerdo !== undefined) && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Braço relaxado (D/E):</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                                    {m.bracoRelaxadoDireito?.toFixed(2)} / {m.bracoRelaxadoEsquerdo?.toFixed(2)} cm
+                                  </span>
+                                </div>
+                              )}
+                              {(m.bracoContraidoDireito !== undefined || m.bracoContraidoEsquerdo !== undefined) && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Braço contraído (D/E):</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                                    {m.bracoContraidoDireito?.toFixed(2)} / {m.bracoContraidoEsquerdo?.toFixed(2)} cm
+                                  </span>
+                                </div>
+                              )}
+                              {(m.pernaDireita !== undefined || m.pernaEsquerda !== undefined) && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Coxa (D/E):</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                                    {m.pernaDireita?.toFixed(2)} / {m.pernaEsquerda?.toFixed(2)} cm
+                                  </span>
+                                </div>
+                              )}
+                              {(m.panturrilhaDireita !== undefined || m.panturrilhaEsquerda !== undefined) && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Panturrilha (D/E):</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                                    {m.panturrilhaDireita?.toFixed(2)} / {m.panturrilhaEsquerda?.toFixed(2)} cm
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Pregas Cutâneas Section */}
+                        {(m.pregaTriceps !== undefined || m.pregaAxilarMedia !== undefined || m.pregaTorax !== undefined || m.pregaAbdominal !== undefined || m.pregaSuprailiaca !== undefined || m.pregaSubescapular !== undefined || m.pregaCoxa !== undefined) && (
+                          <div>
+                            <h4 className={`text-[10px] font-black uppercase tracking-wider mb-2 ${isLightUser ? 'text-zinc-950 font-black' : 'text-white'}`}>Pregas Cutâneas</h4>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                              {m.pregaTriceps !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Tríceps:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaTriceps.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaAxilarMedia !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Axilar Média:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaAxilarMedia.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaTorax !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Tórax:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaTorax.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaAbdominal !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Abdominal:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaAbdominal.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaSuprailiaca !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Suprailíaca:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaSuprailiaca.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaSubescapular !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Subescapular:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaSubescapular.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                              {m.pregaCoxa !== undefined && (
+                                <div className="flex justify-between py-1 border-b border-dashed border-zinc-200/50 dark:border-white/5">
+                                  <span className={isLightUser ? 'text-zinc-500 font-bold' : 'text-zinc-400'}>Coxa:</span>
+                                  <span className={`font-bold ${isLightUser ? 'text-zinc-800' : 'text-zinc-200'}`}>{m.pregaCoxa.toFixed(2)} mm</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {m.observacao && (
+                          <div className={`text-[10px] italic p-2 rounded ${isLightUser ? 'bg-zinc-100 text-zinc-600 font-medium' : 'bg-white/5 text-white/50'}`}>
+                            * {m.observacao}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {idx === measurements.length - 1 && (
-                    <span className="text-[8px] font-black tracking-widest uppercase text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">Partida</span>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         ) : (
@@ -441,12 +599,69 @@ export const DesafioView: React.FC = () => {
     );
   };
 
+  const autoCalculateBodyFat = () => {
+    const age = user.age || 26;
+    const gender = user.sex || 'masculino';
+    
+    const triceps = parseFloat(String(measurementForm.pregaTriceps || 0)) || 0;
+    const axilar = parseFloat(String(measurementForm.pregaAxilarMedia || 0)) || 0;
+    const torax = parseFloat(String(measurementForm.pregaTorax || 0)) || 0;
+    const abdominal = parseFloat(String(measurementForm.pregaAbdominal || 0)) || 0;
+    const supra = parseFloat(String(measurementForm.pregaSuprailiaca || 0)) || 0;
+    const sub = parseFloat(String(measurementForm.pregaSubescapular || 0)) || 0;
+    const coxa = parseFloat(String(measurementForm.pregaCoxa || 0)) || 0;
+    
+    const sum = triceps + axilar + torax + abdominal + supra + sub + coxa;
+    if (sum === 0) return;
+    
+    let bd = 1.0;
+    if (gender === 'masculino') {
+      bd = 1.112 - (0.00043499 * sum) + (0.00000055 * sum * sum) - (0.00028826 * age);
+    } else {
+      bd = 1.097 - (0.00046971 * sum) + (0.00000056 * sum * sum) - (0.00012828 * age);
+    }
+    
+    const bf = (4.95 / bd - 4.50) * 100;
+    setMeasurementForm(prev => ({
+      ...prev,
+      percentualGordura: parseFloat(bf.toFixed(2))
+    }));
+  };
+
   const handleSaveMeasurement = (e: React.FormEvent) => {
     e.preventDefault();
-    if (measurementForm.peso && measurementForm.date) {
-      addMeasurement(measurementForm as BodyMeasurement);
+    if (measurementForm.peso) {
+      const payload: BodyMeasurement = {
+        date: measurementForm.date || getLocalToday(),
+        peso: measurementForm.peso,
+        percentualGordura: measurementForm.percentualGordura,
+        cintura: measurementForm.cintura,
+        peito: measurementForm.peito,
+        abdomen: measurementForm.abdomen,
+        panturrilhaDireita: measurementForm.panturrilhaDireita,
+        panturrilhaEsquerda: measurementForm.panturrilhaEsquerda,
+        pernaDireita: measurementForm.pernaDireita,
+        pernaEsquerda: measurementForm.pernaEsquerda,
+        coxaDireita: measurementForm.coxaDireita,
+        coxaEsquerda: measurementForm.coxaEsquerda,
+        bracoRelaxadoDireito: measurementForm.bracoRelaxadoDireito,
+        bracoRelaxadoEsquerdo: measurementForm.bracoRelaxadoEsquerdo,
+        bracoContraidoDireito: measurementForm.bracoContraidoDireito,
+        bracoContraidoEsquerdo: measurementForm.bracoContraidoEsquerdo,
+        pregaTriceps: measurementForm.pregaTriceps,
+        pregaAxilarMedia: measurementForm.pregaAxilarMedia,
+        pregaTorax: measurementForm.pregaTorax,
+        pregaAbdominal: measurementForm.pregaAbdominal,
+        pregaSuprailiaca: measurementForm.pregaSuprailiaca,
+        pregaSubescapular: measurementForm.pregaSubescapular,
+        pregaCoxa: measurementForm.pregaCoxa,
+        observacao: measurementForm.observacao
+      };
+      
+      addMeasurement(payload);
       setShowMeasurementModal(false);
       setMeasurementForm({});
+      setShowAdvancedFields(false);
     }
   };
 
@@ -502,7 +717,7 @@ export const DesafioView: React.FC = () => {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className={`w-full max-w-sm rounded-[24px] border p-6 overflow-hidden ${
+              className={`w-full max-w-md rounded-[24px] border p-6 max-h-[85vh] overflow-y-auto ${
                 isLightUser 
                   ? 'bg-white border-zinc-200 shadow-xl text-zinc-900' 
                   : 'bg-[#1A1A1A] border-white/10 text-white'
@@ -510,7 +725,15 @@ export const DesafioView: React.FC = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-black uppercase italic tracking-tight">Nova Medição</h2>
-                <button onClick={() => setShowMeasurementModal(false)} className={`p-2 rounded-full ${isLightUser ? 'text-zinc-500 hover:text-zinc-800 bg-zinc-100' : 'text-white/50 hover:text-white bg-white/5'}`}>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setShowMeasurementModal(false);
+                    setMeasurementForm({});
+                    setShowAdvancedFields(false);
+                  }} 
+                  className={`p-2 rounded-full ${isLightUser ? 'text-zinc-500 hover:text-zinc-800 bg-zinc-100' : 'text-white/50 hover:text-white bg-white/5'}`}
+                >
                   <X size={16} />
                 </button>
               </div>
@@ -523,7 +746,7 @@ export const DesafioView: React.FC = () => {
                     required
                     value={measurementForm.date || getLocalToday()}
                     onChange={e => setMeasurementForm({...measurementForm, date: e.target.value})}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                    className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2563EB] ${
                       isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
                     }`}
                   />
@@ -536,7 +759,7 @@ export const DesafioView: React.FC = () => {
                       type="number" step="0.1" required
                       value={measurementForm.peso || ''}
                       onChange={e => setMeasurementForm({...measurementForm, peso: parseFloat(e.target.value)})}
-                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                      className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2563EB] ${
                         isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
                       }`}
                     />
@@ -547,7 +770,7 @@ export const DesafioView: React.FC = () => {
                       type="number" step="0.1"
                       value={measurementForm.percentualGordura || ''}
                       onChange={e => setMeasurementForm({...measurementForm, percentualGordura: parseFloat(e.target.value)})}
-                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                      className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2563EB] ${
                         isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
                       }`}
                     />
@@ -560,11 +783,260 @@ export const DesafioView: React.FC = () => {
                     type="number" step="0.1"
                     value={measurementForm.cintura || ''}
                     onChange={e => setMeasurementForm({...measurementForm, cintura: parseFloat(e.target.value)})}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                    className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2563EB] ${
                       isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
                     }`}
                   />
                 </div>
+
+                {/* Advanced Toggle Button */}
+                <div className="pt-2 border-t border-dashed border-zinc-250/50 dark:border-white/5">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvancedFields(!showAdvancedFields)}
+                    className="w-full flex items-center justify-between text-[10px] font-black tracking-widest uppercase text-[#2563EB] bg-[#2563EB]/10 py-2 px-4 rounded-xl hover:bg-[#2563EB]/15 transition-all"
+                  >
+                    <span>{showAdvancedFields ? 'Ocultar Opcionais' : '+ Pregas e Perímetros'}</span>
+                    <span className="text-xs">{showAdvancedFields ? '▲' : '▼'}</span>
+                  </button>
+                </div>
+
+                {showAdvancedFields && (
+                  <div className="space-y-4 pt-2 border-t border-dashed border-zinc-250/50 dark:border-white/5 animate-fade-in">
+                    
+                    {/* Perímetros Section */}
+                    <div>
+                      <h4 className={`text-[10px] font-black uppercase tracking-wider mb-2 ${isLightUser ? 'text-zinc-600' : 'text-white/60'}`}>Perímetros (cm)</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Peitoral</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.peito || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, peito: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Abdômen</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.abdomen || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, abdomen: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Braço Relax. D</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.bracoRelaxadoDireito || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, bracoRelaxadoDireito: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Braço Relax. E</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.bracoRelaxadoEsquerdo || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, bracoRelaxadoEsquerdo: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Braço Contr. D</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.bracoContraidoDireito || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, bracoContraidoDireito: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Braço Contr. E</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.bracoContraidoEsquerdo || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, bracoContraidoEsquerdo: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Coxa Direita</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pernaDireita || ''}
+                            onChange={e => setMeasurementForm({
+                              ...measurementForm, 
+                              pernaDireita: parseFloat(e.target.value),
+                              coxaDireita: parseFloat(e.target.value)
+                            })}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Coxa Esquerda</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pernaEsquerda || ''}
+                            onChange={e => setMeasurementForm({
+                              ...measurementForm, 
+                              pernaEsquerda: parseFloat(e.target.value),
+                              coxaEsquerda: parseFloat(e.target.value)
+                            })}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Panturrilha D</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.panturrilhaDireita || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, panturrilhaDireita: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Panturrilha E</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.panturrilhaEsquerda || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, panturrilhaEsquerda: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pregas Cutâneas Section */}
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className={`text-[10px] font-black uppercase tracking-wider ${isLightUser ? 'text-zinc-600' : 'text-white/60'}`}>Pregas Cutâneas (mm)</h4>
+                        <button
+                          type="button"
+                          onClick={autoCalculateBodyFat}
+                          className="text-[9px] font-black tracking-widest uppercase bg-[#2563EB] text-white px-2 py-1 rounded hover:brightness-110 transition-all"
+                        >
+                          Calcular BF%
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Tríceps</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaTriceps || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaTriceps: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Axilar Média</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaAxilarMedia || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaAxilarMedia: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Tórax</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaTorax || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaTorax: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Abdominal</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaAbdominal || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaAbdominal: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Suprailíaca</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaSuprailiaca || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaSuprailiaca: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Subescapular</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaSubescapular || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaSubescapular: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Coxa</label>
+                          <input 
+                            type="number" step="0.1"
+                            value={measurementForm.pregaCoxa || ''}
+                            onChange={e => setMeasurementForm({...measurementForm, pregaCoxa: parseFloat(e.target.value)})}
+                            className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                              isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Observação Section */}
+                    <div>
+                      <label className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Observação / Notas</label>
+                      <input 
+                        type="text"
+                        value={measurementForm.observacao || ''}
+                        onChange={e => setMeasurementForm({...measurementForm, observacao: e.target.value})}
+                        placeholder="Ex: Pós-treino, jejum, etc."
+                        className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#2563EB] ${
+                          isLightUser ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder:text-zinc-400' : 'bg-white/5 border-white/10 text-white placeholder:text-white/30'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <button type="submit" className="w-full h-12 mt-4 bg-[#2563EB] text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:brightness-110 transition-all">
                   Salvar

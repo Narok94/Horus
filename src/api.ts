@@ -235,6 +235,26 @@ apiRouter.post("/sync/:username", async (req, res) => {
         dbBadgeIds.add(b.id);
       }
     });
+
+    // Merge challenge90 properly
+    const dbChallenge = dbProfile.challenge90 || {};
+    const clientChallenge = clientProfile.challenge90 || {};
+    const mergedChallenge = {
+      ...clientChallenge,
+      ...dbChallenge,
+      goal: clientChallenge.goal || dbChallenge.goal,
+      dataInicio: clientChallenge.dataInicio || dbChallenge.dataInicio || "2026-07-06"
+    };
+
+    const checksMap = new Map();
+    (dbChallenge.dailyChecks || []).forEach((c: any) => { if (c && c.date) checksMap.set(c.date, c); });
+    (clientChallenge.dailyChecks || []).forEach((c: any) => { if (c && c.date) checksMap.set(c.date, c); });
+    mergedChallenge.dailyChecks = Array.from(checksMap.values()).sort((a: any, b: any) => a.date.localeCompare(b.date));
+
+    const measurementsMap = new Map();
+    (dbChallenge.measurements || []).forEach((m: any) => { if (m && m.date) measurementsMap.set(m.date, m); });
+    (clientChallenge.measurements || []).forEach((m: any) => { if (m && m.date) measurementsMap.set(m.date, m); });
+    mergedChallenge.measurements = Array.from(measurementsMap.values()).sort((a: any, b: any) => a.date.localeCompare(b.date));
     
     const mergedProfile = {
       ...clientProfile,
@@ -245,6 +265,7 @@ apiRouter.post("/sync/:username", async (req, res) => {
       badges: mergedBadges,
       completedMeals: mergedCompletedMeals,
       dietPlan: clientProfile.dietPlan || dbProfile.dietPlan,
+      challenge90: mergedChallenge,
       totalWorkouts: Math.max(dbProfile.totalWorkouts || 0, clientProfile.totalWorkouts || 0, mergedHistory.length),
       streak: Math.max(dbProfile.streak || 0, clientProfile.streak || 0)
     };

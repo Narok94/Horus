@@ -196,7 +196,34 @@ export const henriqueDefault: User = {
     dataInicio: '2026-07-06',
     goal: { description: 'Chegar a 9% de percentual de gordura', type: 'percentual_gordura', targetValue: 9 },
     dailyChecks: [],
-    measurements: []
+    measurements: [
+      {
+        date: '2026-07-06',
+        peso: 68.0,
+        percentualGordura: 13.0,
+        peito: 93.0,
+        cintura: 84.0,
+        abdomen: 85.0,
+        panturrilhaDireita: 37.0,
+        panturrilhaEsquerda: 37.0,
+        pernaDireita: 51.0,
+        pernaEsquerda: 50.0,
+        coxaDireita: 51.0,
+        coxaEsquerda: 50.0,
+        bracoRelaxadoDireito: 31.0,
+        bracoRelaxadoEsquerdo: 31.0,
+        bracoContraidoDireito: 35.0,
+        bracoContraidoEsquerdo: 35.0,
+        pregaTriceps: 11.0,
+        pregaAxilarMedia: 11.0,
+        pregaTorax: 5.0,
+        pregaAbdominal: 23.0,
+        pregaSuprailiaca: 13.0,
+        pregaSubescapular: 18.0,
+        pregaCoxa: 11.0,
+        observacao: 'Avaliação inicial oficial'
+      }
+    ]
   }
 };
 
