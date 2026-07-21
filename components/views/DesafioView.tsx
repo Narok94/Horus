@@ -225,53 +225,6 @@ export const DesafioView: React.FC = () => {
 
         {measurements.length > 0 ? (
           <>
-            {/* Chart Container Card */}
-            <div className={`border rounded-2xl p-4 ${cardClass}`}>
-              <div className="flex gap-2 mb-4">
-                {(['peso', 'percentualGordura', 'cintura'] as const).map(m => (
-                  <button
-                    key={m}
-                    onClick={() => setSelectedMetric(m)}
-                    className={`flex-1 py-1.5 text-[9px] font-black tracking-widest uppercase rounded-lg transition-colors ${
-                      selectedMetric === m 
-                        ? (isLightUser ? 'bg-zinc-150 text-zinc-900 border border-zinc-300' : 'bg-white/10 text-white') 
-                        : (isLightUser ? 'text-zinc-500 hover:bg-zinc-100' : 'text-white/40 hover:bg-white/5')
-                    }`}
-                  >
-                    {m === 'percentualGordura' ? '% Gordura' : m}
-                  </button>
-                ))}
-              </div>
-              <div className="h-48 w-full text-xs">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={measurements}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={isLightUser ? '#E5E7EB' : '#333'} vertical={false} />
-                    <XAxis 
-                      dataKey="date" 
-                      stroke={isLightUser ? '#9CA3AF' : '#666'} 
-                      tick={{ fill: isLightUser ? '#6B7280' : '#666', fontSize: 10 }}
-                      tickFormatter={(val) => {
-                        const d = new Date(val);
-                        return `${d.getUTCDate()}/${d.getUTCMonth() + 1}`;
-                      }}
-                    />
-                    <YAxis stroke={isLightUser ? '#9CA3AF' : '#666'} tick={{ fill: isLightUser ? '#6B7280' : '#666', fontSize: 10 }} domain={['dataMin - 1', 'dataMax + 1']} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: isLightUser ? '#FFFFFF' : '#1A1A1A', 
-                        border: isLightUser ? '1px solid #E5E7EB' : '1px solid #333', 
-                        borderRadius: '8px', 
-                        color: isLightUser ? '#1F2937' : '#fff' 
-                      }}
-                      itemStyle={{ color: '#2563EB' }}
-                      labelFormatter={(val) => new Date(val).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
-                    />
-                    <Line type="monotone" dataKey={selectedMetric} stroke="#2563EB" strokeWidth={3} dot={{ r: 4, fill: '#2563EB', strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
             {/* Measurements List */}
             <div className="space-y-2">
               {measurements.slice().reverse().map((m, idx) => {
