@@ -365,8 +365,8 @@ export const DashboardView: React.FC = () => {
                 syncUserProfile(user.username);
               }}
               title={
-                syncStatus === 'syncing' ? 'Sincronizando com Banco Neon...' :
-                syncStatus === 'synced' ? 'Sincronizado com Banco Neon! Clique para sincronizar novamente.' :
+                syncStatus === 'syncing' ? 'Sincronizando com a nuvem...' :
+                syncStatus === 'synced' ? 'Sincronizado! Clique para sincronizar novamente.' :
                 syncStatus === 'error' ? 'Erro na sincronização. Clique para tentar novamente.' :
                 'Banco de dados offline. Clique para tentar conectar.'
               }

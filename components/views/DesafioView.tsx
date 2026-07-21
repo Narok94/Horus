@@ -1,117 +1,579 @@
-import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Target, ExternalLink, RefreshCw, ArrowLeft } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Target, Dumbbell, Flame, XCircle, Droplets, Moon, Utensils, 
+  ChevronLeft, ChevronRight, Activity, CalendarDays, BarChart3, 
+  Trophy, Plus, X, ArrowLeft, TrendingDown, Scale, Ruler
+} from 'lucide-react';
 import { useStore } from '../../store';
-import { AppTab } from '../../types';
+import { AppTab, DailyCheck, BodyMeasurement } from '../../types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const HABITS: { key: keyof DailyCheck; label: string; icon: any; manual: boolean }[] = [
+  { key: 'treino', label: 'Treino', icon: Dumbbell, manual: true },
+  { key: 'zeroDoce', label: 'Zero Doce', icon: Flame, manual: true },
+  { key: 'zeroBesteira', label: 'Zero Besteira', icon: XCircle, manual: true },
+  { key: 'agua', label: 'Água', icon: Droplets, manual: true },
+  { key: 'sono', label: 'Sono (> 7h)', icon: Moon, manual: true },
+  { key: 'dietaRegulada', label: 'Dieta 100%', icon: Utensils, manual: false }
+];
 
 export const DesafioView: React.FC = () => {
-  const { user, theme, setActiveTab } = useStore();
-  const isTeste1 = user?.username.toLowerCase() === 'henrique' || theme === 'light';
+  const { user, theme, setActiveTab, toggleDailyHabit, addMeasurement } = useStore();
+  const [activeSubTab, setActiveSubTab] = useState<'hoje' | 'progresso' | 'historico' | 'comparativo'>('hoje');
+  
+  const getLocalToday = () => {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    return new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  };
+  
+  const [currentDate, setCurrentDate] = useState<string>(getLocalToday());
+  const [showMeasurementModal, setShowMeasurementModal] = useState(false);
+  const [measurementForm, setMeasurementForm] = useState<Partial<BodyMeasurement>>({});
+  const [selectedMetric, setSelectedMetric] = useState<'peso' | 'percentualGordura' | 'cintura'>('peso');
 
-  const handleRedirect = () => {
-    if (typeof window !== 'undefined') {
-      window.open('https://desafio90d.vercel.app', '_blank', 'noopener,noreferrer');
+  const isLightUser = user?.username.toLowerCase() === 'henrique' || theme === 'light';
+
+  if (!user || !user.challenge90) {
+    return (
+      <div className={`w-full min-h-screen flex flex-col items-center justify-center p-6 text-center ${isLightUser ? 'text-zinc-950 bg-transparent' : 'text-white'}`}>
+        <Target size={48} className={isLightUser ? 'text-zinc-400 mb-4' : 'text-zinc-600 mb-4'} />
+        <h2 className="text-xl font-bold mb-2">Desafio não encontrado</h2>
+        <p className={`text-sm ${isLightUser ? 'text-zinc-500' : 'text-zinc-400'}`}>Você não possui um desafio 90 dias ativo no momento.</p>
+        <button onClick={() => setActiveTab(AppTab.DASHBOARD)} className="mt-6 px-6 py-2 bg-[#2563EB] text-white rounded-lg font-bold">Voltar</button>
+      </div>
+    );
+  }
+
+  const challenge = user.challenge90;
+
+  // Navigation handlers
+  const changeDate = (days: number) => {
+    const d = new Date(currentDate);
+    d.setUTCDate(d.getUTCDate() + days);
+    setCurrentDate(d.toISOString().split('T')[0]);
+  };
+
+  const getStudentData = (username: string) => {
+    if (user.username.toLowerCase() === username.toLowerCase()) return user;
+    try {
+      const saved = localStorage.getItem(`tatugym_user_profile_${username.toLowerCase()}`);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  };
+
+  const henrique = getStudentData('henrique');
+  const jessica = getStudentData('jessica');
+
+  const getStats = (u: any) => {
+    if (!u || !u.challenge90) return { streak: 0, daysLeft: 0, percentCompleted: 0 };
+    const c = u.challenge90;
+    const start = new Date(c.dataInicio);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 90);
+    const now = new Date(getLocalToday());
+    
+    let daysPassed = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysPassed < 0) daysPassed = 0;
+    if (daysPassed > 90) daysPassed = 90;
+    const daysLeft = 90 - daysPassed;
+
+    let streak = 0;
+    const sortedChecks = [...(c.dailyChecks || [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    for (const check of sortedChecks) {
+      if (check.date > getLocalToday()) continue; // Ignore future
+      const totalHabits = HABITS.length;
+      const completedHabits = HABITS.filter(h => check[h.key]).length;
+      if (completedHabits === totalHabits) {
+        streak++;
+      } else if (check.date < getLocalToday()) {
+        break; // Streak broken
+      }
+    }
+
+    let totalPossibleHabits = daysPassed * HABITS.length;
+    if (totalPossibleHabits === 0) totalPossibleHabits = 1; // avoid div by 0
+    let totalCompleted = 0;
+    (c.dailyChecks || []).forEach((check: any) => {
+       if (check.date <= getLocalToday()) {
+         HABITS.forEach(h => {
+           if (check[h.key]) totalCompleted++;
+         });
+       }
+    });
+
+    const percentCompleted = Math.round((totalCompleted / totalPossibleHabits) * 100);
+
+    return { streak, daysLeft, percentCompleted };
+  };
+
+  const myStats = getStats(user);
+
+  // Dynamic theme-based styles
+  const cardClass = isLightUser ? 'bg-white border-zinc-200 shadow-sm' : 'bg-[#1A1A1A] border-white/5';
+  const textPrimary = isLightUser ? 'text-zinc-950 font-black' : 'text-white font-bold';
+  const textSecondary = isLightUser ? 'text-zinc-500 font-bold' : 'text-white/50';
+  
+  const renderHoje = () => {
+    const todayCheck = challenge.dailyChecks?.find(c => c.date === currentDate) || {} as DailyCheck;
+    const isToday = currentDate === getLocalToday();
+    
+    return (
+      <div className="space-y-4 animate-fade-in pb-20">
+        <div className="flex gap-3">
+          {/* Streak Card */}
+          <div className="flex-1 bg-gradient-to-br from-[#2563EB] to-[#122C60] rounded-2xl p-4 shadow-lg text-white">
+            <span className="text-[9px] font-black tracking-widest uppercase opacity-70">SEQUÊNCIA</span>
+            <div className="flex items-end gap-1 mt-1">
+              <span className="text-3xl font-black leading-none">{myStats.streak}</span>
+              <span className="text-xs font-bold opacity-80 mb-0.5">dias</span>
+            </div>
+          </div>
+
+          {/* Remaining Days Card */}
+          <div className={`flex-1 border rounded-2xl p-4 ${cardClass}`}>
+            <span className={`text-[9px] font-black tracking-widest uppercase ${isLightUser ? 'text-zinc-400' : 'opacity-70 text-white/70'}`}>RESTANTES</span>
+            <div className="flex items-end gap-1 mt-1">
+              <span className={`text-3xl font-black leading-none ${isLightUser ? 'text-zinc-950' : 'text-white'}`}>{myStats.daysLeft}</span>
+              <span className={`text-xs font-bold mb-0.5 ${isLightUser ? 'text-zinc-500' : 'opacity-80 text-white/80'}`}>dias</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Date Navigator */}
+        <div className={`flex items-center justify-between border rounded-2xl p-2 ${cardClass}`}>
+          <button onClick={() => changeDate(-1)} className={`p-2 transition-colors ${isLightUser ? 'text-zinc-500 hover:text-zinc-850' : 'text-white/60 hover:text-white'}`}>
+            <ChevronLeft size={20} />
+          </button>
+          <span className={`text-sm font-bold uppercase tracking-widest ${isLightUser ? 'text-zinc-900' : 'text-white'}`}>
+            {isToday ? 'HOJE' : new Date(currentDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+          </span>
+          <button onClick={() => changeDate(1)} className={`p-2 transition-colors ${isLightUser ? 'text-zinc-500 hover:text-zinc-850' : 'text-white/60 hover:text-white'}`} disabled={isToday}>
+            {isToday ? <div className="w-5 h-5" /> : <ChevronRight size={20} />}
+          </button>
+        </div>
+
+        {/* Habits Checklist Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {HABITS.map(h => {
+            const isCompleted = todayCheck[h.key];
+            const Icon = h.icon;
+            return (
+              <div 
+                key={h.key}
+                onClick={() => {
+                  if (h.manual) {
+                    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+                    toggleDailyHabit(currentDate, h.key);
+                  }
+                }}
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
+                  isCompleted 
+                    ? 'bg-[#2563EB]/10 border-[#2563EB]/40 text-[#2563EB] dark:bg-[#2563EB]/20 dark:border-[#2563EB]/50' 
+                    : isLightUser
+                      ? 'bg-white border-zinc-200 text-zinc-400 hover:bg-zinc-50'
+                      : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                } ${h.manual ? 'cursor-pointer active:scale-95' : 'opacity-70'}`}
+              >
+                <Icon size={24} className="mb-2" />
+                <span className={`text-[10px] font-bold tracking-wider uppercase text-center ${isLightUser ? (isCompleted ? 'text-[#2563EB]' : 'text-zinc-800') : 'text-white'}`}>
+                  {h.label}
+                </span>
+                {!h.manual && (
+                  <span className={`text-[8px] mt-1 uppercase ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>(Auto)</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderProgresso = () => {
+    const measurements = [...(challenge.measurements || [])].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    return (
+      <div className="space-y-4 animate-fade-in pb-20">
+        {/* Goal Card */}
+        <div className={`border rounded-2xl p-5 ${cardClass}`}>
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#2563EB]/20 text-[#2563EB] flex items-center justify-center shrink-0">
+              <Target size={20} />
+            </div>
+            <div>
+              <span className={`text-[9px] font-black tracking-widest uppercase ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>SUA META</span>
+              <p className={`text-sm font-bold mt-1 leading-snug ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{challenge.goal.description}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Section Header */}
+        <div className="flex justify-between items-center px-1">
+          <h3 className={`text-[11px] font-black tracking-widest uppercase ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Evolução</h3>
+          <button 
+            onClick={() => setShowMeasurementModal(true)}
+            className="flex items-center gap-1.5 text-[9px] font-black tracking-widest uppercase text-[#2563EB] bg-[#2563EB]/10 px-3 py-1.5 rounded-full"
+          >
+            <Plus size={12} />
+            Nova Medição
+          </button>
+        </div>
+
+        {measurements.length > 0 ? (
+          <>
+            {/* Chart Container Card */}
+            <div className={`border rounded-2xl p-4 ${cardClass}`}>
+              <div className="flex gap-2 mb-4">
+                {(['peso', 'percentualGordura', 'cintura'] as const).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setSelectedMetric(m)}
+                    className={`flex-1 py-1.5 text-[9px] font-black tracking-widest uppercase rounded-lg transition-colors ${
+                      selectedMetric === m 
+                        ? (isLightUser ? 'bg-zinc-150 text-zinc-900 border border-zinc-300' : 'bg-white/10 text-white') 
+                        : (isLightUser ? 'text-zinc-500 hover:bg-zinc-100' : 'text-white/40 hover:bg-white/5')
+                    }`}
+                  >
+                    {m === 'percentualGordura' ? '% Gordura' : m}
+                  </button>
+                ))}
+              </div>
+              <div className="h-48 w-full text-xs">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={measurements}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isLightUser ? '#E5E7EB' : '#333'} vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke={isLightUser ? '#9CA3AF' : '#666'} 
+                      tick={{ fill: isLightUser ? '#6B7280' : '#666', fontSize: 10 }}
+                      tickFormatter={(val) => {
+                        const d = new Date(val);
+                        return `${d.getUTCDate()}/${d.getUTCMonth() + 1}`;
+                      }}
+                    />
+                    <YAxis stroke={isLightUser ? '#9CA3AF' : '#666'} tick={{ fill: isLightUser ? '#6B7280' : '#666', fontSize: 10 }} domain={['dataMin - 1', 'dataMax + 1']} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: isLightUser ? '#FFFFFF' : '#1A1A1A', 
+                        border: isLightUser ? '1px solid #E5E7EB' : '1px solid #333', 
+                        borderRadius: '8px', 
+                        color: isLightUser ? '#1F2937' : '#fff' 
+                      }}
+                      itemStyle={{ color: '#2563EB' }}
+                      labelFormatter={(val) => new Date(val).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                    />
+                    <Line type="monotone" dataKey={selectedMetric} stroke="#2563EB" strokeWidth={3} dot={{ r: 4, fill: '#2563EB', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Measurements List */}
+            <div className="space-y-2">
+              {measurements.slice().reverse().map((m, idx) => (
+                <div key={m.date} className={`border rounded-xl p-4 flex items-center justify-between ${cardClass}`}>
+                  <div>
+                    <span className={`text-[10px] font-bold ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>{new Date(m.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
+                    <div className="flex gap-4 mt-1">
+                      <div className="flex flex-col">
+                        <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Peso</span>
+                        <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.peso}kg</span>
+                      </div>
+                      {m.percentualGordura && (
+                        <div className="flex flex-col">
+                          <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>% Gordura</span>
+                          <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.percentualGordura}%</span>
+                        </div>
+                      )}
+                      {m.cintura && (
+                        <div className="flex flex-col">
+                          <span className={`text-[9px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>Cintura</span>
+                          <span className={`text-sm font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{m.cintura}cm</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {idx === measurements.length - 1 && (
+                    <span className="text-[8px] font-black tracking-widest uppercase text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">Partida</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className={`border rounded-2xl p-8 text-center ${cardClass} ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>
+            <Scale size={32} className="mx-auto mb-2 opacity-50" />
+            <p className="text-sm">Nenhuma medição registrada.</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderHistorico = () => {
+    const days = [];
+    const today = new Date(getLocalToday());
+    
+    // Fill up to 35 days (5 weeks)
+    for (let i = 34; i >= 0; i--) {
+      const d = new Date(today);
+      d.setUTCDate(d.getUTCDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const check = challenge.dailyChecks?.find(c => c.date === dateStr);
+      let score = 0;
+      if (check) {
+        HABITS.forEach(h => { if (check[h.key]) score++; });
+      }
+      days.push({ date: dateStr, score });
+    }
+
+    return (
+      <div className="space-y-4 animate-fade-in pb-20">
+        <div className={`border rounded-2xl p-5 ${cardClass}`}>
+          <h3 className={`text-[11px] font-black tracking-widest uppercase mb-4 ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Últimos 35 dias</h3>
+          <div className="grid grid-cols-7 gap-2">
+            {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => (
+              <div key={i} className={`text-center text-[9px] font-bold ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>{d}</div>
+            ))}
+            {days.map((d, i) => {
+              let bgClass = isLightUser ? 'bg-zinc-100 text-zinc-400' : 'bg-white/5 text-white/40';
+              if (d.score === 1) bgClass = 'bg-[#2563EB]/20 text-[#2563EB]';
+              else if (d.score === 2) bgClass = 'bg-[#2563EB]/40 text-[#2563EB] font-black';
+              else if (d.score === 3 || d.score === 4) bgClass = 'bg-[#2563EB]/60 text-white';
+              else if (d.score === 5) bgClass = 'bg-[#2563EB]/80 text-white';
+              else if (d.score === 6) bgClass = 'bg-[#2563EB] text-white';
+
+              return (
+                <div 
+                  key={d.date} 
+                  title={`${d.date}: ${d.score} hábitos`}
+                  className={`aspect-square rounded-md flex items-center justify-center text-[10px] font-bold ${bgClass}`}
+                >
+                  {new Date(d.date).getUTCDate()}
+                </div>
+              );
+            })}
+          </div>
+          <div className={`flex justify-between items-center mt-4 text-[9px] font-bold uppercase tracking-widest ${isLightUser ? 'text-zinc-400' : 'text-white/40'}`}>
+            <span>Menos</span>
+            <div className="flex gap-1">
+              <div className={`w-3 h-3 rounded ${isLightUser ? 'bg-zinc-100' : 'bg-white/5'}`}></div>
+              <div className="w-3 h-3 rounded bg-[#2563EB]/40"></div>
+              <div className="w-3 h-3 rounded bg-[#2563EB]/80"></div>
+              <div className="w-3 h-3 rounded bg-[#2563EB]"></div>
+            </div>
+            <span>Mais</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderComparativo = () => {
+    const hStats = getStats(henrique);
+    const jStats = getStats(jessica);
+
+    return (
+      <div className="space-y-4 animate-fade-in pb-20">
+        {/* Compare Card */}
+        <div className={`border rounded-2xl p-5 space-y-5 ${cardClass}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy size={16} className="text-yellow-500" />
+            <h3 className={`text-[11px] font-black tracking-widest uppercase ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Desempenho Geral</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {/* Henrique */}
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 font-black ${isLightUser ? 'bg-zinc-100 text-zinc-800 border border-zinc-200' : 'bg-zinc-800 text-white'}`}>HE</div>
+              <span className={`text-xs font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Henrique</span>
+              <div className="mt-2 space-y-1">
+                <div className={`rounded-lg py-2 ${isLightUser ? 'bg-zinc-50 border border-zinc-100' : 'bg-white/5'}`}>
+                  <span className="block text-xl font-black text-[#2563EB]">{hStats.streak}</span>
+                  <span className={`text-[8px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Streak atual</span>
+                </div>
+                <div className={`rounded-lg py-2 ${isLightUser ? 'bg-zinc-50 border border-zinc-100' : 'bg-white/5'}`}>
+                  <span className={`block text-xl font-black ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{hStats.percentCompleted}%</span>
+                  <span className={`text-[8px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Cumprimento</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Jessica */}
+            <div className="text-center">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 font-black ${isLightUser ? 'bg-zinc-100 text-zinc-800 border border-zinc-200' : 'bg-zinc-800 text-white'}`}>JE</div>
+              <span className={`text-xs font-bold ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Jéssica</span>
+              <div className="mt-2 space-y-1">
+                <div className={`rounded-lg py-2 ${isLightUser ? 'bg-zinc-50 border border-zinc-100' : 'bg-white/5'}`}>
+                  <span className="block text-xl font-black text-[#2563EB]">{jStats.streak}</span>
+                  <span className={`text-[8px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Streak atual</span>
+                </div>
+                <div className={`rounded-lg py-2 ${isLightUser ? 'bg-zinc-50 border border-zinc-100' : 'bg-white/5'}`}>
+                  <span className={`block text-xl font-black ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{jStats.percentCompleted}%</span>
+                  <span className={`text-[8px] uppercase tracking-wider ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Cumprimento</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Challenge Goals */}
+        <div className={`border rounded-2xl p-5 ${cardClass}`}>
+          <h3 className={`text-[11px] font-black tracking-widest uppercase mb-4 ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>Metas do Desafio</h3>
+          <div className="space-y-3">
+            <div className={`rounded-xl p-3 ${isLightUser ? 'bg-zinc-50 border border-zinc-150' : 'bg-white/5'}`}>
+              <span className={`text-[9px] uppercase tracking-wider font-bold block mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Henrique</span>
+              <p className={`text-sm font-medium ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{henrique?.challenge90?.goal?.description || '-'}</p>
+            </div>
+            <div className={`rounded-xl p-3 ${isLightUser ? 'bg-zinc-50 border border-zinc-150' : 'bg-white/5'}`}>
+              <span className={`text-[9px] uppercase tracking-wider font-bold block mb-1 ${isLightUser ? 'text-zinc-400' : 'text-white/50'}`}>Jéssica</span>
+              <p className={`text-sm font-medium ${isLightUser ? 'text-zinc-800' : 'text-white'}`}>{jessica?.challenge90?.goal?.description || '-'}</p>
+            </div>
+          </div>
+        </div>
+
+        <p className={`text-[9px] text-center italic mt-6 px-4 ${isLightUser ? 'text-zinc-400 font-bold' : 'text-white/40'}`}>
+          A avaliação final do desafio será feita pela nutricionista Karine Calixto com base nesses dados.
+        </p>
+      </div>
+    );
+  };
+
+  const handleSaveMeasurement = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (measurementForm.peso && measurementForm.date) {
+      addMeasurement(measurementForm as BodyMeasurement);
+      setShowMeasurementModal(false);
+      setMeasurementForm({});
     }
   };
 
-  useEffect(() => {
-    handleRedirect();
-  }, []);
-
-  const accentColor = isTeste1 ? '#2563EB' : 'var(--accent-color)';
-
   return (
-    <div className="w-full min-h-[calc(100vh-120px)] flex flex-col items-center justify-center px-4 py-8 select-none">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={`w-full max-w-md p-8 rounded-[2rem] border text-center relative overflow-hidden flex flex-col items-center justify-between transition-all duration-300 ${
-          isTeste1 
-            ? 'bg-white text-zinc-800 border-zinc-200 shadow-[0_10px_30px_rgba(0,0,0,0.04)]' 
-            : 'bg-[#0E0E12] text-white border-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.3)]'
-        }`}
-      >
-        {/* Subtle glowing accent gradient in background */}
-        {!isTeste1 && (
-          <div 
-            className="absolute -top-12 -left-12 w-40 h-40 rounded-full blur-[60px] opacity-20 pointer-events-none"
-            style={{ backgroundColor: accentColor }}
-          />
-        )}
+    <div className={`w-full min-h-screen flex flex-col bg-transparent select-none font-sans ${isLightUser ? 'text-zinc-950 bg-transparent' : 'text-white'}`}>
+      <div className="px-4 pt-12 pb-4">
+        <h1 className="text-2xl font-black tracking-tighter uppercase italic flex items-center gap-2">
+          <Target className="text-[#2563EB]" size={28} />
+          Desafio 90
+        </h1>
+        <p className={`text-sm font-medium ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>Transformação em andamento</p>
+      </div>
 
-        <div className="flex flex-col items-center mt-4 w-full">
-          {/* Glowing/Styled Icon container with rotation */}
-          <div 
-            className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 relative transition-all duration-300 ${
-              isTeste1 
-                ? 'bg-blue-50 text-blue-600' 
-                : 'bg-accent/10 text-accent border border-accent/20'
-            }`}
-          >
-            {!isTeste1 && (
-              <span className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-75 pointer-events-none" />
-            )}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
+      {/* Sub tabs nav bar */}
+      <div className="px-4 mb-6">
+        <div className={`flex p-1 rounded-xl ${isLightUser ? 'bg-zinc-200/50' : 'bg-white/5'}`}>
+          {(['hoje', 'progresso', 'historico', 'comparativo'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveSubTab(tab)}
+              className={`flex-1 py-2 text-[10px] font-black tracking-widest uppercase rounded-lg transition-all ${
+                activeSubTab === tab 
+                  ? 'bg-[#2563EB] text-white shadow-md' 
+                  : isLightUser 
+                    ? 'text-zinc-500 hover:text-zinc-800' 
+                    : 'text-white/50 hover:text-white'
+              }`}
             >
-              <Target size={38} className="relative z-10 text-accent" />
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Viewport Container */}
+      <div className="px-4 flex-1">
+        {activeSubTab === 'hoje' && renderHoje()}
+        {activeSubTab === 'progresso' && renderProgresso()}
+        {activeSubTab === 'historico' && renderHistorico()}
+        {activeSubTab === 'comparativo' && renderComparativo()}
+      </div>
+
+      {/* New Measurement Modal */}
+      <AnimatePresence>
+        {showMeasurementModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className={`w-full max-w-sm rounded-[24px] border p-6 overflow-hidden ${
+                isLightUser 
+                  ? 'bg-white border-zinc-200 shadow-xl text-zinc-900' 
+                  : 'bg-[#1A1A1A] border-white/10 text-white'
+              }`}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-black uppercase italic tracking-tight">Nova Medição</h2>
+                <button onClick={() => setShowMeasurementModal(false)} className={`p-2 rounded-full ${isLightUser ? 'text-zinc-500 hover:text-zinc-800 bg-zinc-100' : 'text-white/50 hover:text-white bg-white/5'}`}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveMeasurement} className="space-y-4">
+                <div>
+                  <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>Data</label>
+                  <input 
+                    type="date" 
+                    required
+                    value={measurementForm.date || getLocalToday()}
+                    onChange={e => setMeasurementForm({...measurementForm, date: e.target.value})}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                      isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                    }`}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>Peso (kg)*</label>
+                    <input 
+                      type="number" step="0.1" required
+                      value={measurementForm.peso || ''}
+                      onChange={e => setMeasurementForm({...measurementForm, peso: parseFloat(e.target.value)})}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                        isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>% Gordura</label>
+                    <input 
+                      type="number" step="0.1"
+                      value={measurementForm.percentualGordura || ''}
+                      onChange={e => setMeasurementForm({...measurementForm, percentualGordura: parseFloat(e.target.value)})}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                        isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${isLightUser ? 'text-zinc-500' : 'text-white/50'}`}>Cintura (cm)</label>
+                  <input 
+                    type="number" step="0.1"
+                    value={measurementForm.cintura || ''}
+                    onChange={e => setMeasurementForm({...measurementForm, cintura: parseFloat(e.target.value)})}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2563EB] ${
+                      isLightUser ? 'bg-zinc-50 border-zinc-250 text-zinc-900' : 'bg-white/5 border-white/10 text-white'
+                    }`}
+                  />
+                </div>
+
+                <button type="submit" className="w-full h-12 mt-4 bg-[#2563EB] text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:brightness-110 transition-all">
+                  Salvar
+                </button>
+              </form>
             </motion.div>
-          </div>
-
-          <span className="text-accent text-[8.5px] font-black tracking-[0.25em] uppercase font-mono mb-2">
-            CONEXÃO DIRETA ⚡ DESAFIO 90 DIAS
-          </span>
-
-          <h2 className={`text-xl sm:text-2xl font-black tracking-tight leading-snug font-sans uppercase italic ${
-            isTeste1 ? 'text-zinc-900' : 'text-white'
-          }`}>
-            Abrindo o Desafio...
-          </h2>
-
-          <p className={`text-[12px] sm:text-[13px] font-medium leading-relaxed mt-4 max-w-xs ${
-            isTeste1 ? 'text-zinc-500' : 'text-zinc-400'
-          }`}>
-            Você está sendo redirecionado para o aplicativo do desafio em uma nova janela automaticamente.
-          </p>
-
-          <div className="flex items-center gap-2 mt-4 text-[9.5px] text-zinc-450 dark:text-zinc-500 font-mono">
-            <RefreshCw size={10} className="animate-spin" />
-            <span>Se o bloqueador de pop-ups agir, clique abaixo:</span>
-          </div>
-        </div>
-
-        <div className="w-full space-y-3 mt-8">
-          {/* Main Redirect Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleRedirect}
-            className={`w-full h-12 rounded-xl font-black uppercase text-xs tracking-widest transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
-              isTeste1 
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                : 'bg-accent text-zinc-950 hover:brightness-110 shadow-accent/25'
-            }`}
-          >
-            <span>Acessar Desafio</span>
-            <ExternalLink size={14} strokeWidth={2.5} />
-          </motion.button>
-
-          {/* Go back button */}
-          <button
-            onClick={() => setActiveTab(AppTab.DASHBOARD)}
-            className={`w-full py-2.5 rounded-xl font-bold uppercase text-[10px] tracking-widest transition-all bg-transparent cursor-pointer border ${
-              isTeste1 
-                ? 'text-zinc-500 hover:text-zinc-800 border-zinc-200 hover:bg-zinc-50' 
-                : 'text-zinc-400 hover:text-white border-white/5 hover:bg-white/[0.02]'
-            } flex items-center justify-center gap-1.5`}
-          >
-            <ArrowLeft size={11} />
-            <span>Voltar para o App</span>
-          </button>
-        </div>
-      </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

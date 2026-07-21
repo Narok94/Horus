@@ -191,7 +191,13 @@ export const henriqueDefault: User = {
   checkIns: [],
   badges: [],
   isProfileComplete: true,
-  dietPlan: henriqueDietPlan
+  dietPlan: henriqueDietPlan,
+  challenge90: {
+    dataInicio: '2026-07-06',
+    goal: { description: 'Chegar a 9% de percentual de gordura', type: 'percentual_gordura', targetValue: 9 },
+    dailyChecks: [],
+    measurements: []
+  }
 };
 
 export const jessicaDefault: User = {
@@ -208,7 +214,13 @@ export const jessicaDefault: User = {
   checkIns: [],
   badges: [],
   isProfileComplete: true,
-  dietPlan: jessicaDietPlan
+  dietPlan: jessicaDietPlan,
+  challenge90: {
+    dataInicio: '2026-07-06',
+    goal: { description: 'Perder 2kg por mês', type: 'peso_mensal', targetValue: 2 },
+    dailyChecks: [],
+    measurements: []
+  }
 };
 
 export const professorDefault: User = {

@@ -49,6 +49,8 @@ interface AppState {
   syncUserProfile: (username: string) => Promise<User | null>;
   setDietPlan: (plan: import('./types').DietPlan) => void;
   toggleMealComplete: (mealId: string) => void;
+  toggleDailyHabit: (date: string, habitKey: keyof import('./types').DailyCheck) => void;
+  addMeasurement: (measurement: import('./types').BodyMeasurement) => void;
   checkAchievements: () => void;
   handleManualCheckIn: () => void;
   toggleCheckInDate: (dateStr: string) => void;
@@ -295,7 +297,79 @@ export const useStore = create<AppState>((set, get) => {
       delete completedMeals[today];
     }
 
-    updateUserProfile({ completedMeals });
+    let updatedUser: Partial<User> = { completedMeals };
+
+    // Cross-update dietaRegulada for Challenge 90
+    if (user.challenge90 && user.dietPlan?.meals) {
+      const allMealsCompleted = user.dietPlan.meals.length > 0 && user.dietPlan.meals.every(m => todayMeals.includes(m.id));
+      
+      const challenge = user.challenge90;
+      const checks = [...(challenge.dailyChecks || [])];
+      const checkIndex = checks.findIndex(c => c.date === today);
+      
+      if (checkIndex > -1) {
+        checks[checkIndex] = { ...checks[checkIndex], dietaRegulada: allMealsCompleted };
+      } else {
+        checks.push({
+          date: today,
+          treino: false,
+          zeroDoce: false,
+          zeroBesteira: false,
+          agua: false,
+          sono: false,
+          dietaRegulada: allMealsCompleted
+        });
+      }
+      updatedUser.challenge90 = { ...challenge, dailyChecks: checks };
+    }
+
+    updateUserProfile(updatedUser);
+  },
+
+  toggleDailyHabit: (date, habitKey) => {
+    const { user, updateUserProfile } = get();
+    if (!user || !user.challenge90) return;
+
+    const challenge = user.challenge90;
+    const checks = [...(challenge.dailyChecks || [])];
+    const index = checks.findIndex(c => c.date === date);
+
+    if (index > -1) {
+      checks[index] = { ...checks[index], [habitKey]: !checks[index][habitKey] };
+    } else {
+      const newCheck = {
+        date,
+        treino: false,
+        zeroDoce: false,
+        zeroBesteira: false,
+        agua: false,
+        sono: false,
+        dietaRegulada: false,
+        [habitKey]: true
+      };
+      checks.push(newCheck as any);
+    }
+
+    updateUserProfile({ challenge90: { ...challenge, dailyChecks: checks } });
+  },
+
+  addMeasurement: (measurement) => {
+    const { user, updateUserProfile } = get();
+    if (!user || !user.challenge90) return;
+
+    const challenge = user.challenge90;
+    const measurements = [...(challenge.measurements || [])];
+    const index = measurements.findIndex(m => m.date === measurement.date);
+    
+    if (index > -1) {
+      measurements[index] = { ...measurements[index], ...measurement };
+    } else {
+      measurements.push(measurement);
+    }
+    
+    measurements.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    updateUserProfile({ challenge90: { ...challenge, measurements } });
   },
 
   syncUserProfile: async (username) => {
@@ -336,12 +410,12 @@ export const useStore = create<AppState>((set, get) => {
           const mergedProfile = resData.data;
           set({ user: mergedProfile, syncStatus: 'synced' });
           localStorage.setItem(`tatugym_user_profile_${lowerUser}`, JSON.stringify(mergedProfile));
-          get().addToast?.('Sincronizado com o Banco Neon com sucesso!', 'success');
+          get().addToast?.('Sincronizado com sucesso!', 'success');
           return mergedProfile;
         }
       }
       set({ syncStatus: 'error' });
-      get().addToast?.('Erro ao sincronizar com o Banco Neon.', 'error');
+      get().addToast?.('Erro ao sincronizar com o servidor.', 'error');
     } catch (err) {
       console.error('[Sync] Failed to sync with Neon PostgreSQL backend:', err);
       set({ syncStatus: 'offline' });

@@ -79,6 +79,44 @@ export interface DietPlan {
   substitutions: { name: string; items: MealItem[]; obs?: string }[];
 }
 
+export interface DailyCheck {
+  date: string; // YYYY-MM-DD
+  treino: boolean;
+  zeroDoce: boolean;
+  zeroBesteira: boolean;
+  agua: boolean;
+  sono: boolean;
+  dietaRegulada: boolean;
+}
+
+export interface BodyMeasurement {
+  date: string;
+  peso: number;
+  percentualGordura?: number;
+  cintura?: number;
+  quadril?: number;
+  bracoDireito?: number;
+  bracoEsquerdo?: number;
+  pernaDireita?: number;
+  pernaEsquerda?: number;
+  peito?: number;
+  barriga?: number;
+  observacao?: string;
+}
+
+export interface ChallengeGoal {
+  description: string;
+  type: 'percentual_gordura' | 'peso_mensal' | 'outro';
+  targetValue?: number;
+}
+
+export interface Challenge90 {
+  dataInicio: string; // "2026-07-06"
+  goal: ChallengeGoal;
+  dailyChecks: DailyCheck[];
+  measurements: BodyMeasurement[];
+}
+
 export interface User {
   username: string;
   password?: string;
@@ -102,6 +140,7 @@ export interface User {
   badges?: Badge[];
   completedMeals?: Record<string, string[]>; // YYYY-MM-DD -> list of meal times or meal names
   dietPlan?: DietPlan;
+  challenge90?: Challenge90;
 }
 
 export interface Badge {
