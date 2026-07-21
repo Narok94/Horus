@@ -52,6 +52,8 @@ export const WorkoutView: React.FC = () => {
     setActiveTab,
     setSelectedWorkout,
     workoutStartTime,
+    lastMarkedTime,
+    setLastMarkedTime,
     handleManualCheckIn,
     addToast
   } = useStore();
@@ -106,20 +108,48 @@ export const WorkoutView: React.FC = () => {
     }
   };
 
+  const handleFinishWorkoutRef = useRef<(isAutoFinish?: boolean) => void>(() => {});
+  const lastMarkedTimeRef = useRef<number | null>(lastMarkedTime);
+
+  useEffect(() => {
+    lastMarkedTimeRef.current = lastMarkedTime || workoutStartTime;
+  }, [lastMarkedTime, workoutStartTime]);
+
   useEffect(() => {
     if (isWorkoutActive && workoutStartTime) {
       requestWakeLock();
-      timerIntervalRef.current = window.setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - workoutStartTime) / 1000));
-      }, 1000);
+
+      const checkInactivityAndTick = () => {
+        const now = Date.now();
+        setElapsedTime(Math.floor((now - workoutStartTime) / 1000));
+
+        // Check for 40 minutes (2,400,000 ms) without marking anything
+        const lastMark = lastMarkedTimeRef.current || workoutStartTime;
+        if (lastMark && (now - lastMark >= 40 * 60 * 1000)) {
+          console.log('[Inactivity] Finalizando treino automaticamente após 40 minutos sem marcações.');
+          handleFinishWorkoutRef.current(true);
+        }
+      };
+
+      checkInactivityAndTick();
+      timerIntervalRef.current = window.setInterval(checkInactivityAndTick, 1000);
+
+      const handleFocus = () => {
+        checkInactivityAndTick();
+      };
+      window.addEventListener('focus', handleFocus);
+      document.addEventListener('visibilitychange', handleFocus);
+
+      return () => {
+        releaseWakeLock();
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        window.removeEventListener('focus', handleFocus);
+        document.removeEventListener('visibilitychange', handleFocus);
+      };
     } else {
       releaseWakeLock();
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     }
-    return () => {
-      releaseWakeLock();
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
   }, [isWorkoutActive, workoutStartTime, setElapsedTime]);
 
   // Modal Rest Timer Countdown
@@ -175,8 +205,10 @@ export const WorkoutView: React.FC = () => {
 
   const startWorkout = () => {
     handleVibrate(20);
+    const now = Date.now();
     setIsWorkoutActive(true);
-    setWorkoutStartTime(Date.now());
+    setWorkoutStartTime(now);
+    setLastMarkedTime(now);
     setElapsedTime(0);
     handleManualCheckIn();
   };
@@ -193,7 +225,7 @@ export const WorkoutView: React.FC = () => {
     return total;
   };
 
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = (isAutoFinish = false) => {
     if (!selectedWorkout || !user || !workoutStartTime) return;
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -201,7 +233,10 @@ export const WorkoutView: React.FC = () => {
     const volume = calculateVolume();
     setLastWorkoutVolume(volume);
     
-    const duration = Math.floor((Date.now() - workoutStartTime) / 1000);
+    // Duration up to last mark if auto-finish, or now
+    const effectiveLastMark = lastMarkedTimeRef.current || lastMarkedTime || workoutStartTime;
+    const effectiveEndTime = (isAutoFinish && effectiveLastMark) ? effectiveLastMark : Date.now();
+    const duration = Math.max(1, Math.floor((effectiveEndTime - workoutStartTime) / 1000));
     setWorkoutDuration(duration);
     setIsWorkoutActive(false);
 
@@ -237,10 +272,19 @@ export const WorkoutView: React.FC = () => {
       streak: (user.streak || 0) + 1
     });
 
-    triggerConfetti();
+    if (!isAutoFinish) {
+      triggerConfetti();
+    }
     localStorage.removeItem(`tatugym_active_session_${user.username.toLowerCase()}`);
+    setLastMarkedTime(null);
     setShowSummary(true);
+
+    if (isAutoFinish && addToast) {
+      addToast('Treino finalizado automaticamente após 40 minutos sem marcações.', 'info');
+    }
   };
+
+  handleFinishWorkoutRef.current = handleFinishWorkout;
 
   const closeSummary = () => {
     setCapturedImage(null);
@@ -249,6 +293,7 @@ export const WorkoutView: React.FC = () => {
     setCurrentSessionProgress({});
     setCurrentCardioProgress(null);
     setWorkoutStartTime(null);
+    setLastMarkedTime(null);
     setWorkoutDuration(null);
     setElapsedTime(0);
     setIsWorkoutActive(false);
@@ -270,6 +315,7 @@ export const WorkoutView: React.FC = () => {
       setCurrentSessionProgress({});
       setCurrentCardioProgress(null);
       setWorkoutStartTime(null);
+      setLastMarkedTime(null);
       setElapsedTime(0);
       setIsWorkoutActive(false);
       setActiveTab(AppTab.WORKOUT);
@@ -542,6 +588,9 @@ export const WorkoutView: React.FC = () => {
 
     updatedSets[setIndex] = { ...updatedSets[setIndex], ...updates };
 
+    const nowMark = Date.now();
+    setLastMarkedTime(nowMark);
+
     // Emit live to store progress (autosaves natively)
     setCurrentSessionProgress({
       ...currentSessionProgress,
@@ -551,7 +600,7 @@ export const WorkoutView: React.FC = () => {
     if (updates.completed) {
       if (!isWorkoutActive) {
         setIsWorkoutActive(true);
-        setWorkoutStartTime(Date.now());
+        setWorkoutStartTime(nowMark);
         setElapsedTime(0);
         handleManualCheckIn();
       }
@@ -845,7 +894,7 @@ export const WorkoutView: React.FC = () => {
               {formatTime(elapsedTime)}
             </div>
             <button 
-              onClick={handleFinishWorkout}
+              onClick={() => handleFinishWorkout()}
               className={`px-2.5 py-1.5 bg-accent ${isTeste1 ? 'text-white' : 'text-black'} font-black text-[8px] tracking-wider uppercase rounded-lg hover:brightness-110 active:scale-95 transition-all font-sans leading-none`}
             >
               SALVAR
@@ -882,7 +931,7 @@ export const WorkoutView: React.FC = () => {
                 <span className="text-sm font-black text-white font-mono leading-none tracking-tight animate-pulse">{formatTime(elapsedTime)}</span>
               </div>
               <button 
-                onClick={handleFinishWorkout}
+                onClick={() => handleFinishWorkout()}
                 className="flex-1 py-2 bg-accent hover:brightness-110 text-black font-black text-[9px] uppercase tracking-wider rounded-lg active:scale-95 transition-all shadow-md leading-none"
               >
                 FINALIZAR SESSÃO 🏆
@@ -1657,6 +1706,7 @@ export const WorkoutView: React.FC = () => {
                       onClick={() => {
                          handleVibrate(30);
                          setCurrentCardioProgress({ ...cardioInput, completed: true });
+                         setLastMarkedTime(Date.now());
                          setShowCardioModal(false);
                       }}
                       className={`w-full bg-accent ${isTeste1 ? 'text-white font-black' : 'text-[#050505]'} py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.4em] shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3`}

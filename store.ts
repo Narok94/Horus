@@ -15,6 +15,7 @@ interface AppState {
   currentCardioProgress: { exercise: string; duration: number; completed: boolean } | null;
   isWorkoutActive: boolean;
   workoutStartTime: number | null;
+  lastMarkedTime: number | null;
   elapsedTime: number;
   showSummary: boolean;
   lastWorkoutVolume: number;
@@ -37,6 +38,7 @@ interface AppState {
   setCurrentCardioProgress: (progress: AppState['currentCardioProgress']) => void;
   setIsWorkoutActive: (isActive: boolean) => void;
   setWorkoutStartTime: (time: number | null) => void;
+  setLastMarkedTime: (time: number | null) => void;
   setElapsedTime: (time: number) => void;
   setShowSummary: (show: boolean) => void;
   setLastWorkoutVolume: (volume: number) => void;
@@ -138,6 +140,7 @@ export const useStore = create<AppState>((set, get) => {
   currentCardioProgress: null,
   isWorkoutActive: false,
   workoutStartTime: null,
+  lastMarkedTime: null,
   elapsedTime: 0,
   showSummary: false,
   lastWorkoutVolume: 0,
@@ -197,6 +200,7 @@ export const useStore = create<AppState>((set, get) => {
   setCurrentCardioProgress: (currentCardioProgress) => set({ currentCardioProgress }),
   setIsWorkoutActive: (isWorkoutActive) => set({ isWorkoutActive }),
   setWorkoutStartTime: (workoutStartTime) => set({ workoutStartTime }),
+  setLastMarkedTime: (lastMarkedTime) => set({ lastMarkedTime }),
   setElapsedTime: (elapsedTime) => set({ elapsedTime }),
   setShowSummary: (showSummary) => set({ showSummary }),
   setLastWorkoutVolume: (lastWorkoutVolume) => set({ lastWorkoutVolume }),
@@ -236,7 +240,8 @@ export const useStore = create<AppState>((set, get) => {
       selectedWorkout: null,
       isWorkoutActive: false,
       currentSessionProgress: {},
-      workoutStartTime: null
+      workoutStartTime: null,
+      lastMarkedTime: null
     });
     localStorage.removeItem('tatugym_remembered');
   },

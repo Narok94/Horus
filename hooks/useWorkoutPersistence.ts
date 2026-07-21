@@ -10,9 +10,11 @@ export const useWorkoutPersistence = () => {
     selectedWorkout, 
     currentSessionProgress, 
     workoutStartTime,
+    lastMarkedTime,
     setSelectedWorkout,
     setCurrentSessionProgress,
     setWorkoutStartTime,
+    setLastMarkedTime,
     setIsWorkoutActive,
     setActiveTab,
     allWorkouts
@@ -40,6 +42,7 @@ export const useWorkoutPersistence = () => {
             setSelectedWorkout(workout);
             setCurrentSessionProgress(session.progress);
             setWorkoutStartTime(session.startTime);
+            setLastMarkedTime(session.lastMarkedTime || session.startTime || session.timestamp);
             setIsWorkoutActive(true);
             // Redireciona para a aba de treino
             setActiveTab(AppTab.WORKOUT);
@@ -62,6 +65,7 @@ export const useWorkoutPersistence = () => {
         workoutId: selectedWorkout.id,
         progress: currentSessionProgress,
         startTime: workoutStartTime,
+        lastMarkedTime: lastMarkedTime || workoutStartTime || Date.now(),
         timestamp: Date.now()
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
