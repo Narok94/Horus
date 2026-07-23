@@ -152,8 +152,10 @@ export const useStore = create<AppState>((set, get) => {
   syncStatus: 'synced',
   allWorkouts: (() => {
     const saved = localStorage.getItem('tatugym_all_workouts');
+    const cleanHenrique = henriqueWorkouts.filter(w => w.id !== 'h-f');
     let loadedWorkouts: Record<string, WorkoutRoutine[]> = {
-      henrique: henriqueWorkouts,
+      henrique: cleanHenrique,
+      teste1: cleanHenrique,
       teste3: [],
       jessica: jessicaWorkouts
     };
@@ -165,8 +167,13 @@ export const useStore = create<AppState>((set, get) => {
         console.error('Error loading workouts:', e);
       }
     }
+    // Clean out any 'h-f' or deleted routines from all keys
+    Object.keys(loadedWorkouts).forEach(key => {
+      loadedWorkouts[key] = (loadedWorkouts[key] || []).filter(w => w.id !== 'h-f');
+    });
     // Forçar os treinos corretos para atualizar a versão salva em cache do navegador
-    loadedWorkouts.henrique = henriqueWorkouts;
+    loadedWorkouts.henrique = cleanHenrique;
+    loadedWorkouts.teste1 = cleanHenrique;
     loadedWorkouts.jessica = jessicaWorkouts;
     loadedWorkouts.teste3 = [];
     if (typeof localStorage !== 'undefined') {
@@ -193,8 +200,12 @@ export const useStore = create<AppState>((set, get) => {
   setSelectedWorkout: (selectedWorkout) => set({ selectedWorkout }),
   setSelectedStudent: (selectedStudent) => set({ selectedStudent }),
   setAllWorkouts: (allWorkouts) => {
-    set({ allWorkouts });
-    localStorage.setItem('tatugym_all_workouts', JSON.stringify(allWorkouts));
+    const filtered: Record<string, WorkoutRoutine[]> = {};
+    Object.keys(allWorkouts).forEach(k => {
+      filtered[k] = (allWorkouts[k] || []).filter(w => w.id !== 'h-f');
+    });
+    set({ allWorkouts: filtered });
+    localStorage.setItem('tatugym_all_workouts', JSON.stringify(filtered));
   },
   setCurrentSessionProgress: (currentSessionProgress) => set({ currentSessionProgress }),
   setCurrentCardioProgress: (currentCardioProgress) => set({ currentCardioProgress }),

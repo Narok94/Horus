@@ -38,7 +38,8 @@ export const WorkoutsListView: React.FC = () => {
   if (!user) return null;
 
   const isTeste1 = true;
-  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || [];
+  const rawWorkouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || allWorkouts['henrique'] || [];
+  const workouts = rawWorkouts.filter(w => w.id !== 'h-f');
 
   const handleVibrate = (ms = 10) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {

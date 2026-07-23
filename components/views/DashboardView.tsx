@@ -277,7 +277,8 @@ export const DashboardView: React.FC = () => {
   const henriquePointsData = getStudentJulyPoints('teste1', user);
   const jessicaPointsData = getStudentJulyPoints('jessica', user);
 
-  const workouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || [];
+  const rawWorkouts = allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || allWorkouts['henrique'] || [];
+  const workouts = rawWorkouts.filter(w => w.id !== 'h-f');
   
   // Find index of the most recently finished workout in the user's history
   const lastCompleted = user.history && user.history.length > 0 ? user.history[0] : null;
