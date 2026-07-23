@@ -365,12 +365,7 @@ export const DashboardView: React.FC = () => {
                 handleVibrate(30);
                 syncUserProfile(user.username);
               }}
-              title={
-                syncStatus === 'syncing' ? 'Sincronizando com a nuvem...' :
-                syncStatus === 'synced' ? 'Sincronizado! Clique para sincronizar novamente.' :
-                syncStatus === 'error' ? 'Erro na sincronização. Clique para tentar novamente.' :
-                'Banco de dados offline. Clique para tentar conectar.'
-              }
+              title="Sincronizar"
               className={`p-2 border transition-all rounded-xl cursor-pointer flex items-center justify-center relative shadow-[0_1px_2px_rgba(0,0,0,0.01)] ${
                 syncStatus === 'syncing' 
                   ? 'bg-blue-50 border-blue-200 text-blue-500 hover:bg-blue-100' 

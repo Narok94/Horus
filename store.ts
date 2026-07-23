@@ -426,7 +426,6 @@ export const useStore = create<AppState>((set, get) => {
           const mergedProfile = resData.data;
           set({ user: mergedProfile, syncStatus: 'synced' });
           localStorage.setItem(`tatugym_user_profile_${lowerUser}`, JSON.stringify(mergedProfile));
-          get().addToast?.('Sincronizado com sucesso!', 'success');
           return mergedProfile;
         }
       }
