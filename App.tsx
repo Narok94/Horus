@@ -26,7 +26,7 @@ import { AppTab, User } from './types';
 import { ToastProvider, useToast } from './components/ui/Toast';
 import { DashboardSkeleton } from './components/ui/Skeleton';
 import { db, auth, collection, getDocs, doc, setDoc, getDoc, onSnapshot, signInAnonymously } from './firebase';
-import { getUserByUsername, validateCredentials } from './data/users';
+import { getUserByUsername, validateCredentials, jessicaDietPlan } from './data/users';
 
 // Views
 import { DashboardView } from './components/views/DashboardView';
@@ -168,7 +168,11 @@ const AppContent: React.FC = () => {
     const profile = localStorage.getItem(`tatugym_user_profile_${lowerUser}`);
     if (profile) {
       try {
-        return JSON.parse(profile);
+        const parsed = JSON.parse(profile);
+        if (lowerUser === 'jessica' || parsed.name?.toLowerCase().includes('jessica')) {
+          parsed.dietPlan = jessicaDietPlan;
+        }
+        return parsed;
       } catch (e) {
         console.error('[resolveUser] Erro ao ler perfil salvo:', e);
       }

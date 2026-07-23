@@ -123,14 +123,25 @@ export const jessicaDiet: DietPlan = {
     time: '07:30',
     name: 'Café da manhã',
     items: [
-      'Iogurte Batavo Tradicional (Grama: 150)',
+      'Leite de vaca desnatado (Mililitro: 100)',
       'Farelo de aveia (Grama: 20)',
-      'Semente de chia (Grama: 10)',
-      '100g de fruta',
+      'Cacau (Grama: 10)',
       'Whey Protein (Grama: 30)'
     ],
-    tips: [
-      'Overnight'
+    substitutions: [
+      {
+        name: 'Substituição 1 (Overnight)',
+        items: [
+          'Iogurte Batavo Tradicional (Grama: 150)',
+          'Farelo de aveia (Grama: 20)',
+          'Semente de chia (Grama: 10)',
+          '100g de fruta',
+          'Whey Protein (Grama: 30)'
+        ],
+        tips: [
+          'Overnight'
+        ]
+      }
     ]
   },
   {
@@ -172,7 +183,7 @@ export const jessicaDiet: DietPlan = {
     ],
     substitutions: [
       {
-        name: 'Substituição 1',
+        name: 'Substituição 1 (Crepioca)',
         items: [
           'Ovo de galinha (Unidade: 2)',
           'Tapioca de goma (colher de sopa (15g): 1)',
