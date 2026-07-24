@@ -269,7 +269,8 @@ export const WorkoutView: React.FC = () => {
       totalWorkouts: (user.totalWorkouts || 0) + 1,
       weights: newWeights,
       checkIns: newCheckIns,
-      streak: (user.streak || 0) + 1
+      streak: (user.streak || 0) + 1,
+      preferredWorkoutId: undefined
     });
 
     if (!isAutoFinish) {

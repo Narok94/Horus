@@ -14,7 +14,11 @@ import {
   History,
   Calendar,
   Clock,
-  Wind
+  Wind,
+  RotateCcw,
+  Trash2,
+  Dumbbell,
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -25,7 +29,7 @@ const getInitials = (name: string): string => {
 };
 
 export const ProfileView: React.FC = () => {
-  const { user, theme, updateUserProfile } = useStore();
+  const { user, theme, updateUserProfile, addToast, allWorkouts } = useStore();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
 
@@ -37,6 +41,83 @@ export const ProfileView: React.FC = () => {
       .map(v => v < 10 ? "0" + v : v)
       .filter((v, i) => v !== "00" || i > 0)
       .join(":");
+  };
+
+  // Workout adjustment helpers
+  const rawWorkouts = user ? (allWorkouts[user.username.toLowerCase() as keyof typeof allWorkouts] || allWorkouts['teste1'] || allWorkouts['henrique'] || []) : [];
+  const userWorkouts = rawWorkouts.filter(w => w.id !== 'h-f');
+
+  const lastCompleted = user?.history && user.history.length > 0 ? user.history[0] : null;
+  const lastWorkoutIndex = lastCompleted 
+    ? userWorkouts.findIndex(w => w.id === lastCompleted.workoutId || w.title.toLowerCase() === lastCompleted.workoutTitle.toLowerCase()) 
+    : -1;
+
+  let currentActiveDashboardWorkoutId = user?.preferredWorkoutId;
+  if (!currentActiveDashboardWorkoutId) {
+    const nextWorkoutIndex = lastWorkoutIndex > -1 ? (lastWorkoutIndex + 1) % userWorkouts.length : 0;
+    currentActiveDashboardWorkoutId = userWorkouts[nextWorkoutIndex]?.id || userWorkouts[0]?.id;
+  }
+
+  const handleUndoLastWorkout = () => {
+    if (!user || !user.history || user.history.length === 0) return;
+    handleVibrate(30);
+
+    const lastWorkout = user.history[0];
+    const newHistory = user.history.slice(1);
+    const newTotal = Math.max(0, (user.totalWorkouts || 1) - 1);
+
+    updateUserProfile({
+      history: newHistory,
+      totalWorkouts: newTotal,
+      preferredWorkoutId: undefined
+    });
+
+    if (addToast) {
+      addToast(`Último treino ("${lastWorkout.workoutTitle}") desfeito! O Dashboard foi atualizado.`, 'success');
+    }
+  };
+
+  const handleSelectNextWorkout = (workoutId: string, workoutTitle: string) => {
+    if (!user) return;
+    handleVibrate(20);
+
+    updateUserProfile({
+      preferredWorkoutId: workoutId
+    });
+
+    if (addToast) {
+      addToast(`Treino "${workoutTitle}" definido como ativo no Dashboard!`, 'success');
+    }
+  };
+
+  const handleResetPreferredWorkout = () => {
+    if (!user) return;
+    handleVibrate(15);
+
+    updateUserProfile({
+      preferredWorkoutId: undefined
+    });
+
+    if (addToast) {
+      addToast('Sequência do Dashboard restaurada para rotação automática.', 'info');
+    }
+  };
+
+  const handleRemoveHistoryEntry = (entryId: string, title: string) => {
+    if (!user) return;
+    handleVibrate(20);
+
+    const newHistory = user.history.filter(h => h.id !== entryId);
+    const newTotal = Math.max(0, (user.totalWorkouts || 1) - 1);
+
+    updateUserProfile({
+      history: newHistory,
+      totalWorkouts: newTotal
+    });
+
+    if (addToast) {
+      addToast(`Registro de "${title}" removido do histórico.`, 'info');
+    }
   };
 
   // Form states
@@ -417,6 +498,108 @@ export const ProfileView: React.FC = () => {
           </div>
         </div>
 
+        {/* AJUSTAR TREINO NO DASHBOARD / VOLTAR TREINO */}
+        <div className={`p-4 rounded-2xl border space-y-3.5 shadow-md text-left ${
+          isTeste1 
+            ? 'bg-gradient-to-br from-[#2563EB] to-[#122C60] border-white/10 text-white shadow-lg' 
+            : 'bg-[#080808] border-white/5 text-white'
+        }`}>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className={`p-2 rounded-xl border shrink-0 ${isTeste1 ? 'bg-white/15 border-white/10 text-white' : 'bg-zinc-900 border-white/5 text-accent'}`}>
+                <RotateCcw size={15} />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-xs font-black uppercase text-white tracking-tight leading-none">
+                  Ajustar Treino no Dashboard
+                </h3>
+                <p className={`text-[8.5px] font-mono mt-0.5 truncate ${isTeste1 ? 'text-white/70' : 'text-zinc-400'}`}>
+                  Finalizou sem querer ou deseja voltar o treino?
+                </p>
+              </div>
+            </div>
+
+            {user.preferredWorkoutId && (
+              <button
+                onClick={handleResetPreferredWorkout}
+                className="text-[8px] font-mono font-bold uppercase px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Voltar para rotação automática"
+              >
+                <RefreshCw size={9} /> Rotação Auto
+              </button>
+            )}
+          </div>
+
+          {/* Quick Undo Last Workout */}
+          {user.history && user.history.length > 0 && (
+            <div className={`p-3 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 ${
+              isTeste1 ? 'bg-white/10 border-white/10' : 'bg-zinc-900/80 border-white/5'
+            }`}>
+              <div className="min-w-0">
+                <span className="text-[7.5px] font-mono uppercase tracking-wider text-amber-400 font-extrabold block">
+                  Último Treino Registrado
+                </span>
+                <p className="text-[11px] font-extrabold uppercase text-white truncate mt-0.5">
+                  {user.history[0].workoutTitle}
+                </p>
+                <span className={`text-[8px] font-mono block ${isTeste1 ? 'text-white/70' : 'text-zinc-400'}`}>
+                  Concluído em {new Date(user.history[0].date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+
+              <button
+                onClick={handleUndoLastWorkout}
+                className="w-full sm:w-auto px-3 py-2 bg-amber-500/20 hover:bg-amber-500/30 active:bg-amber-500/40 border border-amber-500/40 text-amber-300 hover:text-amber-200 rounded-xl text-[10px] font-extrabold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+              >
+                <RotateCcw size={12} /> Desfazer Este Treino
+              </button>
+            </div>
+          )}
+
+          {/* Select Specific Active Workout */}
+          <div className="space-y-1.5 pt-1">
+            <span className={`text-[7.5px] font-mono font-extrabold uppercase tracking-widest block ${isTeste1 ? 'text-white/70' : 'text-zinc-400'}`}>
+              Definir qual treino deve aparecer agora no Dashboard:
+            </span>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {userWorkouts.map((w) => {
+                const isActive = currentActiveDashboardWorkoutId === w.id || (user.preferredWorkoutId === w.id);
+
+                return (
+                  <button
+                    key={w.id}
+                    onClick={() => handleSelectNextWorkout(w.id, w.title)}
+                    className={`p-2.5 rounded-xl border text-left transition-all duration-200 relative flex flex-col justify-between min-h-[58px] cursor-pointer ${
+                      isActive
+                        ? 'bg-emerald-500/20 border-emerald-500 text-white shadow-md ring-1 ring-emerald-500/50'
+                        : (isTeste1 ? 'bg-white/10 hover:bg-white/15 border-white/10 text-white/90' : 'bg-zinc-900/60 hover:bg-zinc-900 border-white/5 text-zinc-300')
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-1 w-full">
+                      <span className="text-[10px] font-black uppercase tracking-tight leading-tight line-clamp-2">
+                        {w.title}
+                      </span>
+                      {isActive && (
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0 mt-0.5" />
+                      )}
+                    </div>
+
+                    <div className="mt-1 flex items-center justify-between w-full">
+                      <span className={`text-[7.5px] font-mono uppercase tracking-wider ${
+                        isActive ? 'text-emerald-300 font-extrabold' : (isTeste1 ? 'text-white/60' : 'text-zinc-500')
+                      }`}>
+                        {isActive ? 'Ativo no Dashboard' : 'Definir Ativo'}
+                      </span>
+                      <Dumbbell size={10} className={isActive ? 'text-emerald-300' : 'opacity-40'} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {/* MEUS TREINOS (History View Ported) */}
         <div className="space-y-3 mt-4 text-left">
           <span className={`text-[7.5px] font-extrabold tracking-[0.2em] uppercase font-mono block px-0.5 ${isTeste1 ? 'text-zinc-500 font-bold' : 'text-zinc-500'}`}>
@@ -462,23 +645,33 @@ export const ProfileView: React.FC = () => {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col items-end gap-1 shrink-0 text-right leading-none">
-                        <span 
-                          className={`border px-2 py-0.5 rounded text-[7.5px] font-black uppercase tracking-wider font-mono leading-none ${isTeste1 ? 'bg-white/15 border-white/10 text-white' : ''}`}
-                          style={isTeste1 ? undefined : { 
-                            color: accentColor, 
-                            borderColor: `${accentColor}25`, 
-                            backgroundColor: `${accentColor}08` 
-                          }}
+                      <div className="flex items-center gap-2">
+                        <div className="flex flex-col items-end gap-1 shrink-0 text-right leading-none">
+                          <span 
+                            className={`border px-2 py-0.5 rounded text-[7.5px] font-black uppercase tracking-wider font-mono leading-none ${isTeste1 ? 'bg-white/15 border-white/10 text-white' : ''}`}
+                            style={isTeste1 ? undefined : { 
+                              color: accentColor, 
+                              borderColor: `${accentColor}25`, 
+                              backgroundColor: `${accentColor}08` 
+                            }}
+                          >
+                            CONCLUÍDO
+                          </span>
+                          {entry.duration && (
+                            <div className={`flex items-center gap-0.5 text-[8px] font-mono font-extrabold uppercase leading-none mt-1 ${isTeste1 ? 'text-white/90' : 'text-zinc-400'}`}>
+                              <Clock size={8.5} className={isTeste1 ? 'text-white/60' : 'text-zinc-500'} />
+                              <span>{formatTime(entry.duration)}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handleRemoveHistoryEntry(entry.id, entry.workoutTitle)}
+                          className={`p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20 cursor-pointer ml-1`}
+                          title="Excluir este registro do histórico"
                         >
-                          CONCLUÍDO
-                        </span>
-                        {entry.duration && (
-                          <div className={`flex items-center gap-0.5 text-[8px] font-mono font-extrabold uppercase leading-none mt-1 ${isTeste1 ? 'text-white/90' : 'text-zinc-400'}`}>
-                            <Clock size={8.5} className={isTeste1 ? 'text-white/60' : 'text-zinc-500'} />
-                            <span>{formatTime(entry.duration)}</span>
-                          </div>
-                        )}
+                          <Trash2 size={13} />
+                        </button>
                       </div>
                     </div>
 

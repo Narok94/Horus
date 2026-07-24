@@ -157,6 +157,7 @@ export interface User {
   completedMeals?: Record<string, string[]>; // YYYY-MM-DD -> list of meal times or meal names
   dietPlan?: DietPlan;
   challenge90?: Challenge90;
+  preferredWorkoutId?: string;
 }
 
 export interface Badge {

@@ -286,9 +286,21 @@ export const DashboardView: React.FC = () => {
     ? workouts.findIndex(w => w.id === lastCompleted.workoutId || w.title.toLowerCase() === lastCompleted.workoutTitle.toLowerCase()) 
     : -1;
   
+  // Check if user set a manual preferred workout in settings
+  let nextWorkout: any = null;
+  if (user.preferredWorkoutId) {
+    const prefId = user.preferredWorkoutId;
+    const pref = workouts.find(w => w.id === prefId || w.title.toLowerCase().includes(prefId.toLowerCase()));
+    if (pref) {
+      nextWorkout = pref;
+    }
+  }
+
   // The next recommended workout is the next one in the array sequence. If last was -1, it starts from workouts[0].
-  const nextWorkoutIndex = lastWorkoutIndex > -1 ? (lastWorkoutIndex + 1) % workouts.length : 0;
-  const nextWorkout = workouts[nextWorkoutIndex] || workouts[0] || null;
+  if (!nextWorkout) {
+    const nextWorkoutIndex = lastWorkoutIndex > -1 ? (lastWorkoutIndex + 1) % workouts.length : 0;
+    nextWorkout = workouts[nextWorkoutIndex] || workouts[0] || null;
+  }
 
   const startActiveWorkout = () => {
     handleVibrate(40);
@@ -907,7 +919,7 @@ export const DashboardView: React.FC = () => {
                  {/* Vertical Exercise List (Scrollable to prevent screen overflow) */}
                 {nextWorkout.exercises && nextWorkout.exercises.length > 0 && (
                   <div className="flex flex-col gap-1.5 py-1.5 select-none leading-none max-h-[140px] overflow-y-auto no-scrollbar pr-0.5 w-full">
-                    {nextWorkout.exercises.map((ex, index) => (
+                    {nextWorkout.exercises.map((ex: any, index: number) => (
                       <div 
                         key={ex.id || index}
                         className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg ${
