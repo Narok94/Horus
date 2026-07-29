@@ -224,6 +224,29 @@ export const henriqueDefault: User = {
         observacao: 'Avaliação inicial oficial'
       }
     ]
+  },
+  operacao9Data: {
+    dataInicio: '2026-07-20',
+    dataFim: '2026-10-18',
+    pesoInicial: 68.9,
+    gorduraInicial: 13.61,
+    cinturaInicial: 84.0,
+    abdomenInicial: 85.0,
+    metaGordura: 9.0,
+    checkIns: [
+      {
+        id: 'chk-w1',
+        semana: 1,
+        data: '2026-07-20',
+        peso: 68.9,
+        cintura: 84.0,
+        abdomen: 85.0,
+        treinosConcluidos: 5,
+        gorduraCorporal: 13.61,
+        fotoProgresso: true,
+        observacoes: 'Início oficial da Operação 9%. Avaliação pela nutricionista. Aposta valendo com a esposa!'
+      }
+    ]
   }
 };
 

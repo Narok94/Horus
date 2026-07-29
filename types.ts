@@ -133,6 +133,30 @@ export interface Challenge90 {
   measurements: BodyMeasurement[];
 }
 
+export interface Operacao9CheckIn {
+  id: string;
+  semana: number;
+  data: string;
+  peso: number;
+  cintura: number;
+  abdomen: number;
+  treinosConcluidos: number;
+  gorduraCorporal?: number;
+  fotoProgresso: boolean;
+  observacoes?: string;
+}
+
+export interface Operacao9State {
+  dataInicio: string; // 2026-07-20
+  dataFim: string; // 2026-10-18
+  pesoInicial: number; // 68.9
+  gorduraInicial: number; // 13.61
+  cinturaInicial: number; // 84
+  abdomenInicial: number; // 85
+  metaGordura: number; // 9.0
+  checkIns: Operacao9CheckIn[];
+}
+
 export interface User {
   username: string;
   password?: string;
@@ -158,6 +182,7 @@ export interface User {
   dietPlan?: DietPlan;
   challenge90?: Challenge90;
   preferredWorkoutId?: string;
+  operacao9Data?: Operacao9State;
 }
 
 export interface Badge {
