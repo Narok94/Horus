@@ -8,7 +8,6 @@ import {
 import { useStore } from '../../store';
 import { AppTab, DailyCheck, BodyMeasurement } from '../../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Operacao9View } from './Operacao9View';
 
 const HABITS: { key: keyof DailyCheck; label: string; icon: any; manual: boolean }[] = [
   { key: 'treino', label: 'Treino', icon: Dumbbell, manual: true },
@@ -21,13 +20,6 @@ const HABITS: { key: keyof DailyCheck; label: string; icon: any; manual: boolean
 
 export const DesafioView: React.FC = () => {
   const { user, theme, setActiveTab, toggleDailyHabit, addMeasurement } = useStore();
-
-  const usernameLower = user?.username?.toLowerCase() || '';
-  const isHenrique = usernameLower === 'henrique' || usernameLower === 'teste1' || usernameLower.includes('henrique');
-
-  if (isHenrique) {
-    return <Operacao9View />;
-  }
 
   const [activeSubTab, setActiveSubTab] = useState<'hoje' | 'progresso' | 'historico' | 'comparativo'>('hoje');
   const [expandedDate, setExpandedDate] = useState<string | null>(null);

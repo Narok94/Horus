@@ -413,8 +413,14 @@ const AppContent: React.FC = () => {
     );
   }
 
+  const isLightUser = isLoggedIn && user?.role !== 'teacher';
+  const isHenrique = user?.username?.toLowerCase() === 'henrique' || user?.username?.toLowerCase() === 'teste1' || user?.username?.toLowerCase()?.includes('henrique');
+
   const renderView = () => {
     if (selectedWorkout) return <WorkoutView />;
+    if (activeTab === AppTab.DESAFIO && isHenrique) {
+      return <DashboardView />;
+    }
     switch (activeTab) {
       case AppTab.DASHBOARD: return <DashboardView />;
       case AppTab.WORKOUT: return <WorkoutsListView />;
@@ -427,7 +433,6 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const isLightUser = isLoggedIn && user?.role !== 'teacher';
   const strokeColor = isLightUser ? "rgba(0, 0, 0, 0.015)" : "rgba(255, 255, 255, 0.02)";
   const circleFill = isLightUser ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.06)";
   const circleFillStrong = isLightUser ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
@@ -480,7 +485,7 @@ const AppContent: React.FC = () => {
               ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
               { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
               { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
-              { id: AppTab.DESAFIO, icon: Target, label: 'Desafio' },
+              ...(!isHenrique ? [{ id: AppTab.DESAFIO, icon: Target, label: 'Desafio' }] : []),
               { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
               { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
             ].map((item) => {
