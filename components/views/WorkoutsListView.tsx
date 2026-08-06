@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { Play, Dumbbell, Activity, Flame, Zap, Target, Star } from 'lucide-react';
+import { Play, Dumbbell, Activity, Flame, Zap, Target, Star, CheckCircle2 } from 'lucide-react';
 import { useStore } from '../../store';
 import { AppTab, WorkoutRoutine } from '../../types';
 
@@ -33,7 +32,7 @@ const workoutThemes = [
 ];
 
 export const WorkoutsListView: React.FC = () => {
-  const { user, allWorkouts, setSelectedWorkout, setActiveTab, isWorkoutActive, selectedWorkout: currentSelected, addToast } = useStore();
+  const { user, allWorkouts, setSelectedWorkout, setActiveTab, isWorkoutActive, selectedWorkout: currentSelected, addToast, updateUserProfile, triggerConfetti } = useStore();
 
   if (!user) return null;
 
@@ -56,6 +55,64 @@ export const WorkoutsListView: React.FC = () => {
     }
     setSelectedWorkout(workout);
     setActiveTab(AppTab.WORKOUT);
+  };
+
+  const handleQuickCompleteWorkout = (workout: WorkoutRoutine) => {
+    handleVibrate(25);
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const today = now.toISOString().split('T')[0];
+
+    const newWeights: Record<string, number> = { ...(user.weights || {}) };
+
+    const completedExercises = workout.exercises.map(ex => {
+      const sizeSets = ex.reps.includes('+') ? ex.sets * 2 : ex.sets;
+      const baseWeight = user.weights?.[ex.id] || 0;
+      const defaultReps = parseInt(ex.reps.split(/[-/]/)[0]) || 10;
+
+      const performance = Array.from({ length: sizeSets }, () => ({
+        weight: baseWeight,
+        reps: defaultReps,
+        completed: true
+      }));
+
+      if (baseWeight > 0) {
+        newWeights[ex.id] = baseWeight;
+      }
+
+      return {
+        exerciseId: ex.id,
+        name: ex.name,
+        performance
+      };
+    });
+
+    const historyEntry = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      workoutId: workout.id,
+      workoutTitle: workout.title,
+      duration: 2700,
+      exercises: completedExercises
+    };
+
+    const newCheckIns = user.checkIns.includes(today) ? user.checkIns : [...user.checkIns, today];
+
+    updateUserProfile({
+      history: [historyEntry, ...user.history],
+      totalWorkouts: (user.totalWorkouts || 0) + 1,
+      weights: newWeights,
+      checkIns: newCheckIns,
+      streak: (user.streak || 0) + 1
+    });
+
+    if (triggerConfetti) {
+      triggerConfetti();
+    }
+
+    if (addToast) {
+      addToast(`Treino "${workout.title}" concluído! Todas as séries marcadas! 🎉`, 'success');
+    }
   };
 
   const getWorkoutFocus = (workout: WorkoutRoutine) => {
@@ -108,11 +165,8 @@ export const WorkoutsListView: React.FC = () => {
           const ThemeIcon = themeInfo.icon;
 
           return (
-            <motion.div
+            <div
               key={workout.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
               onClick={() => startWorkout(workout)}
               style={{ borderLeftColor: themeInfo.color }}
               className={`group relative rounded-2xl p-4.5 border-l-4 transition-all duration-300 cursor-pointer flex items-center justify-between gap-4 active:scale-[0.99] border ${
@@ -148,25 +202,41 @@ export const WorkoutsListView: React.FC = () => {
                 </p>
               </div>
 
-              {/* Right Zone: Clean, floating Action Icon */}
-              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-300 shrink-0 select-none ${
-                isTeste1 
-                  ? 'bg-white border-transparent text-[#2563EB] shadow-md group-hover:scale-105' 
-                  : 'bg-zinc-900/50 border-white/5 text-zinc-400 group-hover:border-accent/20 group-hover:bg-accent/5 group-hover:text-accent'
-              }`}>
-                <Play size={11} className="fill-current group-hover:scale-110 ml-0.5 transition-all duration-300" />
+              {/* Right Zone: Clean, floating Action Icons */}
+              <div className="flex items-center gap-2 shrink-0 select-none">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleQuickCompleteWorkout(workout);
+                  }}
+                  className={`px-3 py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm ${
+                    isTeste1
+                      ? 'bg-white/15 text-white border border-white/20 hover:bg-white/25 active:scale-95'
+                      : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 active:scale-95'
+                  }`}
+                  title="Marcar treino como 100% concluído"
+                >
+                  <CheckCircle2 size={13} className="text-emerald-400" />
+                  <span>Concluir Tudo</span>
+                </button>
+
+                <div className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-300 ${
+                  isTeste1 
+                    ? 'bg-white border-transparent text-[#2563EB] shadow-md group-hover:scale-105' 
+                    : 'bg-zinc-900/50 border-white/5 text-zinc-400 group-hover:border-accent/20 group-hover:bg-accent/5 group-hover:text-accent'
+                }`}>
+                  <Play size={11} className="fill-current group-hover:scale-110 ml-0.5 transition-all duration-300" />
+                </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Jessica Specific Periodization Info Card */}
       {user.username.toLowerCase() === 'jessica' && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <div
           className={`mt-4 p-4 rounded-2xl border ${
             isTeste1
               ? 'bg-gradient-to-br from-[#1E293B] to-[#0F172A] border-white/10 text-white'
@@ -217,7 +287,7 @@ export const WorkoutsListView: React.FC = () => {
               <strong>Semana de Deload:</strong> Reduza as séries e a carga na Semana 4 para regenerar as articulações e prevenir o acúmulo de fadiga.
             </p>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* SUBTLE FOOTER METADATA (Instead of a heavy glowing motivational box) */}

@@ -663,6 +663,35 @@ export const WorkoutView: React.FC = () => {
     return `SÉRIE FINAL`;
   };
 
+  const handleCompleteExerciseSets = (ex: Exercise) => {
+    handleVibrate(20);
+    if (!isWorkoutActive) {
+      startWorkout();
+    }
+    const perf = getExercisePerformance(ex);
+    const allCompletedPerf = perf.map(p => ({ ...p, completed: true }));
+
+    setCurrentSessionProgress({
+      ...currentSessionProgress,
+      [ex.id]: allCompletedPerf
+    });
+
+    triggerLocalConfetti();
+
+    if (activeModalExercise && activeModalExercise.id === ex.id) {
+      setExerciseCompletedSuccess(true);
+      setModalRestTimeLeft(null);
+      setTimeout(() => {
+        setExerciseCompletedSuccess(false);
+        setActiveModalExercise(null);
+      }, 1500);
+    }
+
+    if (addToast) {
+      addToast(`Exercício concluído! Todas as séries de "${ex.name}" marcadas! 🚀`, "success");
+    }
+  };
+
   const openExerciseModal = (ex: Exercise) => {
     setActiveModalExercise(ex);
     setShowExerciseInfo(false);
@@ -870,7 +899,7 @@ export const WorkoutView: React.FC = () => {
   }, 0);
 
   return (
-    <div className={`w-full min-h-screen pt-12 sm:pt-6 flex flex-col justify-start pb-32 max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none duration-300 ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
+    <div className={`w-full min-h-screen pt-12 sm:pt-6 flex flex-col justify-start pb-32 max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-1 bg-transparent select-none ${isTeste1 ? 'text-zinc-950 font-black' : 'text-white'}`}>
       {/* Upper Navigation Header */}
       <header className={`flex items-center justify-between py-1.5 border-b ${isTeste1 ? 'border-zinc-200' : 'border-white/5'} shrink-0`}>
         <div className="flex items-center gap-2 min-w-0">
@@ -955,9 +984,11 @@ export const WorkoutView: React.FC = () => {
 
       {/* Filter Header separator matching attachment 1 */}
       <div className="flex-1 mt-4">
-        <h3 className={`text-[9px] font-black uppercase tracking-[0.2em] px-1 mb-2 ${isTeste1 ? 'text-zinc-500' : 'text-white/50'}`}>
-          EXERCÍCIOS DO TREINO
-        </h3>
+        <div className="flex items-center justify-between px-1 mb-2">
+          <h3 className={`text-[9px] font-black uppercase tracking-[0.2em] ${isTeste1 ? 'text-zinc-500' : 'text-white/50'}`}>
+            EXERCÍCIOS DO TREINO
+          </h3>
+        </div>
 
         {/* Exercises list - Renders continuously with page scroll */}
         <div className="space-y-3.5 py-1">
@@ -981,10 +1012,7 @@ export const WorkoutView: React.FC = () => {
 
             return (
               <div key={ex.id} className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.03 }}
+                <div
                   onClick={handleCardClick}
                   className={`group relative overflow-hidden rounded-xl border p-3 active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-between gap-3 shadow-md ${
                     isTeste1 
@@ -1070,7 +1098,7 @@ export const WorkoutView: React.FC = () => {
                       <Plus size={14} strokeWidth={3} />
                     </button>
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Inline Expanded View Drawer for Desktop */}
                 <AnimatePresence>
@@ -1099,6 +1127,21 @@ export const WorkoutView: React.FC = () => {
                             />
                           </div>
                           <span className={`text-[7px] uppercase tracking-widest font-mono font-black mt-2 ${isTeste1 ? 'text-zinc-500' : 'text-zinc-500'}`}>GIF Demonstrativo Oficial</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCompleteExerciseSets(ex);
+                            }}
+                            className={`mt-3 w-full max-w-[200px] py-2 px-3 rounded-xl font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 ${
+                              isTeste1
+                                ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20'
+                                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                            }`}
+                          >
+                            <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
+                            <span>Concluir Tudo</span>
+                          </button>
                         </div>
 
                         {/* Educational Information Checklist */}
@@ -1414,6 +1457,20 @@ export const WorkoutView: React.FC = () => {
                     />
                     <span className="absolute bottom-1.5 px-2 py-0.5 rounded bg-black/60 border border-white/5 font-mono text-[6px] font-bold text-zinc-400 uppercase tracking-widest leading-none">DEMONSTRAÇÃO DE EXECUÇÃO</span>
                   </div>
+
+                  {/* Quick complete button for all sets of this exercise */}
+                  <button
+                    type="button"
+                    onClick={() => handleCompleteExerciseSets(activeModalExercise)}
+                    className={`w-full py-3 px-4 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 ${
+                      isTeste1
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                    }`}
+                  >
+                    <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                    <span>Concluir Todas as Séries Deste Exercício</span>
+                  </button>
 
                   {/* Standard Coaching Directives */}
                   <AnimatePresence>
