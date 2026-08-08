@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Calendar, 
   Dumbbell, 
@@ -65,7 +65,7 @@ export const DEFAULT_TASKS: Task[] = [
     title: 'Treino de força',
     time: '11:30',
     category: 'Academia',
-    repeatDays: 'Todos os dias',
+    repeatDays: 'Segunda a Sexta',
     completed: false,
     priority: true,
     icon: 'Dumbbell',
@@ -146,18 +146,8 @@ export const AgendaView: React.FC = () => {
   }, [user?.tasks]);
 
   useEffect(() => {
-    if (user?.tasks && user.tasks.length > 0) {
-      let changed = false;
-      const updated = user.tasks.map(t => {
-        if (t.id === 'task-4' && t.repeatDays !== 'Todos os dias') {
-          changed = true;
-          return { ...t, repeatDays: 'Todos os dias' };
-        }
-        return t;
-      });
-      if (changed) {
-        updateUserProfile({ tasks: updated });
-      }
+    if (!user?.tasks || user.tasks.length === 0 || !user.tasks.some(t => t.id === 'task-1')) {
+      updateUserProfile({ tasks: DEFAULT_TASKS });
     }
   }, [user?.tasks, updateUserProfile]);
 
@@ -237,21 +227,18 @@ export const AgendaView: React.FC = () => {
 
   const isTaskForDate = (task: Task, targetDate: Date) => {
     const targetISO = targetDate.toISOString().split('T')[0];
-    if (task.date && task.date === targetISO) {
-      return true;
-    }
-
     const dayIndex = targetDate.getDay(); // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
-    const rep = (task.repeatDays || 'Todos os dias').toLowerCase();
+    const rep = (task.repeatDays || 'Segunda a Sexta').toLowerCase();
 
-    if (rep.includes('todos os dias') || rep.includes('diariamente')) return true;
-    if (rep.includes('única') || rep.includes('unica')) {
-      return task.date ? task.date === targetISO : true;
-    }
     if (rep.includes('segunda a sexta') || rep.includes('seg a sex')) {
       return dayIndex >= 1 && dayIndex <= 5;
     }
-    if (rep.includes('ter, qui, sáb') || rep.includes('ter, qui, sab') || rep.includes('ter/qui/sáb')) {
+    if (
+      rep.includes('ter, qui, sáb') || 
+      rep.includes('ter, qui, sab') || 
+      rep.includes('ter/qui/sáb') ||
+      (rep.includes('ter') && rep.includes('qui'))
+    ) {
       return dayIndex === 2 || dayIndex === 4 || dayIndex === 6;
     }
     if (rep.includes('seg, qua, sex') || rep.includes('seg/qua/sex')) {
@@ -259,6 +246,16 @@ export const AgendaView: React.FC = () => {
     }
     if (rep.includes('fins de semana') || rep.includes('fim de semana')) {
       return dayIndex === 0 || dayIndex === 6;
+    }
+    if (rep.includes('única') || rep.includes('unica')) {
+      return task.date ? task.date === targetISO : true;
+    }
+    if (rep.includes('todos os dias') || rep.includes('diariamente')) {
+      return true;
+    }
+
+    if (task.date && task.date === targetISO) {
+      return true;
     }
 
     return true;

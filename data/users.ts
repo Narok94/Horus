@@ -287,7 +287,7 @@ export const henriqueDefault: User = {
       title: 'Treino de força',
       time: '11:30',
       category: 'Academia',
-      repeatDays: 'Todos os dias',
+      repeatDays: 'Segunda a Sexta',
       completed: false,
       priority: true,
       icon: 'Dumbbell',
