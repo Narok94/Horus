@@ -77,75 +77,78 @@ export const jessicaWorkouts: WorkoutRoutine[] = [
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
     id: 'h-a',
-    title: 'TREINO A — Peito e Bíceps',
-    description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
+    title: 'TREINO A | PEITO + BÍCEPS',
+    description: 'Objetivo: Hipertrofia, Saúde',
     color: 'purple',
     exercises: [
-      { id: 'ha-1', name: 'Supino Reto (Barra)', muscleGroup: 'Peito', sets: 4, reps: '8-10', rest: 45, image: getExerciseGifUrl('Supino Reto') },
-      { id: 'ha-2', name: 'Supino Inclinado (Halteres)', muscleGroup: 'Peito', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Supino Inclinado') },
-      { id: 'ha-3', name: 'Supino Inclinado Máquina', muscleGroup: 'Peito', sets: 4, reps: '8', rest: 45, image: getExerciseGifUrl('Supino inclinado (máquina)') },
-      { id: 'ha-4', name: 'Crucifixo na Máquina', muscleGroup: 'Peito', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Peck Deck') },
-      { id: 'ha-5', name: 'Rosca Direta (Barra)', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Rosca Direta') },
-      { id: 'ha-6', name: 'Rosca Alternada (Halteres)', muscleGroup: 'Bíceps', sets: 3, reps: '12', rest: 45, notes: 'CADA BRAÇO', image: getExerciseGifUrl('Rosca Alternada') },
-      { id: 'ha-7', name: 'Rosca Martelo', muscleGroup: 'Bíceps', sets: 5, reps: '15', rest: 45, image: getExerciseGifUrl('Rosca martelo') }
+      { id: 'ha-1', name: 'Supino reto com barra', muscleGroup: 'Peito', sets: 3, reps: '6-10', rest: 45, image: getExerciseGifUrl('Supino Reto') },
+      { id: 'ha-2', name: 'Supino inclinado com halteres', muscleGroup: 'Peito', sets: 3, reps: '8-12', rest: 45, image: getExerciseGifUrl('Supino Inclinado') },
+      { id: 'ha-3', name: 'Supino inclinado na máquina', muscleGroup: 'Peito', sets: 2, reps: '10-12', rest: 45, image: getExerciseGifUrl('Supino inclinado (máquina)') },
+      { id: 'ha-4', name: 'Crucifixo na máquina', muscleGroup: 'Peito', sets: 2, reps: '12-15', rest: 45, image: getExerciseGifUrl('Peck Deck') },
+      { id: 'ha-5', name: 'Rosca direta com barra', muscleGroup: 'Bíceps', sets: 3, reps: '8-12', rest: 45, image: getExerciseGifUrl('Rosca Direta') },
+      { id: 'ha-6', name: 'Rosca alternada com halteres', muscleGroup: 'Bíceps', sets: 3, reps: '10-12', rest: 45, notes: 'cada braço', image: getExerciseGifUrl('Rosca Alternada') },
+      { id: 'ha-7', name: 'Rosca martelo', muscleGroup: 'Bíceps', sets: 2, reps: '10-15', rest: 45, image: getExerciseGifUrl('Rosca martelo') }
     ]
   },
   {
     id: 'h-b',
-    title: 'TREINO B — Quadríceps e Panturrilha',
-    description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
+    title: 'TREINO B | QUADRÍCEPS + PANTURRILHA + ABDÔMEN',
+    description: 'Objetivo: Hipertrofia, Saúde',
     color: 'emerald',
     exercises: [
-      { id: 'hb-1', name: 'Agachamento Livre', muscleGroup: 'Quadríceps', sets: 4, reps: '8-10', rest: 45, image: getExerciseGifUrl('Agachamento') },
-      { id: 'hb-2', name: 'Leg Press 45º', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Leg Press 45') },
-      { id: 'hb-3', name: 'Cadeira Extensora', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Cadeira Extensora') },
-      { id: 'hb-4', name: 'Afundo', muscleGroup: 'Quadríceps', sets: 3, reps: '10', rest: 45, notes: 'CADA PERNA', image: getExerciseGifUrl('Afundo') },
-      { id: 'hb-5', name: 'Panturrilha em Pé', muscleGroup: 'Panturrilha', sets: 3, reps: '15-20', rest: 45, image: getExerciseGifUrl('Panturrilha em Pé') },
-      { id: 'hb-6', name: 'Panturrilha Sentada', muscleGroup: 'Panturrilha', sets: 3, reps: '15-20', rest: 45, image: getExerciseGifUrl('Panturrilha Sentada') }
+      { id: 'hb-1', name: 'Agachamento livre', muscleGroup: 'Quadríceps', sets: 3, reps: '6-10', rest: 45, image: getExerciseGifUrl('Agachamento') },
+      { id: 'hb-2', name: 'Leg Press 45°', muscleGroup: 'Quadríceps', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Leg Press 45') },
+      { id: 'hb-3', name: 'Afundo', muscleGroup: 'Quadríceps', sets: 3, reps: '8-12', rest: 45, notes: 'cada perna', image: getExerciseGifUrl('Afundo') },
+      { id: 'hb-4', name: 'Cadeira extensora', muscleGroup: 'Quadríceps', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Cadeira Extensora') },
+      { id: 'hb-5', name: 'Panturrilha em pé', muscleGroup: 'Panturrilha', sets: 4, reps: '10-15', rest: 45, image: getExerciseGifUrl('Panturrilha em Pé') },
+      { id: 'hb-6', name: 'Panturrilha sentada', muscleGroup: 'Panturrilha', sets: 3, reps: '12-20', rest: 45, image: getExerciseGifUrl('Panturrilha Sentada') },
+      { id: 'hb-7', name: 'Elevação de pernas / abdominal infra', muscleGroup: 'Abdômen', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Abdominal') }
     ]
   },
   {
     id: 'h-c',
-    title: 'TREINO C — Costas e Tríceps',
-    description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
+    title: 'TREINO C | COSTAS + TRÍCEPS',
+    description: 'Objetivo: Hipertrofia, Saúde',
     color: 'orange',
     exercises: [
-      { id: 'hc-1', name: 'Puxada Alta (Pulley Frente)', muscleGroup: 'Costas', sets: 4, reps: '10-12', rest: 45, image: getExerciseGifUrl('Puxada frente') },
-      { id: 'hc-2', name: 'Remada Curvada (Barra)', muscleGroup: 'Costas', sets: 4, reps: '8-10', rest: 45, image: getExerciseGifUrl('Remada Curvada') },
-      { id: 'hc-3', name: 'Remada Sentada', muscleGroup: 'Costas', sets: 3, reps: '8-10', rest: 45, image: getExerciseGifUrl('Remada baixa') },
-      { id: 'hc-4', name: 'Remada Cavalinho', muscleGroup: 'Costas', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Remada Cavalinho') },
-      { id: 'hc-5', name: 'Tríceps Testa (Barra W)', muscleGroup: 'Tríceps', sets: 3, reps: '10-12', rest: 45, image: getExerciseGifUrl('Tríceps testa') },
-      { id: 'hc-6', name: 'Tríceps Francês', muscleGroup: 'Tríceps', sets: 4, reps: '10', rest: 45, image: getExerciseGifUrl('Tríceps Francês') },
-      { id: 'hc-7', name: 'Tríceps Pulley (Corda)', muscleGroup: 'Tríceps', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Tríceps Corda') }
+      { id: 'hc-1', name: 'Puxada alta na frente', muscleGroup: 'Costas', sets: 4, reps: '8-12', rest: 45, image: getExerciseGifUrl('Puxada frente') },
+      { id: 'hc-2', name: 'Puxada unilateral na polia', muscleGroup: 'Costas', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Puxada frente') },
+      { id: 'hc-3', name: 'Remada curvada', muscleGroup: 'Costas', sets: 3, reps: '6-10', rest: 45, image: getExerciseGifUrl('Remada Curvada') },
+      { id: 'hc-4', name: 'Remada cavalinho', muscleGroup: 'Costas', sets: 2, reps: '8-12', rest: 45, image: getExerciseGifUrl('Remada Cavalinho') },
+      { id: 'hc-5', name: 'Tríceps testa com barra W', muscleGroup: 'Tríceps', sets: 3, reps: '8-12', rest: 45, image: getExerciseGifUrl('Tríceps testa') },
+      { id: 'hc-6', name: 'Tríceps francês', muscleGroup: 'Tríceps', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Tríceps Francês') },
+      { id: 'hc-7', name: 'Tríceps pulley com corda', muscleGroup: 'Tríceps', sets: 2, reps: '12-15', rest: 45, image: getExerciseGifUrl('Tríceps Corda') }
     ]
   },
   {
     id: 'h-d',
-    title: 'TREINO D — Ombro, Panturrilha e Trapézio',
-    description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
+    title: 'TREINO D | OMBROS + TRAPÉZIO + ABDÔMEN',
+    description: 'Objetivo: Hipertrofia, Saúde',
     color: 'rose',
     exercises: [
-      { id: 'hd-1', name: 'Elevação Frontal (Haltere)', muscleGroup: 'Ombros', sets: 4, reps: '8-10', rest: 45, image: getExerciseGifUrl('Elevação Frontal') },
-      { id: 'hd-2', name: 'Desenvolvimento (Haltere)', muscleGroup: 'Ombros', sets: 4, reps: '12-15', rest: 45, image: getExerciseGifUrl('Desenvolvimento') },
-      { id: 'hd-3', name: 'Elevação Lateral (Haltere)', muscleGroup: 'Ombros', sets: 4, reps: '12-15', rest: 45, image: getExerciseGifUrl('Elevação lateral') },
-      { id: 'hd-4', name: 'Encolhimento de Ombros (Halteres)', muscleGroup: 'Trapézio', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Encolhimento (halteres)') },
-      { id: 'hd-5', name: 'Panturrilha em Pé', muscleGroup: 'Panturrilha', sets: 4, reps: '15-20', rest: 45, image: getExerciseGifUrl('Panturrilha em Pé') },
-      { id: 'hd-6', name: 'Abdominal Supra (Máquina)', muscleGroup: 'Abdômen', sets: 3, reps: '15-20', rest: 45, image: getExerciseGifUrl('Abdominal') },
-      { id: 'hd-7', name: 'Prancha Abdominal', muscleGroup: 'Abdômen', sets: 3, reps: '45-60s', rest: 45, image: getExerciseGifUrl('Prancha') }
+      { id: 'hd-1', name: 'Desenvolvimento com halteres', muscleGroup: 'Ombros', sets: 3, reps: '6-10', rest: 45, image: getExerciseGifUrl('Desenvolvimento') },
+      { id: 'hd-2', name: 'Elevação lateral', muscleGroup: 'Ombros', sets: 4, reps: '10-15', rest: 45, image: getExerciseGifUrl('Elevação lateral') },
+      { id: 'hd-3', name: 'Crucifixo inverso / Peck Deck inverso', muscleGroup: 'Ombros', sets: 3, reps: '12-15', rest: 45, image: getExerciseGifUrl('Peck Deck') },
+      { id: 'hd-4', name: 'Elevação lateral na polia', muscleGroup: 'Ombros', sets: 2, reps: '12-20', rest: 45, image: getExerciseGifUrl('Elevação lateral') },
+      { id: 'hd-5', name: 'Encolhimento com halteres', muscleGroup: 'Trapézio', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Encolhimento (halteres)') },
+      { id: 'hd-6', name: 'Abdominal na máquina', muscleGroup: 'Abdômen', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Abdominal') },
+      { id: 'hd-7', name: 'Prancha', muscleGroup: 'Abdômen', sets: 2, reps: '45-60s', rest: 45, image: getExerciseGifUrl('Prancha') }
     ]
   },
   {
     id: 'h-e',
-    title: 'TREINO E — Posterior de Perna, Glúteo e Cardio',
-    description: 'Objetivo: Hipertrofia, Saúde • 12 Semanas',
+    title: 'TREINO E | POSTERIOR + GLÚTEOS + PANTURRILHA + ABDÔMEN + CARDIO',
+    description: 'Objetivo: Hipertrofia, Saúde',
     color: 'blue',
     exercises: [
-      { id: 'he-1', name: 'Stiff (Barra ou Halter)', muscleGroup: 'Posterior', sets: 4, reps: '8-10', rest: 45, notes: 'Foco no alongamento do posterior', image: getExerciseGifUrl('Stiff') },
-      { id: 'he-2', name: 'Mesa Flexora', muscleGroup: 'Posterior', sets: 3, reps: '12-15', rest: 45, notes: 'Contrair bem o posterior', image: getExerciseGifUrl('Mesa Flexora') },
-      { id: 'he-3', name: 'Cadeira Flexora', muscleGroup: 'Posterior', sets: 4, reps: '10', rest: 45, image: getExerciseGifUrl('Cadeira Flexora') },
-      { id: 'he-4', name: 'Elevação Pélvica (Hip Thrust)', muscleGroup: 'Glúteo', sets: 3, reps: '10-12', rest: 45, notes: 'Foco na contração máxima do glúteo', image: getExerciseGifUrl('Hip Thrust - elevação pélvica') },
-      { id: 'he-5', name: 'Cadeira Abdutora', muscleGroup: 'Glúteo', sets: 3, reps: '15-20', rest: 45, notes: 'Para glúteo médio', image: getExerciseGifUrl('Cadeira Abdutora') },
-      { id: 'he-6', name: 'Cardio (Esteira/Bike)', muscleGroup: 'Cardio', sets: 1, reps: '20-30 min', rest: 0, notes: 'Intensidade moderada a alta', image: getExerciseGifUrl('Cardio') }
+      { id: 'he-1', name: 'Stiff', muscleGroup: 'Posterior', sets: 3, reps: '6-10', rest: 45, image: getExerciseGifUrl('Stiff') },
+      { id: 'he-2', name: 'Mesa flexora', muscleGroup: 'Posterior', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Mesa Flexora') },
+      { id: 'he-3', name: 'Cadeira flexora', muscleGroup: 'Posterior', sets: 2, reps: '10-15', rest: 45, image: getExerciseGifUrl('Cadeira Flexora') },
+      { id: 'he-4', name: 'Hip Thrust / Elevação pélvica', muscleGroup: 'Glúteo', sets: 3, reps: '8-12', rest: 45, image: getExerciseGifUrl('Hip Thrust - elevação pélvica') },
+      { id: 'he-5', name: 'Cadeira abdutora', muscleGroup: 'Glúteo', sets: 2, reps: '15-20', rest: 45, image: getExerciseGifUrl('Cadeira Abdutora') },
+      { id: 'he-6', name: 'Panturrilha em pé', muscleGroup: 'Panturrilha', sets: 3, reps: '12-20', rest: 45, image: getExerciseGifUrl('Panturrilha em Pé') },
+      { id: 'he-7', name: 'Crunch na polia', muscleGroup: 'Abdômen', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Abdominal') },
+      { id: 'he-8', name: 'Cardio: esteira ou bike', muscleGroup: 'Cardio', sets: 1, reps: '20-30 min', rest: 0, image: getExerciseGifUrl('Cardio') }
     ]
   }
 ];
