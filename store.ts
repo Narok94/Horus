@@ -134,7 +134,7 @@ export const useStore = create<AppState>((set, get) => {
   return {
   user: null,
   isLoggedIn: false,
-  activeTab: AppTab.DASHBOARD,
+  activeTab: AppTab.AGENDA,
   selectedWorkout: null,
   currentSessionProgress: {},
   currentCardioProgress: null,

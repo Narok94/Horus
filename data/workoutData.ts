@@ -77,7 +77,7 @@ export const jessicaWorkouts: WorkoutRoutine[] = [
 export const henriqueWorkouts: WorkoutRoutine[] = [
   {
     id: 'h-a',
-    title: 'TREINO A | PEITO + BÍCEPS',
+    title: 'Peito e Bíceps',
     description: 'Objetivo: Hipertrofia, Saúde',
     color: 'purple',
     exercises: [
@@ -92,7 +92,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
   },
   {
     id: 'h-b',
-    title: 'TREINO B | QUADRÍCEPS + PANTURRILHA + ABDÔMEN',
+    title: 'Quadríceps, Panturrilha e Abdômen',
     description: 'Objetivo: Hipertrofia, Saúde',
     color: 'emerald',
     exercises: [
@@ -107,7 +107,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
   },
   {
     id: 'h-c',
-    title: 'TREINO C | COSTAS + TRÍCEPS',
+    title: 'Costas e Tríceps',
     description: 'Objetivo: Hipertrofia, Saúde',
     color: 'orange',
     exercises: [
@@ -122,7 +122,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
   },
   {
     id: 'h-d',
-    title: 'TREINO D | OMBROS + TRAPÉZIO + ABDÔMEN',
+    title: 'Ombros, Trapézio e Abdômen',
     description: 'Objetivo: Hipertrofia, Saúde',
     color: 'rose',
     exercises: [
@@ -137,7 +137,7 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
   },
   {
     id: 'h-e',
-    title: 'TREINO E | POSTERIOR + GLÚTEOS + PANTURRILHA + ABDÔMEN + CARDIO',
+    title: 'Posterior, Glúteo, Panturrilha, Abdômen e Cardio',
     description: 'Objetivo: Hipertrofia, Saúde',
     color: 'blue',
     exercises: [

@@ -141,7 +141,7 @@ const AppContent: React.FC = () => {
           if (finalUser) {
             setUser(finalUser);
             setIsLoggedIn(true);
-            setActiveTab(finalUser.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
+            setActiveTab(finalUser.role === 'teacher' ? AppTab.TEACHER : AppTab.AGENDA);
             localStorage.setItem('tatugym_remembered', JSON.stringify(finalUser));
           } else {
             localStorage.removeItem('tatugym_remembered');
@@ -189,7 +189,7 @@ const AppContent: React.FC = () => {
     
     setUser(resolvedUser);
     setIsLoggedIn(true);
-    setActiveTab(resolvedUser.role === 'teacher' ? AppTab.TEACHER : AppTab.DASHBOARD);
+    setActiveTab(resolvedUser.role === 'teacher' ? AppTab.TEACHER : AppTab.AGENDA);
     localStorage.setItem('tatugym_remember_me_checked', 'true');
     localStorage.setItem('tatugym_remembered', JSON.stringify(resolvedUser));
   };

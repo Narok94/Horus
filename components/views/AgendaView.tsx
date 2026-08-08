@@ -109,20 +109,20 @@ export const DEFAULT_TASKS: Task[] = [
 export const getWorkoutForDay = (dayIndex: number) => {
   switch (dayIndex) {
     case 1:
-      return { code: 'A', title: 'TREINO A | PEITO + BÍCEPS' };
+      return { code: 'A', title: 'Treino A (Peito e Bíceps)' };
     case 2:
-      return { code: 'B', title: 'TREINO B | QUADRÍCEPS + PANTURRILHA + ABDÔMEN' };
+      return { code: 'B', title: 'Treino B (Quadríceps, Panturrilha e Abdômen)' };
     case 3:
-      return { code: 'C', title: 'TREINO C | COSTAS + TRÍCEPS' };
+      return { code: 'C', title: 'Treino C (Costas e Tríceps)' };
     case 4:
-      return { code: 'D', title: 'TREINO D | OMBROS + TRAPÉZIO + ABDÔMEN' };
+      return { code: 'D', title: 'Treino D (Ombros, Trapézio e Abdômen)' };
     case 5:
-      return { code: 'E', title: 'TREINO E | POSTERIOR + GLÚTEOS + PANTURRILHA + ABDÔMEN + CARDIO' };
+      return { code: 'E', title: 'Treino E (Posterior, Glúteo, Panturrilha, Abdômen e Cardio)' };
     case 6:
-      return { code: 'Sáb', title: 'DESCANSO ATIVO / CARDIO' };
+      return { code: 'Sáb', title: 'Descanso Ativo / Cardio' };
     case 0:
     default:
-      return { code: 'Dom', title: 'DESCANSO / RECUPERAÇÃO' };
+      return { code: 'Dom', title: 'Descanso' };
   }
 };
 
