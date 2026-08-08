@@ -192,7 +192,9 @@ export const useStore = create<AppState>((set, get) => {
         document.body.classList.remove('light', 'dark');
         document.body.classList.add(targetTheme);
       }
-      set({ theme: targetTheme });
+      const uName = user.username ? user.username.toLowerCase() : '';
+      const isHenrique = uName === 'henrique' || uName === 'teste1' || uName.includes('henrique');
+      set({ theme: targetTheme, activeTab: isHenrique ? AppTab.AGENDA : AppTab.DASHBOARD });
     }
   },
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),

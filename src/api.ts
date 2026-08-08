@@ -265,6 +265,7 @@ apiRouter.post("/sync/:username", async (req, res) => {
       badges: mergedBadges,
       completedMeals: mergedCompletedMeals,
       dietPlan: clientProfile.dietPlan || dbProfile.dietPlan,
+      tasks: clientProfile.tasks || dbProfile.tasks || [],
       challenge90: mergedChallenge,
       totalWorkouts: Math.max(dbProfile.totalWorkouts || 0, clientProfile.totalWorkouts || 0, mergedHistory.length),
       streak: Math.max(dbProfile.streak || 0, clientProfile.streak || 0)

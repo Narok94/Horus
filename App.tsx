@@ -18,7 +18,8 @@ import {
   Play,
   Activity,
   Utensils,
-  Target
+  Target,
+  Calendar
 } from 'lucide-react';
 import { useStore } from './store';
 import { useWorkoutPersistence } from './hooks/useWorkoutPersistence';
@@ -37,6 +38,7 @@ import { WorkoutsListView } from './components/views/WorkoutsListView';
 import { CardioView } from './components/views/CardioView';
 import { DietView } from './components/views/DietView';
 import { DesafioView } from './components/views/DesafioView';
+import { AgendaView } from './components/views/AgendaView';
 
 export const HorusLogoIcon: React.FC<{ size?: number; className?: string }> = ({ size = 48, className = "" }) => {
   return (
@@ -418,11 +420,15 @@ const AppContent: React.FC = () => {
 
   const renderView = () => {
     if (selectedWorkout) return <WorkoutView />;
-    if (activeTab === AppTab.DESAFIO && isHenrique) {
+    if (!isHenrique && activeTab === AppTab.AGENDA) {
+      return <DashboardView />;
+    }
+    if (isHenrique && activeTab === AppTab.DESAFIO) {
       return <DashboardView />;
     }
     switch (activeTab) {
       case AppTab.DASHBOARD: return <DashboardView />;
+      case AppTab.AGENDA: return isHenrique ? <AgendaView /> : <DashboardView />;
       case AppTab.WORKOUT: return <WorkoutsListView />;
       case AppTab.DIET: return <DietView />;
       case AppTab.PROFILE: return <ProfileView />;
@@ -436,6 +442,23 @@ const AppContent: React.FC = () => {
   const strokeColor = isLightUser ? "rgba(0, 0, 0, 0.015)" : "rgba(255, 255, 255, 0.02)";
   const circleFill = isLightUser ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.06)";
   const circleFillStrong = isLightUser ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
+
+  const navItems = isHenrique
+    ? [
+        ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
+        { id: AppTab.AGENDA, icon: Calendar, label: 'Agenda' },
+        { id: AppTab.DASHBOARD, icon: Dumbbell, label: 'Academia' },
+        { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
+        { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
+      ]
+    : [
+        ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
+        { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
+        { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
+        { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
+        { id: AppTab.DESAFIO, icon: Target, label: 'Desafio' },
+        { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
+      ];
 
   return (
     <div className={`min-h-[100dvh] relative flex flex-col ${
@@ -481,14 +504,7 @@ const AppContent: React.FC = () => {
             : "bg-[#050505]/85 border-t border-white/[0.04] shadow-2xl"
         } backdrop-blur-md select-none`}>
           <div className="w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-2 sm:px-6 flex items-center justify-around">
-            {[
-              ...(user?.role === 'teacher' ? [{ id: AppTab.TEACHER, icon: Users, label: 'Alunos' }] : []),
-              { id: AppTab.DASHBOARD, icon: isLightUser ? Home : LayoutDashboard, label: isLightUser ? 'Home' : 'Dashboard' },
-              { id: AppTab.WORKOUT, icon: Dumbbell, label: 'Treinos' },
-              ...(!isHenrique ? [{ id: AppTab.DESAFIO, icon: Target, label: 'Desafio' }] : []),
-              { id: AppTab.DIET, icon: Utensils, label: 'Dieta' },
-              { id: AppTab.PROFILE, icon: UserIcon, label: 'Perfil' }
-            ].map((item) => {
+            {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
                 <button

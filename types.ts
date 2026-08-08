@@ -157,6 +157,21 @@ export interface Operacao9State {
   checkIns: Operacao9CheckIn[];
 }
 
+export interface Task {
+  id: string;
+  title: string;
+  time: string;
+  category: string;
+  repeatDays?: string;
+  completed: boolean;
+  priority?: boolean;
+  date?: string;
+  period?: 'hoje' | 'semana' | 'mes';
+  icon?: string;
+  notes?: string;
+  createdAt?: string;
+}
+
 export interface User {
   username: string;
   password?: string;
@@ -183,6 +198,7 @@ export interface User {
   challenge90?: Challenge90;
   preferredWorkoutId?: string;
   operacao9Data?: Operacao9State;
+  tasks?: Task[];
 }
 
 export interface Badge {
@@ -203,6 +219,7 @@ export interface Achievement {
 
 export enum AppTab {
   DASHBOARD = 'dashboard',
+  AGENDA = 'agenda',
   WORKOUT = 'workout',
   HISTORY = 'history',
   PROFILE = 'profile',
