@@ -17,7 +17,9 @@ import {
   Edit2, 
   Trash2,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '../../store';
@@ -31,7 +33,7 @@ export const DEFAULT_TASKS: Task[] = [
     time: '07:30',
     category: 'Saúde',
     repeatDays: 'Ter, Qui, Sáb',
-    completed: true,
+    completed: false,
     priority: true,
     icon: 'Flame',
     period: 'hoje'
@@ -60,6 +62,17 @@ export const DEFAULT_TASKS: Task[] = [
   },
   {
     id: 'task-4',
+    title: 'Treino de força',
+    time: '11:30',
+    category: 'Academia',
+    repeatDays: 'Segunda a Sexta',
+    completed: false,
+    priority: true,
+    icon: 'Dumbbell',
+    period: 'hoje'
+  },
+  {
+    id: 'task-5',
     title: 'Almoço (pós-treino)',
     time: '13:30',
     category: 'Dieta',
@@ -70,7 +83,7 @@ export const DEFAULT_TASKS: Task[] = [
     period: 'hoje'
   },
   {
-    id: 'task-5',
+    id: 'task-6',
     title: 'Lanche',
     time: '17:30',
     category: 'Dieta',
@@ -78,17 +91,6 @@ export const DEFAULT_TASKS: Task[] = [
     completed: false,
     priority: false,
     icon: 'Apple',
-    period: 'hoje'
-  },
-  {
-    id: 'task-6',
-    title: 'Treino do Dia (Peito e Bíceps)',
-    time: '18:30',
-    category: 'Academia',
-    repeatDays: 'Segunda a Sexta',
-    completed: false,
-    priority: true,
-    icon: 'Dumbbell',
     period: 'hoje'
   },
   {
@@ -104,12 +106,37 @@ export const DEFAULT_TASKS: Task[] = [
   }
 ];
 
+export const getWorkoutForDay = (dayIndex: number) => {
+  switch (dayIndex) {
+    case 1:
+      return { code: 'A', title: 'TREINO A | PEITO + BÍCEPS' };
+    case 2:
+      return { code: 'B', title: 'TREINO B | QUADRÍCEPS + PANTURRILHA + ABDÔMEN' };
+    case 3:
+      return { code: 'C', title: 'TREINO C | COSTAS + TRÍCEPS' };
+    case 4:
+      return { code: 'D', title: 'TREINO D | OMBROS + TRAPÉZIO + ABDÔMEN' };
+    case 5:
+      return { code: 'E', title: 'TREINO E | POSTERIOR + GLÚTEOS + PANTURRILHA + ABDÔMEN + CARDIO' };
+    case 6:
+      return { code: 'Sáb', title: 'DESCANSO ATIVO / CARDIO' };
+    case 0:
+    default:
+      return { code: 'Dom', title: 'DESCANSO / RECUPERAÇÃO' };
+  }
+};
+
 export const AgendaView: React.FC = () => {
   const { user, updateUserProfile, setActiveTab, syncStatus } = useStore();
 
   const [activePeriod, setActivePeriod] = useState<'hoje' | 'semana' | 'mes'>('hoje');
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+
+  const selectedDateISO = useMemo(() => {
+    return selectedDate.toISOString().split('T')[0];
+  }, [selectedDate]);
 
   const tasks: Task[] = useMemo(() => {
     if (user?.tasks && user.tasks.length > 0) {
@@ -121,10 +148,26 @@ export const AgendaView: React.FC = () => {
   const userName = user?.name || user?.username || 'Henrique';
 
   const dateDisplay = useMemo(() => {
-    const d = new Date();
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'short' };
-    return d.toLocaleDateString('pt-BR', options).toUpperCase().replace('.', '');
-  }, []);
+    return selectedDate.toLocaleDateString('pt-BR', options).toUpperCase().replace('.', '');
+  }, [selectedDate]);
+
+  // Days for the week containing selectedDate (Monday to Sunday)
+  const weekDays = useMemo(() => {
+    const curr = new Date(selectedDate);
+    const day = curr.getDay(); // 0 = Dom
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    const monday = new Date(curr);
+    monday.setDate(curr.getDate() + diffToMonday);
+
+    const days: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }, [selectedDate]);
 
   const saveTasks = (newTasks: Task[]) => {
     updateUserProfile({ tasks: newTasks });
@@ -159,6 +202,7 @@ export const AgendaView: React.FC = () => {
         id: 'task-' + Date.now(),
         title: data.title,
         time: data.time,
+        date: data.date || selectedDateISO,
         category: data.category,
         repeatDays: data.repeatDays,
         completed: false,
@@ -175,22 +219,62 @@ export const AgendaView: React.FC = () => {
     saveTasks(updated);
   };
 
-  // Filter tasks by active period
+  const isTaskForDate = (task: Task, targetDate: Date) => {
+    const targetISO = targetDate.toISOString().split('T')[0];
+    if (task.date && task.date === targetISO) {
+      return true;
+    }
+
+    const dayIndex = targetDate.getDay(); // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
+    const rep = (task.repeatDays || 'Todos os dias').toLowerCase();
+
+    if (rep.includes('todos os dias') || rep.includes('diariamente')) return true;
+    if (rep.includes('única') || rep.includes('unica')) {
+      return task.date ? task.date === targetISO : true;
+    }
+    if (rep.includes('segunda a sexta') || rep.includes('seg a sex')) {
+      return dayIndex >= 1 && dayIndex <= 5;
+    }
+    if (rep.includes('ter, qui, sáb') || rep.includes('ter, qui, sab') || rep.includes('ter/qui/sáb')) {
+      return dayIndex === 2 || dayIndex === 4 || dayIndex === 6;
+    }
+    if (rep.includes('seg, qua, sex') || rep.includes('seg/qua/sex')) {
+      return dayIndex === 1 || dayIndex === 3 || dayIndex === 5;
+    }
+    if (rep.includes('fins de semana') || rep.includes('fim de semana')) {
+      return dayIndex === 0 || dayIndex === 6;
+    }
+
+    return true;
+  };
+
+  const formatTaskTitle = (task: Task, date: Date) => {
+    const lower = task.title.toLowerCase();
+    if (lower.includes('treino de força') || lower.includes('treino do dia') || task.category.toLowerCase() === 'academia') {
+      const workout = getWorkoutForDay(date.getDay());
+      return `Treino de força — ${workout.title}`;
+    }
+    return task.title;
+  };
+
+  // Filter tasks by selected date & active period and sort by time
   const filteredTasks = useMemo(() => {
-    return tasks.filter(t => {
-      if (!t.period) return true;
-      return t.period === activePeriod || activePeriod === 'hoje';
-    });
-  }, [tasks, activePeriod]);
+    return tasks
+      .filter(t => isTaskForDate(t, selectedDate))
+      .filter(t => {
+        if (!t.period) return true;
+        return t.period === activePeriod || activePeriod === 'hoje';
+      })
+      .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  }, [tasks, selectedDate, activePeriod]);
 
   // Next relevant task
   const nextRelevantTask = useMemo(() => {
-    // Priority: uncompleted priority task first, else first uncompleted task
-    const uncompleted = tasks.filter(t => !t.completed);
+    const uncompleted = filteredTasks.filter(t => !t.completed);
     if (uncompleted.length === 0) return null;
     const priorityTask = uncompleted.find(t => t.priority);
     return priorityTask || uncompleted[0];
-  }, [tasks]);
+  }, [filteredTasks]);
 
   const getCategoryColor = (catName: string) => {
     const found = CATEGORIES.find(c => c.name.toLowerCase() === catName.toLowerCase());
@@ -217,7 +301,7 @@ export const AgendaView: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-[#EEF1F7] text-[#0E1730] font-sans pb-24 relative min-h-screen -mx-2.5 sm:-mx-4 md:mx-0 px-4 md:px-6 pt-3 rounded-3xl">
+    <div className="w-full bg-[#EEF1F7] text-[#0E1730] font-sans pb-28 relative min-h-screen px-3 sm:px-5 md:px-6 pt-3 rounded-2xl sm:rounded-3xl">
       {/* Header */}
       <header className="flex flex-col gap-3 pt-2 pb-3 relative">
         <div className="flex justify-between items-start relative">
@@ -275,6 +359,100 @@ export const AgendaView: React.FC = () => {
         </nav>
       </header>
 
+      {/* Date Navigation & Week Selector Bar */}
+      <section className="bg-white border border-[#E3E8F1] rounded-xl p-2 shadow-xs my-2 font-sans">
+        {/* Date Controls Header */}
+        <div className="flex items-center justify-between gap-1.5 mb-1.5 px-0.5">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => {
+                const prev = new Date(selectedDate);
+                prev.setDate(prev.getDate() - 7);
+                setSelectedDate(prev);
+              }}
+              title="Semana anterior"
+              className="p-1 rounded-lg bg-[#F3F5FA] hover:bg-[#E3E8F1] text-[#0E1730] transition-colors cursor-pointer"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <button
+              onClick={() => setSelectedDate(new Date())}
+              className="px-2 py-0.5 rounded-lg bg-[#2F5CFF]/10 text-[#2F5CFF] hover:bg-[#2F5CFF]/20 text-[11px] font-bold transition-all cursor-pointer font-display"
+            >
+              Hoje
+            </button>
+            <button
+              onClick={() => {
+                const next = new Date(selectedDate);
+                next.setDate(next.getDate() + 7);
+                setSelectedDate(next);
+              }}
+              title="Próxima semana"
+              className="p-1 rounded-lg bg-[#F3F5FA] hover:bg-[#E3E8F1] text-[#0E1730] transition-colors cursor-pointer"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-bold text-[#0E1730] font-display">
+              {dateDisplay}
+            </span>
+            <label className="relative flex items-center justify-center p-1 rounded-lg bg-[#F3F5FA] hover:bg-[#E3E8F1] text-[#2F5CFF] cursor-pointer border border-[#E3E8F1]">
+              <Calendar size={13} />
+              <input
+                type="date"
+                value={selectedDateISO}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const [y, m, d] = e.target.value.split('-').map(Number);
+                    setSelectedDate(new Date(y, m - 1, d));
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* 7-Day Week Strip */}
+        <div className="grid grid-cols-7 gap-1">
+          {weekDays.map((d) => {
+            const dayNames = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+            const dayName = dayNames[d.getDay()];
+            const dayNum = d.getDate();
+            const isToday = d.toDateString() === new Date().toDateString();
+            const isSelected = d.toDateString() === selectedDate.toDateString();
+
+            return (
+              <button
+                key={d.toISOString()}
+                onClick={() => setSelectedDate(d)}
+                className={`flex flex-col items-center justify-center py-1 px-0.5 rounded-lg transition-all cursor-pointer relative select-none ${
+                  isSelected
+                    ? 'bg-[#2F5CFF] text-white shadow-xs font-bold'
+                    : 'bg-[#F8FAFC] text-[#69708A] hover:bg-[#E3E8F1]/60 hover:text-[#0E1730]'
+                }`}
+              >
+                <span className={`text-[9px] font-bold font-display uppercase tracking-wider ${
+                  isSelected ? 'text-white/80' : 'text-[#69708A]'
+                }`}>
+                  {dayName}
+                </span>
+                <span className={`text-xs font-extrabold font-display leading-none mt-0.5 ${
+                  isSelected ? 'text-white' : 'text-[#0E1730]'
+                }`}>
+                  {dayNum}
+                </span>
+                {isToday && !isSelected && (
+                  <span className="w-1 h-1 rounded-full bg-[#2F5CFF] absolute bottom-0.5" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       {/* Hero Card - Próxima Tarefa Relevante */}
       <section className="mt-3 mb-6">
         <div className="flex items-center gap-1.5 mb-2">
@@ -306,7 +484,7 @@ export const AgendaView: React.FC = () => {
 
             <div className="flex flex-col flex-1 min-w-0">
               <h3 className="text-base md:text-lg font-bold text-white font-display truncate">
-                {nextRelevantTask.title}
+                {formatTaskTitle(nextRelevantTask, selectedDate)}
               </h3>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-[11px] md:text-xs text-white/95 font-medium bg-white/10 px-2.5 py-0.5 rounded-md flex items-center gap-1.5 shrink-0">
@@ -329,7 +507,7 @@ export const AgendaView: React.FC = () => {
         ) : (
           <div className="flex items-center justify-center gap-2 bg-white/80 border border-[#E3E8F1] p-5 rounded-[22px] text-[#69708A] font-medium text-sm">
             <Sparkles size={18} className="text-[#10B981]" />
-            <span>Todas as tarefas concluídas por hoje! Parabéns!</span>
+            <span>Nenhuma tarefa pendente para esta data!</span>
           </div>
         )}
       </section>
@@ -387,13 +565,14 @@ export const AgendaView: React.FC = () => {
           {filteredTasks.length === 0 ? (
             <div className="bg-white border border-[#E3E8F1] rounded-[20px] p-8 text-center space-y-2">
               <Calendar size={32} className="mx-auto text-[#9AA1B8]" />
-              <p className="text-sm font-semibold text-[#0E1730]">Nenhuma tarefa encontrada</p>
+              <p className="text-sm font-semibold text-[#0E1730]">Nenhuma tarefa encontrada para esta data</p>
               <p className="text-xs text-[#69708A]">Clique em "+ Nova Tarefa" para adicionar.</p>
             </div>
           ) : (
             filteredTasks.map((task) => {
               const isCompleted = task.completed;
               const categoryColor = getCategoryColor(task.category);
+              const displayTitle = formatTaskTitle(task, selectedDate);
 
               return (
                 <div
@@ -442,7 +621,7 @@ export const AgendaView: React.FC = () => {
                           isCompleted ? 'line-through decoration-[#0E1730]/30 text-[#69708A]' : ''
                         }`}
                       >
-                        {task.title}
+                        {displayTitle}
                       </h3>
                       {task.priority && !isCompleted && (
                         <span className="text-[10px] text-[#FF8A24] bg-[#FF8A24]/15 px-1.5 py-0.5 rounded-md font-bold shrink-0">
@@ -496,6 +675,7 @@ export const AgendaView: React.FC = () => {
         onSave={handleSaveModal}
         onDelete={handleDeleteTask}
         taskToEdit={taskToEdit}
+        initialDate={selectedDateISO}
       />
     </div>
   );

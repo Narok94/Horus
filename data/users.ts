@@ -247,7 +247,86 @@ export const henriqueDefault: User = {
         observacoes: 'Início oficial da Operação 9%. Avaliação pela nutricionista. Aposta valendo com a esposa!'
       }
     ]
-  }
+  },
+  tasks: [
+    {
+      id: 'task-1',
+      title: 'Cardio em jejum (moderado)',
+      time: '07:30',
+      category: 'Saúde',
+      repeatDays: 'Ter, Qui, Sáb',
+      completed: false,
+      priority: true,
+      icon: 'Flame',
+      period: 'hoje'
+    },
+    {
+      id: 'task-2',
+      title: 'Café da manhã',
+      time: '08:30',
+      category: 'Dieta',
+      repeatDays: 'Todos os dias',
+      completed: false,
+      priority: false,
+      icon: 'Coffee',
+      period: 'hoje'
+    },
+    {
+      id: 'task-3',
+      title: 'Lanche (pré-treino)',
+      time: '11:00',
+      category: 'Dieta',
+      repeatDays: 'Todos os dias',
+      completed: false,
+      priority: false,
+      icon: 'Apple',
+      period: 'hoje'
+    },
+    {
+      id: 'task-4',
+      title: 'Treino de força',
+      time: '11:30',
+      category: 'Academia',
+      repeatDays: 'Segunda a Sexta',
+      completed: false,
+      priority: true,
+      icon: 'Dumbbell',
+      period: 'hoje'
+    },
+    {
+      id: 'task-5',
+      title: 'Almoço (pós-treino)',
+      time: '13:30',
+      category: 'Dieta',
+      repeatDays: 'Todos os dias',
+      completed: false,
+      priority: false,
+      icon: 'Apple',
+      period: 'hoje'
+    },
+    {
+      id: 'task-6',
+      title: 'Lanche',
+      time: '17:30',
+      category: 'Dieta',
+      repeatDays: 'Todos os dias',
+      completed: false,
+      priority: false,
+      icon: 'Apple',
+      period: 'hoje'
+    },
+    {
+      id: 'task-7',
+      title: 'Jantar',
+      time: '20:30',
+      category: 'Dieta',
+      repeatDays: 'Todos os dias',
+      completed: false,
+      priority: false,
+      icon: 'Apple',
+      period: 'hoje'
+    }
+  ]
 };
 
 export const jessicaDefault: User = {

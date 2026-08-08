@@ -9,6 +9,7 @@ interface TaskModalProps {
   onSave: (task: Omit<Task, 'id' | 'completed'> & { id?: string }) => void;
   onDelete?: (id: string) => void;
   taskToEdit?: Task | null;
+  initialDate?: string;
 }
 
 export const CATEGORIES = [
@@ -34,10 +35,12 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onClose,
   onSave,
   onDelete,
-  taskToEdit
+  taskToEdit,
+  initialDate
 }) => {
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('11:00');
+  const [date, setDate] = useState('');
   const [category, setCategory] = useState('Dieta');
   const [repeatDays, setRepeatDays] = useState('Todos os dias');
   const [priority, setPriority] = useState(false);
@@ -48,6 +51,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     if (taskToEdit) {
       setTitle(taskToEdit.title || '');
       setTime(taskToEdit.time || '11:00');
+      setDate(taskToEdit.date || initialDate || new Date().toISOString().split('T')[0]);
       setCategory(taskToEdit.category || 'Dieta');
       setRepeatDays(taskToEdit.repeatDays || 'Todos os dias');
       setPriority(taskToEdit.priority || false);
@@ -56,13 +60,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     } else {
       setTitle('');
       setTime('11:00');
+      setDate(initialDate || new Date().toISOString().split('T')[0]);
       setCategory('Dieta');
       setRepeatDays('Todos os dias');
       setPriority(false);
       setPeriod('hoje');
       setNotes('');
     }
-  }, [taskToEdit, isOpen]);
+  }, [taskToEdit, isOpen, initialDate]);
 
   if (!isOpen) return null;
 
@@ -74,6 +79,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       id: taskToEdit?.id,
       title: title.trim(),
       time,
+      date,
       category,
       repeatDays,
       priority,
@@ -122,8 +128,20 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               />
             </div>
 
-            {/* Time & Period */}
+            {/* Date & Time */}
             <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-[#0E1730] font-display uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <Calendar size={12} className="text-[#2F5CFF]" /> Data
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3E8F1] bg-[#F3F5FA] text-[#0E1730] font-medium text-sm focus:outline-none focus:border-[#2F5CFF] focus:bg-white transition-all"
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-[#0E1730] font-display uppercase tracking-wider mb-1 flex items-center gap-1">
                   <Clock size={12} className="text-[#2F5CFF]" /> Horário
@@ -135,21 +153,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3E8F1] bg-[#F3F5FA] text-[#0E1730] font-medium text-sm focus:outline-none focus:border-[#2F5CFF] focus:bg-white transition-all"
                   required
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#0E1730] font-display uppercase tracking-wider mb-1 flex items-center gap-1">
-                  <Calendar size={12} className="text-[#2F5CFF]" /> Período
-                </label>
-                <select
-                  value={period}
-                  onChange={(e) => setPeriod(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3E8F1] bg-[#F3F5FA] text-[#0E1730] font-medium text-sm focus:outline-none focus:border-[#2F5CFF] focus:bg-white transition-all cursor-pointer"
-                >
-                  <option value="hoje">Hoje</option>
-                  <option value="semana">Semana</option>
-                  <option value="mes">Mês</option>
-                </select>
               </div>
             </div>
 

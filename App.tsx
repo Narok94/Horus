@@ -493,7 +493,7 @@ const AppContent: React.FC = () => {
 
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
 
-      <div className="flex-grow flex-1 min-h-0 w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2.5 md:px-4 lg:px-6 pt-1 relative z-10 flex flex-col justify-start">
+      <div className="flex-grow flex-1 min-h-0 w-full max-w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-1 sm:px-3 md:px-4 lg:px-6 pt-1 relative z-10 flex flex-col justify-start">
         {renderView()}
       </div>
 
@@ -503,7 +503,7 @@ const AppContent: React.FC = () => {
             ? "bg-white/80 border-t border-gray-250/50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]"
             : "bg-[#050505]/85 border-t border-white/[0.04] shadow-2xl"
         } backdrop-blur-md select-none`}>
-          <div className="w-full max-w-sm md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-2 sm:px-6 flex items-center justify-around">
+          <div className="w-full max-w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto h-[74px] px-2 sm:px-6 flex items-center justify-around">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
