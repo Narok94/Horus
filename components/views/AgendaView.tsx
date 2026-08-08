@@ -65,7 +65,7 @@ export const DEFAULT_TASKS: Task[] = [
     title: 'Treino de força',
     time: '11:30',
     category: 'Academia',
-    repeatDays: 'Segunda a Sexta',
+    repeatDays: 'Todos os dias',
     completed: false,
     priority: true,
     icon: 'Dumbbell',
@@ -144,6 +144,22 @@ export const AgendaView: React.FC = () => {
     }
     return DEFAULT_TASKS;
   }, [user?.tasks]);
+
+  useEffect(() => {
+    if (user?.tasks && user.tasks.length > 0) {
+      let changed = false;
+      const updated = user.tasks.map(t => {
+        if (t.id === 'task-4' && t.repeatDays !== 'Todos os dias') {
+          changed = true;
+          return { ...t, repeatDays: 'Todos os dias' };
+        }
+        return t;
+      });
+      if (changed) {
+        updateUserProfile({ tasks: updated });
+      }
+    }
+  }, [user?.tasks, updateUserProfile]);
 
   const userName = user?.name || user?.username || 'Henrique';
 
