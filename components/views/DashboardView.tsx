@@ -514,13 +514,23 @@ export const DashboardView: React.FC = () => {
           </div>
 
           {/* Compact CTA Trigger padding */}
-          <button
-            onClick={startActiveWorkout}
-            className="w-full mt-3.5 bg-white hover:bg-zinc-150 active:scale-[0.98] text-[#2563EB] font-black uppercase text-[10px] py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider shadow-md relative z-10 border-0"
-          >
-            <Play size={11} className="fill-[#2563EB] stroke-none" />
-            <span>{isWorkoutActive ? 'CONTINUAR TREINO' : 'INICIAR TREINO'}</span>
-          </button>
+          <div className="flex flex-col gap-2 mt-3.5 relative z-10 w-full">
+            <button
+              onClick={startActiveWorkout}
+              className="w-full bg-white hover:bg-zinc-150 active:scale-[0.98] text-[#2563EB] font-black uppercase text-[10px] py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider shadow-md border-0"
+            >
+              <Play size={11} className="fill-[#2563EB] stroke-none" />
+              <span>{isWorkoutActive ? 'CONTINUAR TREINO' : 'INICIAR TREINO'}</span>
+            </button>
+
+            <button
+              onClick={viewWorkoutsList}
+              className="w-full bg-white/10 hover:bg-white/20 active:scale-[0.98] text-white border border-white/20 font-black uppercase text-[10px] py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 tracking-wider backdrop-blur-sm"
+            >
+              <Dumbbell size={11} className="text-white" />
+              <span>TODOS OS TREINOS</span>
+            </button>
+          </div>
         </div>
 
         {/* Wrapper for side-by-side md: Grid */}
@@ -995,7 +1005,7 @@ export const DashboardView: React.FC = () => {
               onClick={viewWorkoutsList}
               className="flex-1 bg-transparent border border-zinc-200 dark:border-white/10 hover:border-zinc-350 dark:hover:border-white/25 text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-white font-nike italic font-[900] uppercase text-[11px] py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/[0.015] active:scale-[0.98] transition-all cursor-pointer tracking-wider text-center flex items-center justify-center gap-1.5"
             >
-              Fichas
+              Todos os Treinos
             </button>
           </div>
         </div>
