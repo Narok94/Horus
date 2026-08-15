@@ -150,5 +150,22 @@ export const henriqueWorkouts: WorkoutRoutine[] = [
       { id: 'he-7', name: 'Crunch na polia', muscleGroup: 'Abdômen', sets: 3, reps: '10-15', rest: 45, image: getExerciseGifUrl('Abdominal') },
       { id: 'he-8', name: 'Cardio: esteira ou bike', muscleGroup: 'Cardio', sets: 1, reps: '20-30 min', rest: 0, image: getExerciseGifUrl('Cardio') }
     ]
+  },
+  {
+    id: 'h-pump',
+    title: 'Treino de Pump',
+    description: 'Objetivo: Hipertrofia, Pump e Vascularização',
+    color: 'pink',
+    exercises: [
+      { id: 'hp-1', name: 'Supino inclinado com halteres', muscleGroup: 'Peito', sets: 4, reps: '12-15', rest: 45, image: getExerciseGifUrl('Supino Inclinado') },
+      { id: 'hp-2', name: 'Crucifixo na máquina', muscleGroup: 'Peito', sets: 3, reps: '15-20', rest: 30, image: getExerciseGifUrl('Peck Deck') },
+      { id: 'hp-3', name: 'Puxada alta na frente', muscleGroup: 'Costas', sets: 4, reps: '12-15', rest: 45, image: getExerciseGifUrl('Puxada frente') },
+      { id: 'hp-4', name: 'Remada cavalinho', muscleGroup: 'Costas', sets: 3, reps: '15-20', rest: 30, image: getExerciseGifUrl('Remada Cavalinho') },
+      { id: 'hp-5', name: 'Elevação lateral', muscleGroup: 'Ombros', sets: 4, reps: '15-20', rest: 30, image: getExerciseGifUrl('Elevação lateral') },
+      { id: 'hp-6', name: 'Rosca direta com barra', muscleGroup: 'Bíceps', sets: 3, reps: '12-15', rest: 30, image: getExerciseGifUrl('Rosca Direta') },
+      { id: 'hp-7', name: 'Rosca martelo', muscleGroup: 'Bíceps', sets: 2, reps: '15-20', rest: 20, image: getExerciseGifUrl('Rosca martelo') },
+      { id: 'hp-8', name: 'Tríceps pulley com corda', muscleGroup: 'Tríceps', sets: 3, reps: '15-20', rest: 30, image: getExerciseGifUrl('Tríceps Corda') },
+      { id: 'hp-9', name: 'Tríceps francês', muscleGroup: 'Tríceps', sets: 2, reps: '15-20', rest: 20, image: getExerciseGifUrl('Tríceps Francês') }
+    ]
   }
 ];

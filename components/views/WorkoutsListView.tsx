@@ -28,6 +28,11 @@ const workoutThemes = [
     color: '#06B6D4',
     icon: Activity,
     bgClass: 'bg-cyan-500'
+  },
+  {
+    color: '#EC4899',
+    icon: Flame,
+    bgClass: 'bg-pink-500'
   }
 ];
 
@@ -116,6 +121,9 @@ export const WorkoutsListView: React.FC = () => {
   };
 
   const getWorkoutFocus = (workout: WorkoutRoutine) => {
+    if (workout.id === 'h-pump' || workout.title.toLowerCase().includes('pump')) {
+      return 'Treino de Pump';
+    }
     const groups = Array.from(new Set(workout.exercises.map(ex => ex.muscleGroup)))
       .filter(g => g && g.toLowerCase() !== 'manguito')
       .map(g => g.charAt(0).toUpperCase() + g.slice(1).toLowerCase());
@@ -132,6 +140,9 @@ export const WorkoutsListView: React.FC = () => {
   };
 
   const getWorkoutCardLabel = (workout: WorkoutRoutine, index: number) => {
+    if (workout.id === 'h-pump' || workout.title.toLowerCase().includes('pump') || workout.title.toLowerCase().includes('extra')) {
+      return 'Treino Pump';
+    }
     const match = workout.title.match(/Treino\s+([A-Z])/i);
     if (match) {
       return `Treino ${match[1].toUpperCase()}`;
